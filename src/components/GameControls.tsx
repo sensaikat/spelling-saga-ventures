@@ -104,7 +104,7 @@ const GameControls: React.FC<GameControlsProps> = ({
               className="game-control-button"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              title={showAlphabetHelper ? "Hide alphabet helper" : "Show alphabet helper"}
+              title={showAlphabetHelper ? "Hide character keyboard" : "Show character keyboard"}
             >
               <Type size={20} />
               {showAlphabetHelper && (
@@ -179,7 +179,7 @@ const GameControls: React.FC<GameControlsProps> = ({
             <li>You can change difficulty level during the game</li>
             <li>Toggle audio to hear word pronunciations</li>
             {onAlphabetHelperToggle && (
-              <li>Use the alphabet helper to type in languages you may not have keyboard support for</li>
+              <li>Use the character keyboard to type in multiple languages and access special characters, numbers, and punctuation</li>
             )}
           </ul>
         </motion.div>
