@@ -15,6 +15,13 @@ const alphabets: Record<string, string[]> = {
   pl: "aąbcćdeęfghijklłmnńoópqrsśtuvwxyzźż".split(''),
   ar: "ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي".split(' '),
   zh: "阿 巴 车 德 俄 佛 该 哈 伊 杰 卡 拉 马 娜 欧 帕 契 日 萨 特 乌 维 万 希 亚 子".split(' '), // Simplified set
+  // Adding new languages
+  ur: "ا ب پ ت ٹ ث ج چ ح خ د ڈ ذ ر ڑ ز ژ س ش ص ض ط ظ ع غ ف ق ک گ ل م ن ں و ہ ھ ء ی ے".split(' '),
+  pa: "ੳ ਅ ੲ ਸ ਹ ਕ ਖ ਗ ਘ ਙ ਚ ਛ ਜ ਝ ਞ ਟ ਠ ਡ ਢ ਣ ਤ ਥ ਦ ਧ ਨ ਪ ਫ ਬ ਭ ਮ ਯ ਰ ਲ ਵ ੜ ਸ਼ ਖ਼ ਗ਼ ਜ਼ ਫ਼ ਲ਼".split(' '),
+  kn: "ಅ ಆ ಇ ಈ ಉ ಊ ಋ ಎ ಏ ಐ ಒ ಓ ಔ ಕ ಖ ಗ ಘ ಙ ಚ ಛ ಜ ಝ ಞ ಟ ಠ ಡ ಢ ಣ ತ ಥ ದ ಧ ನ ಪ ಫ ಬ ಭ ಮ ಯ ರ ಲ ವ ಶ ಷ ಸ ಹ ಳ".split(' '),
+  ml: "അ ആ ഇ ഈ ഉ ഊ ഋ എ ഏ ഐ ഒ ഓ ഔ ക ഖ ഗ ഘ ങ ച ഛ ജ ഝ ഞ ട ഠ ഡ ഢ ണ ത ഥ ദ ധ ന പ ഫ ബ ഭ മ യ ര ല വ ശ ഷ സ ഹ ള ഴ റ".split(' '),
+  ro: "aăâbcdefghiîjklmnopqrsștțuvwxyz".split(''),
+  ru: "абвгдеёжзийклмнопрстуфхцчшщъыьэюя".split(''),
 };
 
 interface AlphabetHelperProps {
