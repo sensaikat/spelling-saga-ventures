@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -53,6 +52,11 @@ export const languages: Language[] = [
   { id: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
   { id: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
   { id: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
+  { id: 'bn', name: 'Bengali', nativeName: 'বাংলা', flag: '🇧🇩' },
+  { id: 'or', name: 'Oriya', nativeName: 'ଓଡ଼ିଆ', flag: '🇮🇳' },
+  { id: 'ta', name: 'Tamil', nativeName: 'தமிழ்', flag: '🇮🇳' },
+  { id: 'te', name: 'Telugu', nativeName: 'తెలుగు', flag: '🇮🇳' },
+  { id: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
 ];
 
 // Game modes
@@ -87,7 +91,7 @@ export const gameModes: GameMode[] = [
   },
 ];
 
-// Sample word list for English (would be larger in full implementation)
+// Sample word list for English, Spanish, Hindi, and added languages
 export const wordLists: Record<string, WordList[]> = {
   en: [
     {
@@ -158,6 +162,133 @@ export const wordLists: Record<string, WordList[]> = {
       languageId: 'hi',
       difficulty: 'easy',
     },
+  ],
+  bn: [
+    {
+      id: 'bn-basics',
+      name: 'মৌলিক শব্দ',
+      description: 'শিশুদের জন্য প্রাথমিক শব্দ',
+      words: [
+        { id: 'bn-1', text: 'আপেল', hint: 'একটি লাল বা সবুজ ফল যা গাছে জন্মায়', difficulty: 'easy' },
+        { id: 'bn-2', text: 'কলা', hint: 'একটি লম্বা হলুদ ফল যার আকার বাঁকা', difficulty: 'easy' },
+        { id: 'bn-3', text: 'বিড়াল', hint: 'একটি ছোট পশুপালন প্রাণী যা মিউ মিউ শব্দ করে', difficulty: 'easy' },
+        { id: 'bn-4', text: 'কুকুর', hint: 'একটি সাধারণ পোষা প্রাণী যা ঘেউ ঘেউ করে', difficulty: 'easy' },
+        { id: 'bn-5', text: 'হাতি', hint: 'একটি বড় ধূসর প্রাণী যার শুঁড় আছে', difficulty: 'medium' },
+        { id: 'bn-6', text: 'ফুল', hint: 'একটি রঙিন উদ্ভিদ যা ফোটে', difficulty: 'easy' },
+      ],
+      languageId: 'bn',
+      difficulty: 'easy',
+    }
+  ],
+  or: [
+    {
+      id: 'or-basics',
+      name: 'ମୌଳିକ ଶବ୍ଦ',
+      description: 'ପ୍ରାରମ୍ଭିକ ମାନଙ୍କ ପାଇଁ ସାଧାରଣ ଶବ୍ଦ',
+      words: [
+        { id: 'or-1', text: 'ଆପଲ', hint: 'ଏକ ଲାଲ କିମ୍ବା ସବୁଜ ଫଳ ଯାହା ଗଛରେ ହୁଏ', difficulty: 'easy' },
+        { id: 'or-2', text: 'କଦଳୀ', hint: 'ଏକ ଲମ୍ବା ହଳଦିଆ ଫଳ ଯାହାର ବକ୍ର ଆକୃତି', difficulty: 'easy' },
+        { id: 'or-3', text: 'ବିଲେଇ', hint: 'ଏକ ଛୋଟ ପୋଷା ପ୍ରାଣୀ ଯିଏ ମେଉଁ ମେଉଁ କରେ', difficulty: 'easy' },
+        { id: 'or-4', text: 'କୁକୁର', hint: 'ଏକ ସାଧାରଣ ପୋଷା ଯିଏ ଭୁକିଥାଏ', difficulty: 'easy' },
+      ],
+      languageId: 'or',
+      difficulty: 'easy',
+    }
+  ],
+  ta: [
+    {
+      id: 'ta-basics',
+      name: 'அடிப்படை வார்த்தைகள்',
+      description: 'ஆரம்ப பயிற்சிக்கான பொதுவான வார்த்தைகள்',
+      words: [
+        { id: 'ta-1', text: 'ஆப்பிள்', hint: 'மரத்தில் வளரும் சிவப்பு அல்லது பச்சை பழம்', difficulty: 'easy' },
+        { id: 'ta-2', text: 'வாழைப்பழம்', hint: 'வளைந்த வடிவம் கொண்ட நீளமான மஞ்சள் நிற பழம்', difficulty: 'easy' },
+        { id: 'ta-3', text: 'பூனை', hint: 'மியாவ் என்று சத்தமிடும் சிறிய விலங்கு', difficulty: 'easy' },
+        { id: 'ta-4', text: 'நாய்', hint: 'குரைக்கும் பொதுவான செல்லப்பிராணி', difficulty: 'easy' },
+      ],
+      languageId: 'ta',
+      difficulty: 'easy',
+    }
+  ],
+  te: [
+    {
+      id: 'te-basics',
+      name: 'ప్రాథమిక పదాలు',
+      description: 'ప్రారంభకులకు సాధారణ పదాలు',
+      words: [
+        { id: 'te-1', text: 'యాపిల్', hint: 'చెట్లపై పెరిగే ఎరుపు లేదా ఆకుపచ్చ పండు', difficulty: 'easy' },
+        { id: 'te-2', text: 'అరటిపండు', hint: 'వంపు ఆకారంతో ఉన్న పొడవైన పసుపు రంగు పండు', difficulty: 'easy' },
+        { id: 'te-3', text: 'పిల్లి', hint: 'మ్యావ్ అనే శబ్దం చేసే చిన్న పెంపుడు జంతువు', difficulty: 'easy' },
+        { id: 'te-4', text: 'కుక్క', hint: 'మొరిగే సాధారణ పెంపుడు జంతువు', difficulty: 'easy' },
+      ],
+      languageId: 'te',
+      difficulty: 'easy',
+    }
+  ],
+  pl: [
+    {
+      id: 'pl-basics',
+      name: 'Podstawowe Słowa',
+      description: 'Codzienne słowa dla pocz��tkujących',
+      words: [
+        { id: 'pl-1', text: 'jabłko', hint: 'Czerwony lub zielony owoc, który rośnie na drzewach', difficulty: 'easy' },
+        { id: 'pl-2', text: 'banan', hint: 'Długi żółty owoc o zakrzywionym kształcie', difficulty: 'easy' },
+        { id: 'pl-3', text: 'kot', hint: 'Małe futrzaste zwierzę domowe, które miauczy', difficulty: 'easy' },
+        { id: 'pl-4', text: 'pies', hint: 'Popularne zwierzę domowe, które szczeka', difficulty: 'easy' },
+        { id: 'pl-5', text: 'słoń', hint: 'Duże szare zwierzę z trąbą', difficulty: 'medium' },
+      ],
+      languageId: 'pl',
+      difficulty: 'easy',
+    }
+  ],
+  ar: [
+    {
+      id: 'ar-basics',
+      name: 'الكلمات الأساسية',
+      description: 'كلمات يومية شائعة للمبتدئين',
+      words: [
+        { id: 'ar-1', text: 'تفاحة', hint: 'فاكهة حمراء أو خضراء تنمو على الأشجار', difficulty: 'easy' },
+        { id: 'ar-2', text: 'موز', hint: 'فاكهة صفراء طويلة ذات شكل منحني', difficulty: 'easy' },
+        { id: 'ar-3', text: 'قطة', hint: 'حيوان أليف صغير ذو فرو يموء', difficulty: 'easy' },
+        { id: 'ar-4', text: 'كلب', hint: 'حيوان أليف شائع ينبح', difficulty: 'easy' },
+        { id: 'ar-5', text: 'فيل', hint: 'حيوان رمادي كبير له خرطوم', difficulty: 'medium' },
+        { id: 'ar-6', text: 'زهرة', hint: 'نبات ملون يزهر', difficulty: 'easy' },
+      ],
+      languageId: 'ar',
+      difficulty: 'easy',
+    }
+  ],
+  fr: [
+    {
+      id: 'fr-basics',
+      name: 'Mots de Base',
+      description: 'Mots quotidiens pour les débutants',
+      words: [
+        { id: 'fr-1', text: 'pomme', hint: 'Un fruit rouge ou vert qui pousse sur les arbres', difficulty: 'easy' },
+        { id: 'fr-2', text: 'banane', hint: 'Un fruit jaune long à forme courbée', difficulty: 'easy' },
+        { id: 'fr-3', text: 'chat', hint: 'Un petit animal de compagnie qui miaule', difficulty: 'easy' },
+        { id: 'fr-4', text: 'chien', hint: 'Un animal de compagnie commun qui aboie', difficulty: 'easy' },
+        { id: 'fr-5', text: 'éléphant', hint: 'Un grand animal gris avec une trompe', difficulty: 'medium' },
+      ],
+      languageId: 'fr',
+      difficulty: 'easy',
+    }
+  ],
+  zh: [
+    {
+      id: 'zh-basics',
+      name: '基础词汇',
+      description: '初学者常用的日常词汇',
+      words: [
+        { id: 'zh-1', text: '苹果', hint: '一种生长在树上的红色或绿色水果', difficulty: 'easy' },
+        { id: 'zh-2', text: '香蕉', hint: '一种弯曲形状的长黄色水果', difficulty: 'easy' },
+        { id: 'zh-3', text: '猫', hint: '一种会喵喵叫的小型毛茸茸宠物', difficulty: 'easy' },
+        { id: 'zh-4', text: '狗', hint: '一种常见的会汪汪叫的宠物', difficulty: 'easy' },
+        { id: 'zh-5', text: '大象', hint: '一种有长鼻子的大型灰色动物', difficulty: 'medium' },
+      ],
+      languageId: 'zh',
+      difficulty: 'easy',
+    }
   ],
 };
 
@@ -300,3 +431,4 @@ export const useGameStore = create<GameState>()(
     }
   )
 );
+
