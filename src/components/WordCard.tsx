@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Word } from '../utils/gameData';
-import { Volume } from 'lucide-react';
+import { Volume, HelpCircle } from 'lucide-react';
 
 interface WordCardProps {
   word: Word;
   revealed?: boolean;
   onClick?: () => void;
   onSpeakClick?: () => void;
+  onHintClick?: () => void;
+  showHint?: boolean;
   className?: string;
 }
 
@@ -17,6 +19,8 @@ const WordCard: React.FC<WordCardProps> = ({
   revealed = true,
   onClick,
   onSpeakClick,
+  onHintClick,
+  showHint = false,
   className = '',
 }) => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -31,6 +35,11 @@ const WordCard: React.FC<WordCardProps> = ({
   const handleSpeakClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (onSpeakClick) onSpeakClick();
+  };
+
+  const handleHintClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onHintClick) onHintClick();
   };
 
   // Determine difficulty color
@@ -50,16 +59,30 @@ const WordCard: React.FC<WordCardProps> = ({
     >
       <div className={`flex justify-between items-start mb-2`}>
         <div className={`h-2 w-16 rounded-full ${difficultyColor} opacity-70`} />
-        {onSpeakClick && (
-          <motion.button
-            className="text-gray-600 hover:text-game-blue"
-            onClick={handleSpeakClick}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <Volume size={20} />
-          </motion.button>
-        )}
+        <div className="flex space-x-2">
+          {onHintClick && (
+            <motion.button
+              className="text-gray-600 hover:text-game-yellow"
+              onClick={handleHintClick}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              title="Get a hint"
+            >
+              <HelpCircle size={20} />
+            </motion.button>
+          )}
+          {onSpeakClick && (
+            <motion.button
+              className="text-gray-600 hover:text-game-blue"
+              onClick={handleSpeakClick}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              title="Listen to pronunciation"
+            >
+              <Volume size={20} />
+            </motion.button>
+          )}
+        </div>
       </div>
       
       <div className="flex flex-col items-center justify-center h-32">
@@ -75,8 +98,14 @@ const WordCard: React.FC<WordCardProps> = ({
           {revealed ? word.text : '????????'}
         </h3>
         
-        {word.hint && (
-          <p className="text-sm text-gray-500 mt-2 text-center">{word.hint}</p>
+        {showHint && word.hint && (
+          <motion.p 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-sm bg-yellow-50 text-gray-700 mt-2 p-2 rounded-md text-center border border-yellow-200"
+          >
+            {word.hint}
+          </motion.p>
         )}
       </div>
     </motion.div>
