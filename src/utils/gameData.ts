@@ -225,7 +225,7 @@ export const wordLists: Record<string, WordList[]> = {
         { id: 'te-1', text: 'యాపిల్', hint: 'చెట్లపై పెరిగే ఎరుపు లేదా ఆకుపచ్చ పండు', difficulty: 'easy' },
         { id: 'te-2', text: 'అరటిపండు', hint: 'వంపు ఆకారంతో ఉన్న పొడవైన పసుపు రంగు పండు', difficulty: 'easy' },
         { id: 'te-3', text: 'పిల్లి', hint: 'మ్యావ్ అనే శబ్దం చేసే చిన్న పెంపుడు జంతువు', difficulty: 'easy' },
-        { id: 'te-4', text: 'కుక్క', hint: 'మొరిగే సాధారண పెంపుడు జంతువు', difficulty: 'easy' },
+        { id: 'te-4', text: 'కుక్క', hint: 'మొరిగే సాధారණ పెంపుడు జంతువు', difficulty: 'easy' },
       ],
       languageId: 'te',
       difficulty: 'easy',
@@ -319,7 +319,7 @@ export const wordLists: Record<string, WordList[]> = {
       name: 'ਮੁੱਢਲੇ ਸ਼ਬਦ',
       description: 'ਨਵੇਂ ਸਿੱਖਣ ਵਾਲਿਆਂ ਲਈ ਆਮ ਸ਼ਬਦ',
       words: [
-        { id: 'pa-1', text: 'ਸੇਬ', hint: 'ਇੱਕ ਲਾਲ ਜਾਂ ਹਰਾ ਫਲ ਜੋ ਰੁੱਖ 'ਤੇ ਉੱਗਦਾ ਹੈ', difficulty: 'easy' },
+        { id: 'pa-1', text: 'ਸੇਬ', hint: 'ਇੱਕ ਲਾਲ ਜਾਂ ਹਰਾ ਫਲ ਜੋ ਰੁੱਖ ਤੇ ਉੱਗਦਾ ਹੈ', difficulty: 'easy' },
         { id: 'pa-2', text: 'ਕੇਲਾ', hint: 'ਇੱਕ ਲੰਬਾ ਪੀਲਾ ਫਲ ਜਿਸਦਾ ਆਕਾਰ ਮੁੜਿਆ ਹੋਇਆ ਹੈ', difficulty: 'easy' },
         { id: 'pa-3', text: 'ਬਿੱਲੀ', hint: 'ਇੱਕ ਛੋਟਾ ਪਾਲਤੂ ਜਾਨਵਰ ਜੋ ਮਿਆਉਂ ਮਿਆਉਂ ਕਰਦਾ ਹੈ', difficulty: 'easy' },
         { id: 'pa-4', text: 'ਕੁੱਤਾ', hint: 'ਇੱਕ ਆਮ ਪਾਲਤੂ ਜਾਨਵਰ ਜੋ ਭੌਂਕਦਾ ਹੈ', difficulty: 'easy' },
@@ -336,7 +336,7 @@ export const wordLists: Record<string, WordList[]> = {
       words: [
         { id: 'kn-1', text: 'ಸೇಬು', hint: 'ಮರದಲ್ಲಿ ಬೆಳೆಯುವ ಕೆಂಪು ಅಥವಾ ಹಸಿರು ಹಣ್ಣು', difficulty: 'easy' },
         { id: 'kn-2', text: 'ಬಾಳೆಹಣ್ಣು', hint: 'ಬಾಗಿದ ಆಕಾರದ ಉದ್ದನೆಯ ಹಳದಿ ಹಣ್ಣು', difficulty: 'easy' },
-        { id: 'kn-3', text: 'ಬೆಕ್ಕು', hint: 'ಮ್ಯಾವ್ ಮ್�ಾವ್ ಎಂದು ಶಬ್ದ ಮಾಡುವ ಚಿಕ್ಕ ಸಾಕು ಪ್ರಾಣಿ', difficulty: 'easy' },
+        { id: 'kn-3', text: 'ಬೆಕ್ಕು', hint: 'ಮ್ಯಾವ್ ಮ್ಯಾವ್ ಎಂದು ಶಬ್ದ ಮಾಡುವ ಚಿಕ್ಕ ಸಾಕು ಪ್ರಾಣಿ', difficulty: 'easy' },
         { id: 'kn-4', text: 'ನಾಯಿ', hint: 'ಸಾಮಾನ್ಯ ಸಾಕು ಪ್ರಾಣಿ ಅದು ಬೊಗಳುತ್ತದೆ', difficulty: 'easy' },
       ],
       languageId: 'kn',
