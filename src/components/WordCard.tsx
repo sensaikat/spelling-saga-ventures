@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Word } from '../utils/gameData';
-import { VolumeUp } from 'lucide-react';
+import { Volume } from 'lucide-react';
 
 interface WordCardProps {
   word: Word;
@@ -57,7 +57,7 @@ const WordCard: React.FC<WordCardProps> = ({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <VolumeUp size={20} />
+            <Volume size={20} />
           </motion.button>
         )}
       </div>

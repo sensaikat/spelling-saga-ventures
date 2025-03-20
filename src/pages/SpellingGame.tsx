@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, VolumeUp, Check, X, Trophy, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Volume, Check, X, Trophy, ChevronRight } from 'lucide-react';
 import { useGameStore, Word } from '../utils/gameData';
 import WordCard from '../components/WordCard';
 import { toast } from '@/components/ui/use-toast';
@@ -28,14 +27,12 @@ const SpellingGame = () => {
   
   const inputRef = useRef<HTMLInputElement>(null);
   
-  // Guard for direct access (required data not selected)
   useEffect(() => {
     if (!selectedLanguage || !selectedGameMode || !currentWordList) {
       navigate('/');
     }
   }, [selectedLanguage, selectedGameMode, currentWordList, navigate]);
   
-  // Focus input field when component mounts
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -51,12 +48,10 @@ const SpellingGame = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check answer
     const correct = userInput.toLowerCase().trim() === currentWord.text.toLowerCase();
     setIsCorrect(correct);
     setShowResult(true);
     
-    // Update progress and score
     updateWordProgress(currentWord.id, correct);
     
     if (correct) {
@@ -72,7 +67,6 @@ const SpellingGame = () => {
       setRemainingLives(prev => prev - 1);
       
       if (remainingLives <= 1) {
-        // Game over if no lives left
         setTimeout(() => {
           setGameCompleted(true);
         }, 1500);
@@ -80,7 +74,6 @@ const SpellingGame = () => {
       }
     }
     
-    // Wait to show next word
     setTimeout(() => {
       if (currentWordIndex < currentWordList.words.length - 1) {
         setCurrentWordIndex(prev => prev + 1);
@@ -88,7 +81,6 @@ const SpellingGame = () => {
         setIsCorrect(null);
         setShowResult(false);
       } else {
-        // Game completed
         setGameCompleted(true);
       }
     }, 1500);
@@ -100,14 +92,12 @@ const SpellingGame = () => {
     setShowResult(true);
     
     if (remainingLives <= 1) {
-      // Game over if no lives left
       setTimeout(() => {
         setGameCompleted(true);
       }, 1500);
       return;
     }
     
-    // Wait to show next word
     setTimeout(() => {
       if (currentWordIndex < currentWordList.words.length - 1) {
         setCurrentWordIndex(prev => prev + 1);
@@ -115,14 +105,12 @@ const SpellingGame = () => {
         setIsCorrect(null);
         setShowResult(false);
       } else {
-        // Game completed
         setGameCompleted(true);
       }
     }, 1500);
   };
   
   const speakWord = (word: Word) => {
-    // Use speech synthesis to pronounce the word
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(word.text);
       utterance.lang = selectedLanguage.id;
@@ -246,7 +234,7 @@ const SpellingGame = () => {
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-game-blue"
                         onClick={() => speakWord(currentWord)}
                       >
-                        <VolumeUp size={20} />
+                        <Volume size={20} />
                       </button>
                     </div>
                     
@@ -377,3 +365,4 @@ const SpellingGame = () => {
 };
 
 export default SpellingGame;
+
