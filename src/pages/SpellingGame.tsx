@@ -8,8 +8,17 @@ import GameControls from '../components/GameControls';
 import AlphabetHelper from '../components/AlphabetHelper';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
+import { useAdventure } from '../contexts/AdventureContext';
 
-const SpellingGame = () => {
+interface SpellingGameProps {
+  isAdventure?: boolean;
+  onAdventureComplete?: (score: number) => void;
+}
+
+const SpellingGame: React.FC<SpellingGameProps> = ({ 
+  isAdventure = false, 
+  onAdventureComplete 
+}) => {
   const navigate = useNavigate();
   const { gameId } = useParams<{ gameId: string }>();
   const { 
@@ -19,6 +28,9 @@ const SpellingGame = () => {
     updateWordProgress,
     addPoints 
   } = useGameStore();
+  
+  const { getCurrentLocation } = useAdventure();
+  const currentLocation = getCurrentLocation();
   
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [userInput, setUserInput] = useState('');
@@ -40,10 +52,10 @@ const SpellingGame = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
-    if (!selectedLanguage || !selectedGameMode || !currentWordList) {
+    if (!isAdventure && (!selectedLanguage || !selectedGameMode || !currentWordList)) {
       navigate('/');
     }
-  }, [selectedLanguage, selectedGameMode, currentWordList, navigate]);
+  }, [selectedLanguage, selectedGameMode, currentWordList, navigate, isAdventure]);
   
   useEffect(() => {
     if (inputRef.current) {
@@ -78,7 +90,7 @@ const SpellingGame = () => {
     }
   }, [selectedLanguage]);
   
-  if (!selectedLanguage || !selectedGameMode || !currentWordList || filteredWords.length === 0) {
+  if (!isAdventure && (!selectedLanguage || !selectedGameMode || !currentWordList || filteredWords.length === 0)) {
     return null;
   }
   
@@ -124,46 +136,6 @@ const SpellingGame = () => {
         setGameCompleted(true);
       }
     }, 1500);
-  };
-  
-  const handleSkip = () => {
-    setRemainingLives(prev => prev - 1);
-    setIsCorrect(false);
-    setShowResult(true);
-    
-    if (remainingLives <= 1) {
-      setTimeout(() => {
-        setGameCompleted(true);
-      }, 1500);
-      return;
-    }
-    
-    setTimeout(() => {
-      if (currentWordIndex < filteredWords.length - 1) {
-        setCurrentWordIndex(prev => prev + 1);
-        setUserInput('');
-        setIsCorrect(null);
-        setShowResult(false);
-        setShowHint(false);
-      } else {
-        setGameCompleted(true);
-      }
-    }, 1500);
-  };
-  
-  const speakWord = (word: Word) => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(word.text);
-      utterance.lang = selectedLanguage.id;
-      window.speechSynthesis.speak(utterance);
-    }
-  };
-
-  const handleShowHint = () => {
-    if (hintsUsed < maxHints) {
-      setShowHint(true);
-      setHintsUsed(prev => prev + 1);
-    }
   };
   
   const handlePlayAgain = () => {
@@ -220,7 +192,6 @@ const SpellingGame = () => {
     }
   };
   
-  // Handle cursor position tracking in the input
   const handleInputSelect = (e: React.SyntheticEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
     setCursorPosition(target.selectionStart || 0);
@@ -233,8 +204,62 @@ const SpellingGame = () => {
   
   const progressPercentage = ((currentWordIndex + 1) / filteredWords.length) * 100;
   
+  const handleAdventureReturn = () => {
+    if (onAdventureComplete) {
+      onAdventureComplete(score);
+    }
+  };
+  
+  const handleSkip = () => {
+    setRemainingLives(prev => prev - 1);
+    setIsCorrect(false);
+    setShowResult(true);
+    
+    if (remainingLives <= 1) {
+      setTimeout(() => {
+        setGameCompleted(true);
+      }, 1500);
+      return;
+    }
+    
+    setTimeout(() => {
+      if (currentWordIndex < filteredWords.length - 1) {
+        setCurrentWordIndex(prev => prev + 1);
+        setUserInput('');
+        setIsCorrect(null);
+        setShowResult(false);
+        setShowHint(false);
+      } else {
+        setGameCompleted(true);
+      }
+    }, 1500);
+  };
+  
+  const speakWord = (word: Word) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(word.text);
+      utterance.lang = selectedLanguage.id;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleShowHint = () => {
+    if (hintsUsed < maxHints) {
+      setShowHint(true);
+      setHintsUsed(prev => prev + 1);
+    }
+  };
+  
+  const handleAdventureReturn = () => {
+    if (onAdventureComplete) {
+      onAdventureComplete(score);
+    }
+  };
+  
+  const progressPercentage = ((currentWordIndex + 1) / filteredWords.length) * 100;
+  
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
+    <div className={`min-h-screen ${isAdventure && currentLocation ? terrainBackgrounds[currentLocation.terrain] : 'bg-gradient-to-b from-blue-50 to-purple-50'}`}>
       <div className="container mx-auto px-4 py-6">
         {!gameCompleted ? (
           <>
@@ -245,11 +270,11 @@ const SpellingGame = () => {
               transition={{ duration: 0.5 }}
             >
               <button 
-                onClick={() => navigate('/game-mode')} 
+                onClick={() => isAdventure ? handleAdventureReturn() : navigate('/game-mode')} 
                 className="text-gray-600 hover:text-gray-900 transition-colors flex items-center"
               >
                 <ArrowLeft size={20} className="mr-2" />
-                <span>Exit Game</span>
+                <span>{isAdventure ? 'Back to Adventure' : 'Exit Game'}</span>
               </button>
               
               <div className="flex items-center space-x-2">
@@ -288,7 +313,7 @@ const SpellingGame = () => {
                 transition={{ duration: 0.6 }}
               >
                 <h2 className="text-xl font-medium mb-1">
-                  {selectedGameMode.name}
+                  {isAdventure && currentLocation ? currentLocation.name : selectedGameMode.name}
                 </h2>
                 <div className="flex items-center justify-center gap-2 text-gray-600">
                   <span>{selectedLanguage.flag}</span>
@@ -456,43 +481,65 @@ const SpellingGame = () => {
               <Trophy size={64} className="text-white" />
             </motion.div>
             
-            <h2 className="text-3xl font-display font-bold mb-4">Game Completed!</h2>
+            <h2 className="text-3xl font-display font-bold mb-4">{isAdventure ? 'Challenge Completed!' : 'Game Completed!'}</h2>
             
             <p className="text-xl mb-6">Your final score: <span className="font-bold">{score}</span></p>
             
             <div className="flex flex-col gap-4 mt-8">
-              <motion.button
-                onClick={handlePlayAgain}
-                className="primary-button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Play Again
-              </motion.button>
-              
-              <motion.button
-                onClick={() => navigate('/game-mode')}
-                className="secondary-button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Choose Another Game
-              </motion.button>
-              
-              <motion.button
-                onClick={() => navigate('/progress')}
-                className="bg-gray-200 text-gray-700 w-full font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:bg-gray-300 active:scale-95 flex items-center justify-center gap-2"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                View Progress <ChevronRight size={16} />
-              </motion.button>
+              {isAdventure ? (
+                <motion.button
+                  onClick={handleAdventureReturn}
+                  className="primary-button"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Return to Adventure
+                </motion.button>
+              ) : (
+                <>
+                  <motion.button
+                    onClick={handlePlayAgain}
+                    className="primary-button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Play Again
+                  </motion.button>
+                  
+                  <motion.button
+                    onClick={() => navigate('/game-mode')}
+                    className="secondary-button"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Choose Another Game
+                  </motion.button>
+                  
+                  <motion.button
+                    onClick={() => navigate('/progress')}
+                    className="bg-gray-200 text-gray-700 w-full font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:bg-gray-300 active:scale-95 flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    View Progress <ChevronRight size={16} />
+                  </motion.button>
+                </>
+              )}
             </div>
           </motion.div>
         )}
       </div>
     </div>
   );
+};
+
+const terrainBackgrounds = {
+  forest: 'bg-gradient-to-b from-green-200 to-green-600',
+  desert: 'bg-gradient-to-b from-yellow-200 to-amber-600',
+  river: 'bg-gradient-to-b from-blue-200 to-blue-600',
+  mountain: 'bg-gradient-to-b from-slate-200 to-slate-600',
+  castle: 'bg-gradient-to-b from-purple-200 to-purple-600',
+  space: 'bg-gradient-to-b from-indigo-200 to-indigo-800',
 };
 
 export default SpellingGame;
