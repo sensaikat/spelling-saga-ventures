@@ -250,14 +250,6 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
     }
   };
   
-  const handleAdventureReturn = () => {
-    if (onAdventureComplete) {
-      onAdventureComplete(score);
-    }
-  };
-  
-  const progressPercentage = ((currentWordIndex + 1) / filteredWords.length) * 100;
-  
   return (
     <div className={`min-h-screen ${isAdventure && currentLocation ? terrainBackgrounds[currentLocation.terrain] : 'bg-gradient-to-b from-blue-50 to-purple-50'}`}>
       <div className="container mx-auto px-4 py-6">
