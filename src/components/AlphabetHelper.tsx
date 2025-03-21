@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -24,9 +25,9 @@ const alphabets: Record<string, Record<string, string[]>> = {
   },
   de: {
     letters: "abcdefghijklmnopqrstuvwxyzäöüß".split(''),
-    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ".split(''),
+    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß".split(''),
     numbers: "0123456789".split(''),
-    punctuation: ".,?!':;\"()-_@#$%&*+=/\\<>[]{}|~^`„"‚'".split('')
+    punctuation: ".,?!':;\"()-_@#$%&*+=/\\<>[]{}|~^`".split('')
   },
   cs: {
     letters: "abcdefghijklmnopqrstuvwxyzáčďéěíňóřšťúůýž".split(''),
@@ -119,7 +120,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
   },
   zh: {
     common: "阿 巴 车 德 俄 佛 该 哈 伊 杰 卡 拉 马 娜 欧 帕 契 日 萨 特 乌 维 万 希 亚 子".split(' '),
-    // Fixed the Chinese punctuation - proper escaping of quotes
     punctuation: "。 ， ？ ！ ： ； （ ） 【 】 、 · … — _ @ # ￥ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' '),
     numbers: "０ １ ２ ３ ４ ５ ６ ７ ８ ９ 0 1 2 3 4 5 6 7 8 9".split(' ')
   },
