@@ -68,7 +68,7 @@
   }
   
   .glass-panel {
-    @apply backdrop-blur-md bg-white/80 rounded-xl border border-white/20 shadow-lg;
+    @apply backdrop-blur-sm bg-white/80 rounded-xl border border-white/20 shadow-lg;
   }
   
   .floating-element {
@@ -80,18 +80,62 @@
   }
   
   .primary-button {
-    @apply bg-game-blue text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:bg-blue-500 active:scale-95;
+    @apply bg-gradient-to-r from-game-blue to-blue-500 text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:from-blue-500 hover:to-blue-600 active:scale-95;
   }
   
   .secondary-button {
-    @apply bg-game-purple text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:bg-purple-500 active:scale-95;
+    @apply bg-gradient-to-r from-game-purple to-purple-500 text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:from-purple-500 hover:to-purple-600 active:scale-95;
   }
   
   .success-button {
-    @apply bg-game-green text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:bg-green-500 active:scale-95;
+    @apply bg-gradient-to-r from-game-green to-green-500 text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:from-green-500 hover:to-green-600 active:scale-95;
   }
   
   .shimmer-bg {
     @apply bg-gradient-to-r from-transparent via-white/20 to-transparent bg-[length:500px_100%] animate-shimmer;
+  }
+  
+  /* New adventure-themed components */
+  .adventure-card {
+    @apply relative overflow-hidden rounded-xl p-4 border-2 transition-all duration-300;
+  }
+  
+  .adventure-button {
+    @apply flex items-center justify-center gap-2 font-medium px-5 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-lg active:scale-95;
+  }
+  
+  .achievement-badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-sm font-medium shadow-sm;
+  }
+  
+  .quest-container {
+    @apply bg-white/70 backdrop-blur-sm rounded-xl p-5 border border-white/30 shadow-lg;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600;
+  }
+  
+  .glow {
+    @apply shadow-[0_0_15px_rgba(59,130,246,0.5)];
+  }
+  
+  .rotate-slow {
+    animation: rotateSlow 15s linear infinite;
+  }
+  
+  .rotate-medium {
+    animation: rotateSlow 8s linear infinite;
+  }
+  
+  @keyframes rotateSlow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
