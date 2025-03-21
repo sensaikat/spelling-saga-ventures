@@ -22,6 +22,18 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "0123456789".split(''),
     punctuation: ".,?!':;\"()-_@#$%&*+=/\\<>[]{}|~^`".split('')
   },
+  de: {
+    letters: "abcdefghijklmnopqrstuvwxyzäöüß".split(''),
+    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ".split(''),
+    numbers: "0123456789".split(''),
+    punctuation: ".,?!':;\"()-_@#$%&*+=/\\<>[]{}|~^`„"‚'".split('')
+  },
+  cs: {
+    letters: "abcdefghijklmnopqrstuvwxyzáčďéěíňóřšťúůýž".split(''),
+    uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ".split(''),
+    numbers: "0123456789".split(''),
+    punctuation: ".,?!':;\"()-_@#$%&*+=/\\<>[]{}|~^`".split('')
+  },
   hi: {
     letters: "अ आ इ ई उ ऊ ऋ ए ऐ ओ औ क ख ग घ ङ च छ ज झ ञ ट ठ ड ढ ण त थ द ध न प फ ब भ म य र ल व श ष स ह क्ष त्र ज्ञ".split(' '),
     vowelSigns: "ा ि ी ु ू ृ े ै ो ौ ं ः ँ ॅ ॆ ॏ ॉ ॊ ॎ".split(' '),
@@ -61,7 +73,7 @@ const alphabets: Record<string, Record<string, string[]>> = {
   te: {
     letters: "అ ఆ ఇ ఈ ఉ ఊ ఋ ఌ ఎ ఏ ఐ ఒ ఓ ఔ క ఖ గ ఘ ఙ చ ఛ జ ఝ ఞ ట ఠ డ ఢ ణ త థ ద ధ న ప ఫ బ భ మ య ర ల వ శ ష స హ ళ క్ష ఱ".split(' '),
     vowelSigns: "ా ి ీ ు ూ ృ ౄ ె ే ై ొ ో ౌ ం ః ఁ".split(' '),
-    conjuncts: "క్క క్ష క్ర క్త క్ల క్వ ఖ్య గ్గ గ్ర గ్ల ఘ్న ఘ్ర ఙ్క ఙ్ఖ ఙ్గ ఙ్ఘ ఙ్ఙ చ్చ చ్ఛ చ్ర జ్జ జ్ఝ జ్ఞ జ్ర ట్ట ట్ర ఠ్య డ్డ డ్ఢ డ్ర ణ్ణ త్త త్థ త్న త్మ త్ర త్వ థ్ర ద్ద ద్ధ ద్బ ద్భ ద్య ద్ర ద్వ ధ్న ధ్ర ధ్వ న్న ప్ప ప్ర ప్ల ఫ్ర బ్బ బ్ర భ్ర మ్మ మ్ర య్య ర్క ర్చ ర్జ ర్ట ర్ఠ ర్త ర్థ ర్ద ర్ధ ర్న ర్ప ర్ఫ ర్బ ర్భ ర్మ ర్య ర్ర ర్ల ర్వ ర్శ ర్ష ర్స ర్హ ల్క ల్ప ల్ల వ్ర శ్చ శ్న శ్ర శ్ల ష్క ష్ట ష్ఠ ష్ప ష్ఫ ష్మ ష్య ష్ర స్క స్ట స్త స్థ స్న స్ప స్ఫ స్మ స్య స్ర స్వ స్స హ్న హ్మ హ్య హ్ర హ్ల ళ్ళ క్ష్ణ క్ష్మ క్ష్య క్ష్ర".split(' '),
+    conjuncts: "క్క క్ష క్ర క్త క్ల క్వ ఖ్య గ్గ గ్ర గ్ల ఘ్న ఘ్ర ఙ్క ఙ్ఖ ఙ్గ ఙ్ఘ ఙ్ఙ చ్చ చ్ఛ చ్ర జ్జ జ్ఝ జ్ఞ జ్ర ట్ట ట్ర ఠ్య డ్డ డ్ఢ డ్ర ణ్ణ త్త త్థ త్న త్మ త్ర త్వ థ్ర ద్ద ద్ధ ద్బ ద్భ ద్య ద్ర ద్వ ధ్న ధ్ర ధ్వ న్న ప్ప ప్ర ప్ల ఫ్ర బ్బ బ్ర భ్ర మ్మ మ్ర య్య ర్క ర్చ ర్జ ర్ట ర్ఠ ర్త ర్థ ర్ద ర్ధ ర్న ర్ప ర్ఫ ర్బ ర్భ ర్మ ర్య ర్ర ర్ల ర్వ ర్శ ర్ష ర్స ర్హ ల్క ల్ప ల్ల వ్ర శ్చ శ్న శ్ర శ్ల ష్క ష్ట ష్ఠ ష్ణ ష్ప ష్ఫ ష్మ ష్య ష్ర స్క స్ట స్త స్థ స్న స్ప స్ఫ స్మ స్య స్ర స్వ స్స హ్న హ్మ హ్య హ్ర హ్ల ళ్ళ క్ష్ణ క్ష్మ క్ష్య క్ష్ర".split(' '),
     halant: "్".split(''),
     numbers: "౦ ౧ ౨ ౩ ౪ ౫ ౬ ౭ ౮ ౯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
@@ -173,7 +185,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
 
 // Group languages by script type
 const scriptGroups: Record<string, string[]> = {
-  latin: ['en', 'es', 'fr', 'pl', 'ro', 'ru'],
+  latin: ['en', 'es', 'fr', 'pl', 'ro', 'ru', 'de', 'cs'],
   devanagari: ['hi'], 
   bengali: ['bn'],
   odia: ['or'],
