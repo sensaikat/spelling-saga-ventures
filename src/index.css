@@ -111,6 +111,27 @@
   .quest-container {
     @apply bg-white/70 backdrop-blur-sm rounded-xl p-5 border border-white/30 shadow-lg;
   }
+  
+  /* New magical UI elements */
+  .magic-button {
+    @apply relative overflow-hidden bg-gradient-to-r from-purple-400 to-indigo-500 text-white font-medium rounded-full py-3 px-6 shadow-md hover:shadow-lg transition-all duration-300 hover:from-purple-500 hover:to-indigo-600 active:scale-95;
+  }
+  
+  .magic-card {
+    @apply bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-5 border border-indigo-100 shadow-lg transition-all duration-300 hover:shadow-xl;
+  }
+  
+  .magic-border {
+    @apply relative before:absolute before:inset-0 before:rounded-xl before:p-[2px] before:bg-gradient-to-r before:from-indigo-500 before:via-purple-500 before:to-pink-500 before:content-[''] before:-z-10 before:animate-border-glow;
+  }
+  
+  .sparkle-container {
+    @apply relative overflow-hidden;
+  }
+  
+  .child-friendly-text {
+    @apply font-display text-lg leading-relaxed;
+  }
 }
 
 @layer utilities {
@@ -130,6 +151,18 @@
     animation: rotateSlow 8s linear infinite;
   }
   
+  .magic-sparkle {
+    animation: sparkle 1.5s linear infinite;
+  }
+  
+  .float-up-down {
+    animation: floatUpDown 3s ease-in-out infinite;
+  }
+  
+  .pulsate {
+    animation: pulsate 2s ease-in-out infinite;
+  }
+  
   @keyframes rotateSlow {
     from {
       transform: rotate(0deg);
@@ -137,5 +170,52 @@
     to {
       transform: rotate(360deg);
     }
+  }
+  
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+  
+  @keyframes floatUpDown {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  @keyframes pulsate {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  @keyframes border-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  .animate-bounce-small {
+    animation: bounce-small 2s ease-in-out infinite;
+  }
+  
+  @keyframes bounce-small {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s infinite linear;
+  }
+  
+  @keyframes shimmer {
+    from { background-position: -500px 0; }
+    to { background-position: 500px 0; }
   }
 }

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Map, Compass } from 'lucide-react';
 import AdventureMap from '../components/AdventureMap';
 import { useAdventure } from '../contexts/AdventureContext';
+import GuideCharacter from '../components/GuideCharacter';
 
 const AdventureMapPage = () => {
   const navigate = useNavigate();
@@ -46,6 +47,37 @@ const AdventureMapPage = () => {
       <div className="absolute bottom-1/4 left-20 text-7xl opacity-10">
         🌊
       </div>
+      
+      {/* Add animated floating clouds */}
+      <motion.div 
+        className="absolute top-20 left-1/4 text-7xl opacity-10"
+        animate={{ 
+          x: [0, 30, 0],
+          y: [0, -10, 0]
+        }}
+        transition={{ 
+          repeat: Infinity, 
+          duration: 20,
+          ease: "easeInOut"
+        }}
+      >
+        ☁️
+      </motion.div>
+      
+      <motion.div 
+        className="absolute bottom-40 right-1/3 text-5xl opacity-10"
+        animate={{ 
+          x: [0, -20, 0],
+          y: [0, 5, 0]
+        }}
+        transition={{ 
+          repeat: Infinity, 
+          duration: 15,
+          ease: "easeInOut"
+        }}
+      >
+        ☁️
+      </motion.div>
       
       <div className="container mx-auto px-4 py-6 relative z-10">
         <motion.div 
@@ -94,6 +126,9 @@ const AdventureMapPage = () => {
           <AdventureMap onLocationSelect={handleLocationSelect} />
         </motion.div>
       </div>
+      
+      {/* Add our guide character */}
+      <GuideCharacter />
     </div>
   );
 };
