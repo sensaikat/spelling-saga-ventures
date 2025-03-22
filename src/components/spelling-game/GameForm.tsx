@@ -81,6 +81,7 @@ export const GameForm: React.FC<GameFormProps> = ({
             <Input
               ref={inputRef}
               type="text"
+              name="wordInput"
               value={userInput}
               onChange={handleInputChange}
               onClick={handleInputSelect}
@@ -94,6 +95,10 @@ export const GameForm: React.FC<GameFormProps> = ({
               }`}
               placeholder="Type the word..."
               disabled={showResult}
+              autoComplete="off"
+              spellCheck="false"
+              lang={currentWord.language || "en"}
+              dir={currentWord.language && ["ar", "ur"].includes(currentWord.language) ? "rtl" : "ltr"}
             />
             
             <button 
