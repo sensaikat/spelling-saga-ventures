@@ -1,22 +1,20 @@
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { 
   processPayment, 
-  validateCreditCard, 
-  formatCreditCardNumber,
-  formatExpiryDate
+  validateCreditCard
 } from '../../utils/payment';
 import { SubscriptionPlan } from '../../utils/subscription';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import { Separator } from '../ui/separator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Loader2, CheckCircle, CreditCard, Calendar, User, Mail } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
+import { PaymentMethodType, formatPrice } from '../../utils/payment/paymentMethods';
 import PaymentMethodSelector from './PaymentMethodSelector';
-import { PaymentMethodType, currencies, formatPrice } from '../../utils/payment/paymentMethods';
+import PaymentSummary from './PaymentSummary';
+import PaymentDetails from './PaymentDetails';
+import OrderReview from './OrderReview';
+import PaymentSuccess from './PaymentSuccess';
 
 interface PaymentFormProps {
   plan: SubscriptionPlan;
@@ -70,6 +68,29 @@ const PaymentForm = ({ plan, onSuccess, onCancel }: PaymentFormProps) => {
         [field]: '',
       });
     }
+  };
+  
+  // Format credit card input (add spaces after every 4 digits)
+  const formatCreditCardNumber = (input: string): string => {
+    const digits = input.replace(/\D/g, '');
+    const groups = [];
+    
+    for (let i = 0; i < digits.length; i += 4) {
+      groups.push(digits.slice(i, i + 4));
+    }
+    
+    return groups.join(' ');
+  };
+
+  // Format expiry date (MM/YY)
+  const formatExpiryDate = (input: string): string => {
+    const digits = input.replace(/\D/g, '');
+    
+    if (digits.length <= 2) {
+      return digits;
+    }
+    
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}`;
   };
   
   const validateForm = (): boolean => {
@@ -194,62 +215,16 @@ const PaymentForm = ({ plan, onSuccess, onCancel }: PaymentFormProps) => {
   };
   
   if (isSuccess) {
-    return (
-      <div className="py-6 text-center">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="inline-block mb-4"
-        >
-          <CheckCircle size={64} className="text-green-500" />
-        </motion.div>
-        <h3 className="text-xl font-bold mb-2">Payment Successful!</h3>
-        <p className="text-gray-600 mb-4">
-          Thank you for subscribing to {plan.name}!
-        </p>
-      </div>
-    );
+    return <PaymentSuccess plan={plan} />;
   }
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-sm text-gray-600">You will be charged</p>
-            <p className="text-2xl font-bold">{formatPrice(plan.price, paymentData.currency)}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-600">Billing cycle</p>
-            <p className="font-medium">
-              {plan.billingCycle === 'monthly' 
-                ? 'Monthly' 
-                : plan.billingCycle === 'yearly' 
-                  ? 'Yearly' 
-                  : 'One-time payment'}
-            </p>
-          </div>
-        </div>
-        
-        <div className="mt-4">
-          <Label htmlFor="currency">Currency</Label>
-          <Select 
-            value={paymentData.currency}
-            onValueChange={(value) => updatePaymentData('currency', value)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Currency" />
-            </SelectTrigger>
-            <SelectContent>
-              {currencies.map((currency) => (
-                <SelectItem key={currency.code} value={currency.code}>
-                  {currency.symbol} {currency.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <PaymentSummary 
+        plan={plan} 
+        currency={paymentData.currency}
+        onCurrencyChange={(currency) => updatePaymentData('currency', currency)}
+      />
       
       <Separator className="my-4" />
       
@@ -261,130 +236,16 @@ const PaymentForm = ({ plan, onSuccess, onCancel }: PaymentFormProps) => {
       )}
       
       {step === 'details' && (
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <div className="relative">
-              <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                className="pl-9"
-                value={paymentData.email}
-                onChange={(e) => updatePaymentData('email', e.target.value)}
-              />
-            </div>
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-          </div>
-          
-          <div>
-            <Label htmlFor="name">Full Name</Label>
-            <div className="relative">
-              <User size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-              <Input
-                id="name"
-                placeholder="Full name"
-                className="pl-9"
-                value={paymentData.name}
-                onChange={(e) => updatePaymentData('name', e.target.value)}
-              />
-            </div>
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-          </div>
-          
-          {paymentData.method === 'credit-card' && (
-            <>
-              <div>
-                <Label htmlFor="cardNumber">Card Number</Label>
-                <div className="relative">
-                  <CreditCard size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-                  <Input
-                    id="cardNumber"
-                    placeholder="1234 5678 9012 3456"
-                    className="pl-9"
-                    value={paymentData.cardNumber}
-                    onChange={(e) => updatePaymentData('cardNumber', e.target.value)}
-                    maxLength={19}
-                  />
-                </div>
-                {errors.cardNumber && <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="expiryDate">Expiry Date</Label>
-                  <div className="relative">
-                    <Calendar size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-                    <Input
-                      id="expiryDate"
-                      placeholder="MM/YY"
-                      className="pl-9"
-                      value={paymentData.expiryDate}
-                      onChange={(e) => updatePaymentData('expiryDate', e.target.value)}
-                      maxLength={5}
-                    />
-                  </div>
-                  {errors.expiryDate && <p className="text-red-500 text-xs mt-1">{errors.expiryDate}</p>}
-                </div>
-                
-                <div>
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input
-                    id="cvv"
-                    type="text"
-                    placeholder="123"
-                    value={paymentData.cvv}
-                    onChange={(e) => updatePaymentData('cvv', e.target.value)}
-                    maxLength={4}
-                  />
-                  {errors.cvv && <p className="text-red-500 text-xs mt-1">{errors.cvv}</p>}
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+        <PaymentDetails 
+          paymentMethod={paymentData.method}
+          paymentData={paymentData}
+          errors={errors}
+          updatePaymentData={updatePaymentData}
+        />
       )}
       
       {step === 'review' && (
-        <div className="space-y-4">
-          <h3 className="text-sm font-medium mb-3">Review Your Order</h3>
-          
-          <div className="rounded-md border p-4 space-y-3">
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Plan</span>
-              <span className="font-medium">{plan.name}</span>
-            </div>
-            
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Price</span>
-              <span className="font-medium">
-                {formatPrice(plan.price, paymentData.currency)}
-                {plan.billingCycle !== 'lifetime' && 
-                  `/${plan.billingCycle === 'monthly' ? 'mo' : 'year'}`}
-              </span>
-            </div>
-            
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Payment Method</span>
-              <span className="font-medium capitalize">
-                {paymentData.method.replace('-', ' ')}
-              </span>
-            </div>
-            
-            <Separator />
-            
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Email</span>
-              <span className="font-medium">{paymentData.email}</span>
-            </div>
-            
-            <div className="flex justify-between">
-              <span className="text-sm text-gray-600">Name</span>
-              <span className="font-medium">{paymentData.name}</span>
-            </div>
-          </div>
-        </div>
+        <OrderReview plan={plan} paymentData={paymentData} />
       )}
       
       <div className="flex gap-4 mt-6">
