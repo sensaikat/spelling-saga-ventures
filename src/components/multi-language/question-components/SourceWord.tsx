@@ -10,7 +10,7 @@ interface SourceWordProps {
 }
 
 const SourceWord: React.FC<SourceWordProps> = ({ word, languageId }) => {
-  const { speakWord } = useSpeech();
+  const { speakWord, isSpeaking } = useSpeech();
   
   return (
     <div className="text-center mb-8">
@@ -19,8 +19,9 @@ const SourceWord: React.FC<SourceWordProps> = ({ word, languageId }) => {
           <h3 className="text-2xl font-medium">{word.text}</h3>
         </div>
         <button 
-          className="ml-2 p-2 text-gray-600 hover:text-gray-900 transition-colors"
+          className={`ml-2 p-2 rounded-full ${isSpeaking ? 'bg-game-blue/10 text-game-blue' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} transition-colors`}
           onClick={() => speakWord(word.text, languageId)}
+          aria-label={`Pronounce ${word.text}`}
         >
           <Volume2 size={20} />
         </button>

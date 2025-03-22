@@ -1,12 +1,31 @@
 
+import { useState } from 'react';
+
 export const useSpeech = () => {
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
   const speakWord = (text: string, languageId: string) => {
     if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = languageId;
+      
+      // Set speaking state
+      setIsSpeaking(true);
+      
+      utterance.onend = () => {
+        setIsSpeaking(false);
+      };
+      
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+      };
+      
       window.speechSynthesis.speak(utterance);
     }
   };
   
-  return { speakWord };
+  return { speakWord, isSpeaking };
 };
