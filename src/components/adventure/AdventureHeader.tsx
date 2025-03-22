@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Star, Trophy, Sparkles, HelpCircle } from 'lucide-react';
+import { ChevronLeft, Star, Trophy, Sparkles, HelpCircle, Home, Gamepad, Settings, Book } from 'lucide-react';
 import { Character, Location } from '../../contexts/adventure/types';
 import { Language } from '../../utils/game';
 import { terrainImages } from './constants/terrainData';
+import { useNavigate } from 'react-router-dom';
 
 interface AdventureHeaderProps {
   currentLocation: Location;
@@ -23,6 +24,8 @@ const AdventureHeader: React.FC<AdventureHeaderProps> = ({
   onToggleTips,
   showTips
 }) => {
+  const navigate = useNavigate();
+  
   // Get vernacular name based on selected language if available
   const getVernacularName = () => {
     if (!selectedLanguage) return null;
@@ -92,7 +95,48 @@ const AdventureHeader: React.FC<AdventureHeaderProps> = ({
           <span>Adventure Map</span>
         </motion.button>
         
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2">
+          {/* Quick Navigation Menu */}
+          <motion.button
+            className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/')}
+            aria-label="Home"
+          >
+            <Home size={18} />
+          </motion.button>
+          
+          <motion.button
+            className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/game')}
+            aria-label="Games"
+          >
+            <Gamepad size={18} />
+          </motion.button>
+          
+          <motion.button
+            className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/progress')}
+            aria-label="Progress"
+          >
+            <Book size={18} />
+          </motion.button>
+          
+          <motion.button
+            className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/settings')}
+            aria-label="Settings"
+          >
+            <Settings size={18} />
+          </motion.button>
+          
           <motion.button
             className={`p-2 rounded-full shadow-md transition-colors ${
               showTips ? 'bg-blue-500 text-white' : 'bg-white/70 text-blue-500'
@@ -100,8 +144,9 @@ const AdventureHeader: React.FC<AdventureHeaderProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onToggleTips}
+            aria-label="Tips"
           >
-            <HelpCircle size={20} />
+            <HelpCircle size={18} />
           </motion.button>
           
           <motion.div 

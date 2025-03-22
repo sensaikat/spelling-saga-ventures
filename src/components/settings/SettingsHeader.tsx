@@ -3,6 +3,7 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import QuickNav from '../navigation/QuickNav';
 
 const SettingsHeader = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const SettingsHeader = () => {
   return (
     <>
       <motion.div 
-        className="mb-8 flex items-center"
+        className="mb-8 flex items-center justify-between"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
@@ -22,6 +23,8 @@ const SettingsHeader = () => {
           <ArrowLeft size={20} className="mr-2" />
           <span>Back to Home</span>
         </button>
+        
+        <QuickNav />
       </motion.div>
       
       <motion.h1 
