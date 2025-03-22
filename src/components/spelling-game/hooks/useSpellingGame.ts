@@ -1,30 +1,25 @@
 
-import { useState } from 'react';
-import { Word } from '../../../utils/game';
+import { useState, useEffect } from 'react';
+import { Word } from '../../utils/game';
+import { useGameStore } from '../../utils/game';
+import { toast } from '@/components/ui/use-toast';
 import { 
   useGameInput, 
   useGameTimer, 
   useGameLifecycle, 
   useGameHints,
-  useGameGuide
+  useGameGuide,
+  useGameCulture
 } from './spelling-game';
 
 export const useSpellingGame = (
-  words: Word[],
-  isAdventure: boolean,
+  initialWords: Word[] = [], 
+  isAdventure: boolean = false,
   onAdventureComplete?: (score: number) => void
 ) => {
-  // Use our smaller, focused hooks
-  const {
-    userInput,
-    setUserInput,
-    inputStatus,
-    setInputStatus,
-    isCheckingAnswer,
-    setIsCheckingAnswer,
-    checkAnswer
-  } = useGameInput();
+  const { selectedLanguage } = useGameStore();
   
+  // Game lifecycle hook
   const {
     currentWord,
     score,
@@ -39,69 +34,169 @@ export const useSpellingGame = (
     recordCorrectAnswer,
     recordIncorrectAnswer,
     setGameFinished
-  } = useGameLifecycle(words);
+  } = useGameLifecycle(initialWords);
   
-  const { elapsedTime, resetTimer } = useGameTimer(gameFinished);
+  // Game input hook
+  const {
+    userInput,
+    inputStatus,
+    isCheckingAnswer,
+    setUserInput,
+    checkAnswer,
+    clearInput
+  } = useGameInput();
   
+  // Game timer hook
+  const {
+    startTimer,
+    stopTimer,
+    resetTimer
+  } = useGameTimer();
+  
+  // Game hints hook
   const {
     showHint,
-    showHintButton,
     handleShowHint,
-    resetHints
+    maxHints,
+    hintsUsed
   } = useGameHints();
   
+  // Game guide hook
   const {
     showGuide,
-    guideMessage,
-    showGuideWithMessage
+    showGuideWithMessage,
+    hideGuide
   } = useGameGuide();
-
+  
+  // Game culture hook (new!)
+  const {
+    getRandomPrompt,
+    getEncouragement,
+    getFunFact,
+    getContextualHint
+  } = useGameCulture(selectedLanguage);
+  
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsCheckingAnswer(true);
     
-    if (!currentWord) return;
-    
-    const isCorrect = checkAnswer(currentWord, userInput);
-    
-    setInputStatus(isCorrect ? 'correct' : 'incorrect');
-    
-    if (isCorrect) {
-      recordCorrectAnswer(currentWord);
-    } else {
-      recordIncorrectAnswer(currentWord, userInput);
+    if (!currentWord || isCheckingAnswer) {
+      return;
     }
     
-    setUserInput('');
+    const result = await checkAnswer(userInput, currentWord.text);
     
-    setTimeout(() => {
-      setIsCheckingAnswer(false);
-      setInputStatus(null);
-      moveToNextWord();
-    }, 1500);
+    if (result) {
+      // Correct answer
+      recordCorrectAnswer(currentWord);
+      
+      // Show cultural encouragement
+      toast({
+        title: "Correct!",
+        description: getEncouragement(),
+        variant: "default",
+        duration: 1500,
+      });
+      
+      // Display cultural fun fact occasionally
+      if (Math.random() > 0.7) {
+        showGuideWithMessage(getFunFact());
+        setTimeout(hideGuide, 3000);
+      }
+      
+      // Move to next word or finish game
+      const hasNextWord = moveToNextWord();
+      if (!hasNextWord) {
+        handleGameComplete();
+      }
+    } else {
+      // Incorrect answer
+      if (remainingLives > 1) {
+        recordIncorrectAnswer(currentWord, userInput);
+        
+        // Show cultural hint
+        toast({
+          title: "Try again!",
+          description: getContextualHint(),
+          variant: "destructive",
+          duration: 2000,
+        });
+      } else {
+        handleGameComplete();
+      }
+    }
+    
+    clearInput();
   };
   
+  // Handle skipping current word
+  const handleSkipClick = () => {
+    if (!currentWord) return;
+    
+    recordIncorrectAnswer(currentWord, "skipped");
+    
+    toast({
+      title: "Word skipped",
+      description: `The correct spelling was "${currentWord.text}"`,
+      variant: "default",
+      duration: 2000,
+    });
+    
+    const hasNextWord = moveToNextWord();
+    if (!hasNextWord) {
+      handleGameComplete();
+    }
+    
+    clearInput();
+  };
+  
+  // Handle game completion
+  const handleGameComplete = () => {
+    setGameFinished(true);
+    stopTimer();
+    
+    if (isAdventure && onAdventureComplete) {
+      onAdventureComplete(score);
+    }
+    
+    // Show cultural completion message
+    setTimeout(() => {
+      showGuideWithMessage(`Great job! You've learned ${correctWords.length} words in ${selectedLanguage?.name || 'this language'}!`);
+    }, 500);
+  };
+  
+  // Handle playing again
   const handlePlayAgainClick = () => {
     resetGame();
     resetTimer();
-    resetHints();
-    setUserInput('');
+    clearInput();
   };
   
-  const handleSkipClick = () => {
-    if (!currentWord) return;
-    setUserInput('');
-    moveToNextWord();
-  };
-  
+  // Handle adventure return
   const handleAdventureReturn = () => {
     if (onAdventureComplete) {
       onAdventureComplete(score);
     }
   };
-
+  
+  useEffect(() => {
+    startTimer();
+    
+    // Introduce the cultural context
+    if (selectedLanguage && currentWord) {
+      setTimeout(() => {
+        showGuideWithMessage(`Welcome to learning ${selectedLanguage.name}! Let's explore words related to ${currentWord.difficulty === 'easy' ? 'everyday items' : 'cultural elements'}!`);
+      }, 1000);
+      
+      setTimeout(hideGuide, 4000);
+    }
+    
+    return () => {
+      stopTimer();
+    };
+  }, []);
+  
   return {
-    // State
     currentWord,
     userInput,
     score,
@@ -110,21 +205,19 @@ export const useSpellingGame = (
     incorrectWords,
     correctWords,
     gameFinished,
-    elapsedTime,
     isCheckingAnswer,
     inputStatus,
     showHint,
-    showHintButton,
     remainingLives,
     showGuide,
-    guideMessage,
+    hintsUsed,
+    maxHints,
     
-    // Actions
     setUserInput,
     handleSubmit,
-    handlePlayAgainClick,
     handleSkipClick,
     handleShowHint,
+    handlePlayAgainClick,
     handleAdventureReturn,
     showGuideWithMessage
   };

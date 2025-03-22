@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Word } from '../utils/game';
@@ -42,9 +41,7 @@ const WordCard: React.FC<WordCardProps> = ({
     if (onHintClick) onHintClick();
   };
 
-  // Improved image mapping with clearer, more accurate images
   const defaultImages: Record<string, string> = {
-    // English
     'apple': 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=600',
     'banana': 'https://images.unsplash.com/photo-1543218024-57a70143c369?q=80&w=600',
     'cat': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600',
@@ -60,7 +57,6 @@ const WordCard: React.FC<WordCardProps> = ({
     'dolphin': 'https://images.unsplash.com/photo-1607153333879-c174d265f1d2?q=80&w=600',
     'octopus': 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?q=80&w=600',
     
-    // Spanish
     'manzana': 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=600',
     'plátano': 'https://images.unsplash.com/photo-1543218024-57a70143c369?q=80&w=600',
     'gato': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600',
@@ -70,24 +66,58 @@ const WordCard: React.FC<WordCardProps> = ({
     'jirafa': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50?q=80&w=600',
     'casa': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=600',
     
-    // Hindi
+    'paella': 'https://images.unsplash.com/photo-1512058564366-18510be2db19?q=80&w=600',
+    'tacos': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600',
+    'tortilla': 'https://images.unsplash.com/photo-1584208632869-05fa2b2a5934?q=80&w=600',
+    'churros': 'https://images.unsplash.com/photo-1624471437289-d6282b950ceb?q=80&w=600',
+    'empanada': 'https://images.unsplash.com/photo-1604127087553-92a49100ab1b?q=80&w=600',
+    'tamales': 'https://images.unsplash.com/photo-1611626007708-0b5d9de92bfb?q=80&w=600',
+    
+    'barcelona': 'https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=600',
+    'andes': 'https://images.unsplash.com/photo-1531170150093-a8f9d3244c75?q=80&w=600',
+    'méxico': 'https://images.unsplash.com/photo-1518638150340-f706e86654de?q=80&w=600',
+    'amazonas': 'https://images.unsplash.com/photo-1628684308273-a01ab80df31e?q=80&w=600',
+    'madrid': 'https://images.unsplash.com/photo-1539037116277-4db20889f2d4?q=80&w=600',
+    
+    'guitarra': 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?q=80&w=600',
+    'flamenco': 'https://images.unsplash.com/photo-1504609813442-a9924e2e9353?q=80&w=600',
+    'piñata': 'https://images.unsplash.com/photo-1608404862898-ca7de5c2eb4a?q=80&w=600',
+    'siesta': 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?q=80&w=600',
+    'mariachi': 'https://images.unsplash.com/photo-1518114433-d005a4a7e8e1?q=80&w=600',
+    
     'सेब': 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=600',
     'केला': 'https://images.unsplash.com/photo-1543218024-57a70143c369?q=80&w=600',
     'बिल्ली': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600',
     'कुत्ता': 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=600',
     'हाथी': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=600',
     'फूल': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=600',
-
-    // Additional languages can follow the same pattern
+    
+    'समोसा': 'https://images.unsplash.com/photo-1601050690597-df0568f70950?q=80&w=600',
+    'जलेबी': 'https://images.unsplash.com/photo-1589778655375-3a2269e8af5a?q=80&w=600',
+    'पकोड़ा': 'https://images.unsplash.com/photo-1626074353765-517a681e40be?q=80&w=600',
+    'दाल': 'https://images.unsplash.com/photo-1604152135912-04a022e23696?q=80&w=600',
+    'चावल': 'https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?q=80&w=600',
+    'रोटी': 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=600',
+    'चाय': 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?q=80&w=600',
+    
+    'ताजमहल': 'https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=600',
+    'दिल्ली': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?q=80&w=600',
+    'गंगा': 'https://images.unsplash.com/photo-1589892893341-2ee193cbe80a?q=80&w=600',
+    'हिमालय': 'https://images.unsplash.com/photo-1516125073169-9e3ecdee83e7?q=80&w=600',
+    'जयपुर': 'https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=600',
+    
+    'कृष्ण': 'https://images.unsplash.com/photo-1604608672516-f1b9fe9c0fba?q=80&w=600',
+    'गणेश': 'https://images.unsplash.com/photo-1567591414240-e9c1adbe8458?q=80&w=600',
+    'हनुमान': 'https://images.unsplash.com/photo-1621080497019-63218f425576?q=80&w=600',
+    'पंचतंत्र': 'https://images.unsplash.com/photo-1595459650375-fbc120753aea?q=80&w=600',
+    'राम': 'https://images.unsplash.com/photo-1618817111517-8df103117442?q=80&w=600',
   };
 
-  // Determine difficulty color
   const difficultyColor = 
     word.difficulty === 'easy' ? 'bg-game-green' : 
     word.difficulty === 'medium' ? 'bg-game-yellow' : 
     'bg-game-red';
 
-  // Use provided image or get from default mapping or use placeholder
   const imageUrl = word.image || defaultImages[word.text.toLowerCase()] || 'https://images.unsplash.com/photo-1579547945413-497e1b99dac0?q=80&w=600';
 
   return (
