@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AlphabetHelperProps } from './types';
-import { getLanguageAlphabet } from './utils';
+import { getLanguageAlphabet, getCategoryLabel } from './utils';
 import CharacterGrid from './CharacterGrid';
 
 const AlphabetHelper: React.FC<AlphabetHelperProps> = ({ 
@@ -18,7 +18,16 @@ const AlphabetHelper: React.FC<AlphabetHelperProps> = ({
       setAlphabet(languageAlphabet);
       const cats = Object.keys(languageAlphabet);
       setCategories(cats);
-      setSelectedCategory(cats[0]);
+      
+      // Default to a useful category based on script
+      // For Indic scripts, 'Matras' or 'Consonants' are often more useful than 'Vowels'
+      if (cats.includes('Matras') || cats.includes('Vowel Marks')) {
+        setSelectedCategory(cats.includes('Matras') ? 'Matras' : 'Vowel Marks');
+      } else if (cats.includes('Consonants')) {
+        setSelectedCategory('Consonants');
+      } else {
+        setSelectedCategory(cats[0]);
+      }
     }
   }, [languageId]);
 
@@ -38,17 +47,23 @@ const AlphabetHelper: React.FC<AlphabetHelperProps> = ({
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }`}
             onClick={() => setSelectedCategory(category)}
+            title={getCategoryLabel(languageId, category)}
           >
-            {category}
+            {getCategoryLabel(languageId, category)}
           </button>
         ))}
       </div>
 
       {selectedCategory && (
-        <CharacterGrid 
-          characters={alphabet[selectedCategory] || []} 
-          onCharacterClick={onCharacterClick} 
-        />
+        <>
+          <h3 className="text-sm text-gray-500 mb-2 font-medium">
+            {getCategoryLabel(languageId, selectedCategory)}
+          </h3>
+          <CharacterGrid 
+            characters={alphabet[selectedCategory] || []} 
+            onCharacterClick={onCharacterClick} 
+          />
+        </>
       )}
     </div>
   );
