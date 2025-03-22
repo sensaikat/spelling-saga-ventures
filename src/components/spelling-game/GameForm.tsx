@@ -20,7 +20,7 @@ interface GameFormProps {
   handleAlphabetHelperToggle: () => void;
   handleInputSelect: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  setCursorPosition: (position: number) => void;
+  setCursorPosition: number;
 }
 
 export const GameForm: React.FC<GameFormProps> = ({

@@ -38,7 +38,7 @@ interface GameContentProps {
   handleInputSelect: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleAdventureReturn: () => void;
-  setCursorPosition: (position: number) => void;
+  cursorPosition: number;
   handleCharacterClick: (char: string) => void;
 }
 
@@ -69,7 +69,7 @@ export const GameContent: React.FC<GameContentProps> = ({
   handleInputSelect,
   handleInputChange,
   handleAdventureReturn,
-  setCursorPosition,
+  cursorPosition,
   handleCharacterClick
 }) => {
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ export const GameContent: React.FC<GameContentProps> = ({
           handleAlphabetHelperToggle={handleAlphabetHelperToggle}
           handleInputSelect={handleInputSelect}
           handleInputChange={handleInputChange}
-          setCursorPosition={setCursorPosition}
+          setCursorPosition={cursorPosition}
         />
         
         <motion.div

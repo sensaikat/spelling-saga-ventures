@@ -53,7 +53,8 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     handleAlphabetHelperToggle,
     handleInputSelect,
     handleInputChange: baseHandleInputChange,
-    setCursorPosition
+    handleCharacterClick: baseHandleCharacterClick,
+    cursorPosition
   } = useAlphabetHelper();
   
   // Calculate progress percentage
@@ -70,12 +71,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   const handleCharacterClick = (char: string) => {
     if (showResult) return;
     
-    const newInput = 
-      userInput.substring(0, setCursorPosition) + 
-      char + 
-      userInput.substring(setCursorPosition);
-    
-    setUserInput(newInput);
+    baseHandleCharacterClick(char, userInput, setUserInput);
   };
   
   // Determine background based on adventure location
@@ -114,7 +110,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
             handleInputSelect={handleInputSelect}
             handleInputChange={handleInputChange}
             handleAdventureReturn={handleAdventureReturn}
-            setCursorPosition={setCursorPosition}
+            cursorPosition={cursorPosition}
             handleCharacterClick={handleCharacterClick}
           />
         ) : (
