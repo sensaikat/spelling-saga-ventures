@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Brain, PieChart, Shield } from 'lucide-react';
 import { useLearningDashboard } from '../hooks/useLearningDashboard';
@@ -9,6 +8,7 @@ import StatisticsTab from '../components/learning/StatisticsTab';
 import { PrivacyTab } from '../components/learning/tabs';
 import DeleteConfirmDialog from '../components/learning/DeleteConfirmDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LearningInsight } from '../services/analytics/learningAnalytics';
 
 const LearningDashboard = () => {
   const {
