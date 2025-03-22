@@ -1,9 +1,11 @@
 
 import React from 'react';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Sparkles } from 'lucide-react';
 import { Word } from '../../../utils/game/types';
 import { useSpeech } from '../hooks/useSpeech';
 import { defaultImages } from '../../word-card/ImageMappings';
+import { useSeasonalContent } from '../../../hooks/useSeasonalContent';
+import { useGameStore } from '../../../utils/game';
 
 interface SourceWordProps {
   word: Word;
@@ -12,23 +14,37 @@ interface SourceWordProps {
 
 const SourceWord: React.FC<SourceWordProps> = ({ word, languageId }) => {
   const { speakWord, isSpeaking } = useSpeech();
+  const { selectedLanguage } = useGameStore();
+  const { getSeasonalImage, isSeasonalWord } = useSeasonalContent(languageId);
   
-  // Use provided image or get from default mapping or use placeholder
-  const imageUrl = word.image || defaultImages[word.text.toLowerCase()] || 'https://images.unsplash.com/photo-1579547945413-497e1b99dac0?q=80&w=600';
+  // Check if we have a seasonal override for this image
+  const baseImageUrl = word.image || defaultImages[word.text.toLowerCase()] || 'https://images.unsplash.com/photo-1579547945413-497e1b99dac0?q=80&w=600';
+  const seasonalImageUrl = getSeasonalImage(word.text);
+  const finalImageUrl = seasonalImageUrl || baseImageUrl;
+  
+  // Check if this is a seasonal word
+  const isSeasonal = isSeasonalWord(word.text);
   
   return (
     <div className="text-center my-8">
       <div className="flex flex-col items-center mb-3">
-        <div className="w-24 h-24 mb-4 overflow-hidden rounded-lg shadow-sm">
+        <div className="relative w-24 h-24 mb-4 overflow-hidden rounded-lg shadow-sm">
           <img 
-            src={imageUrl} 
+            src={finalImageUrl} 
             alt={word.text} 
-            className="w-full h-full object-cover" 
+            className={`w-full h-full object-cover transition-transform ${isSeasonal ? 'hover:scale-110' : ''}`}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = 'https://images.unsplash.com/photo-1579547945413-497e1b99dac0?q=80&w=600';
             }}
           />
+          
+          {/* Show sparkle indicator for seasonal content */}
+          {isSeasonal && (
+            <div className="absolute top-2 right-2 text-yellow-500 animate-pulse">
+              <Sparkles size={18} />
+            </div>
+          )}
         </div>
         
         <div className="flex items-center bg-white rounded-lg px-8 py-4 shadow-sm border border-gray-200">
@@ -46,9 +62,16 @@ const SourceWord: React.FC<SourceWordProps> = ({ word, languageId }) => {
       {word.hint && (
         <p className="text-sm text-gray-600 italic">Hint: {word.hint}</p>
       )}
+      
+      {/* Show seasonal context if this is a seasonal word */}
+      {isSeasonal && (
+        <div className="mt-2 text-sm bg-amber-50 px-3 py-2 rounded-md inline-flex items-center">
+          <Sparkles size={14} className="text-amber-500 mr-1" />
+          <span className="text-amber-700">Seasonal word!</span>
+        </div>
+      )}
     </div>
   );
 };
 
 export default SourceWord;
-

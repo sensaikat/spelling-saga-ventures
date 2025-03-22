@@ -3,7 +3,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { TerrainType } from '../../contexts/adventure/types';
 import { terrainCompanions } from './TerrainBackground';
-import { Tree, Building, Mountain, Sun, Waves, Rocket } from 'lucide-react';
+import { 
+  Trees, 
+  Building, 
+  Mountain, 
+  Sun, 
+  Waves, 
+  Rocket 
+} from 'lucide-react';
 
 interface MissionInfoProps {
   description: string;
@@ -41,13 +48,13 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
   // Cultural icon for each terrain type
   const getTerrainIcon = () => {
     switch(terrain) {
-      case 'forest': return <Tree className="text-green-600" />;
+      case 'forest': return <Trees className="text-green-600" />;
       case 'desert': return <Sun className="text-amber-500" />;
       case 'river': return <Waves className="text-blue-500" />;
       case 'mountain': return <Mountain className="text-slate-600" />;
       case 'castle': return <Building className="text-stone-600" />;
       case 'space': return <Rocket className="text-purple-600" />;
-      default: return <Tree className="text-green-600" />;
+      default: return <Trees className="text-green-600" />;
     }
   };
   
@@ -91,4 +98,3 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
 };
 
 export default MissionInfo;
-
