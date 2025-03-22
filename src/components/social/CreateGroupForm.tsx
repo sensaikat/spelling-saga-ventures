@@ -13,6 +13,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { ArrowLeft } from 'lucide-react';
+import { SocialGroup } from '../../contexts/SocialGroupsContext';
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -30,6 +31,10 @@ const formSchema = z.object({
   location: z.string().optional(),
 });
 
+// Define this type to match exactly what createGroup expects
+type CreateGroupInput = Omit<SocialGroup, 'id' | 'createdAt' | 'updatedAt' | 'members' | 'pendingInvitations'>;
+
+// Form values from zod schema
 type FormValues = z.infer<typeof formSchema>;
 
 const CreateGroupForm: React.FC = () => {
@@ -48,15 +53,17 @@ const CreateGroupForm: React.FC = () => {
   });
   
   const onSubmit = (values: FormValues) => {
-    // Fix: Explicitly cast the values to the required type to satisfy TypeScript
-    // Since we're using Zod validation, we know these values will be present
-    createGroup({
-      name: values.name,
-      description: values.description,
-      type: values.type,
-      isPublic: values.isPublic,
-      location: values.location,
-    });
+    // Cast the form values to the expected type
+    // We need to explicitly create the object with the required properties
+    const groupData: CreateGroupInput = {
+      name: values.name, // This is now explicitly required
+      description: values.description, // This is now explicitly required
+      type: values.type, // This is now explicitly required
+      isPublic: values.isPublic, // This is now explicitly required
+      location: values.location || '', // Handle optional field
+    };
+    
+    createGroup(groupData);
     navigate('/social');
   };
   
