@@ -1,6 +1,7 @@
 
-import { useState } from 'react';
-import { useGameSettings } from './useGameSettings';
+import { useGameState } from './useGameState';
+import { useGameUIState } from './useGameUIState';
+import { useGameLives } from './useGameLives';
 
 /**
  * Props for the useGameStateManagement hook
@@ -12,52 +13,20 @@ interface UseGameStateManagementProps {
 }
 
 /**
- * Hook for managing the game state
+ * Hook for managing the complete game state
  * 
- * This hook centralizes all the state variables needed to run the spelling game:
- * - User input tracking
- * - Score tracking
- * - Correctness validation
- * - Game completion state
- * - Lives management
- * - UI state (hints, answers checking, etc.)
- * 
- * It also provides a reset function to return all state to initial values.
+ * This hook integrates all specialized state hooks to provide a unified
+ * interface for managing the game state:
+ * - Core game state (user input, score, correctness)
+ * - UI state (hints, answer checking)
+ * - Player lives
  * 
  * @param {UseGameStateManagementProps} props - Object containing initial lives
- * @returns Game state variables and setters
+ * @returns Complete game state variables and setters
  */
 export const useGameStateManagement = ({ initialLives }: UseGameStateManagementProps = {}) => {
-  // Get game settings
-  const { settings } = useGameSettings({ 
-    overrides: initialLives ? { initialLives } : undefined 
-  });
-  
-  const [userInput, setUserInput] = useState('');
-  const [score, setScore] = useState(0);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [showResult, setShowResult] = useState(false);
-  const [remainingLives, setRemainingLives] = useState(settings.initialLives);
-  const [showHint, setShowHint] = useState(false);
-  const [isCheckingAnswer, setIsCheckingAnswer] = useState(false);
-  const [gameCompleted, setGameCompleted] = useState(false);
-  
-  /**
-   * Resets all game state variables to their initial values
-   */
-  const resetGameState = () => {
-    setUserInput('');
-    setScore(0);
-    setIsCorrect(null);
-    setShowResult(false);
-    setRemainingLives(settings.initialLives);
-    setShowHint(false);
-    setIsCheckingAnswer(false);
-    setGameCompleted(false);
-  };
-  
-  return {
-    // State values
+  // Core game state
+  const {
     userInput,
     setUserInput,
     score,
@@ -66,14 +35,58 @@ export const useGameStateManagement = ({ initialLives }: UseGameStateManagementP
     setIsCorrect,
     showResult,
     setShowResult,
-    remainingLives,
-    setRemainingLives,
+    gameCompleted,
+    setGameCompleted,
+    resetGameState: resetCoreState
+  } = useGameState({ initialLives });
+  
+  // UI state
+  const {
     showHint,
     setShowHint,
     isCheckingAnswer,
     setIsCheckingAnswer,
+    resetUIState
+  } = useGameUIState();
+  
+  // Lives management
+  const {
+    remainingLives,
+    setRemainingLives,
+    resetLives
+  } = useGameLives({ initialLives });
+  
+  /**
+   * Resets all game state variables to their initial values
+   */
+  const resetGameState = () => {
+    resetCoreState();
+    resetUIState();
+    resetLives();
+  };
+  
+  return {
+    // Core state values
+    userInput,
+    setUserInput,
+    score,
+    setScore,
+    isCorrect,
+    setIsCorrect,
+    showResult,
+    setShowResult,
     gameCompleted,
     setGameCompleted,
+    
+    // UI state values
+    showHint,
+    setShowHint,
+    isCheckingAnswer,
+    setIsCheckingAnswer,
+    
+    // Lives management
+    remainingLives,
+    setRemainingLives,
     
     // Helper functions
     resetGameState
