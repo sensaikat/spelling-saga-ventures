@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useSocialGroups, SocialGroup } from '../../contexts/SocialGroupsContext';
+import { useSocialGroups, SocialGroup } from '@/contexts/social';
 import { motion } from 'framer-motion';
 import { Users, Plus, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';

@@ -20,7 +20,7 @@ import Social from "./pages/Social";
 import CreateGroup from "./pages/CreateGroup";
 import DiscoverGroupsPage from "./pages/DiscoverGroupsPage";
 import { ParentalControlsProvider } from "./contexts/ParentalControlsContext";
-import { SocialGroupsProvider } from "./contexts/SocialGroupsContext";
+import { SocialGroupsProvider } from "./contexts/social";
 import TimeLimitOverlay from "./components/parental/TimeLimitOverlay";
 
 function App() {
