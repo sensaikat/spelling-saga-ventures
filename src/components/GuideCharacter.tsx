@@ -1,12 +1,74 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wand2, Sparkles, Lightbulb, MessageCircle, X } from 'lucide-react';
+import { Wand2, Sparkles, Lightbulb, MessageCircle, X, UserRound, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useGameStore } from '../utils/game';
 import { TerrainType } from '../contexts/AdventureContext';
 
-// Different guide appearances based on terrain
+// Expanded guide appearances with different personalities and phrases
 const guideAppearances = {
+  wizard: { 
+    emoji: '🧙‍♂️', 
+    name: 'Wizzy', 
+    color: 'bg-violet-100 border-violet-300 text-violet-800',
+    personality: 'wise',
+    greetings: {
+      en: { hello: "Hello there, young scholar!", wellDone: "Magnificent spell-casting!", goodbye: "Farewell, until next time!" },
+      es: { hello: "¡Hola, joven aprendiz!", wellDone: "¡Hechizo magnífico!", goodbye: "¡Adiós, hasta la próxima!" },
+      hi: { hello: "नमस्ते, युवा विद्वान!", wellDone: "शानदार प्रदर्शन!", goodbye: "अलविदा, अगली बार तक!" },
+      fr: { hello: "Bonjour, jeune érudit!", wellDone: "Sortilège magnifique!", goodbye: "Au revoir, à la prochaine!" }
+    }
+  },
+  explorer: { 
+    emoji: '👧', 
+    name: 'Flora', 
+    color: 'bg-green-100 border-green-300 text-green-800',
+    personality: 'adventurous',
+    greetings: {
+      en: { hello: "Hi there, fellow explorer!", wellDone: "Amazing discovery!", goodbye: "See you on our next adventure!" },
+      es: { hello: "¡Hola, compañero explorador!", wellDone: "¡Descubrimiento asombroso!", goodbye: "¡Nos vemos en nuestra próxima aventura!" },
+      hi: { hello: "नमस्ते, साथी अन्वेषक!", wellDone: "अद्भुत खोज!", goodbye: "हमारे अगले रोमांच पर मिलते हैं!" },
+      fr: { hello: "Salut, explorateur!", wellDone: "Découverte incroyable!", goodbye: "À la prochaine aventure!" }
+    }
+  },
+  robot: { 
+    emoji: '🤖', 
+    name: 'Beep', 
+    color: 'bg-blue-100 border-blue-300 text-blue-800',
+    personality: 'logical',
+    greetings: {
+      en: { hello: "Greetings, human learner.", wellDone: "Calculation correct. Well done.", goodbye: "Ending session. Goodbye." },
+      es: { hello: "Saludos, aprendiz humano.", wellDone: "Cálculo correcto. Bien hecho.", goodbye: "Terminando sesión. Adiós." },
+      hi: { hello: "नमस्कार, मानव शिक्षार्थी।", wellDone: "गणना सही। शाबाश।", goodbye: "सत्र समाप्त। अलविदा।" },
+      fr: { hello: "Salutations, apprenant humain.", wellDone: "Calcul correct. Bien joué.", goodbye: "Fin de session. Au revoir." }
+    }
+  },
+  dragon: { 
+    emoji: '🐉', 
+    name: 'Sparky', 
+    color: 'bg-red-100 border-red-300 text-red-800',
+    personality: 'energetic',
+    greetings: {
+      en: { hello: "ROAR! Ready to learn?", wellDone: "AMAZING! You're on fire!", goodbye: "Fly you later, word warrior!" },
+      es: { hello: "¡RUGIDO! ¿Listo para aprender?", wellDone: "¡INCREÍBLE! ¡Estás que ardes!", goodbye: "¡Hasta luego, guerrero de palabras!" },
+      hi: { hello: "दहाड़! सीखने के लिए तैयार?", wellDone: "अद्भुत! आप आग लगा रहे हैं!", goodbye: "बाद में मिलते हैं, शब्द योद्धा!" },
+      fr: { hello: "RUGISSEMENT! Prêt à apprendre?", wellDone: "INCROYABLE! Tu es en feu!", goodbye: "À plus tard, guerrier des mots!" }
+    }
+  },
+  alien: { 
+    emoji: '👽', 
+    name: 'Nova', 
+    color: 'bg-indigo-100 border-indigo-300 text-indigo-800',
+    personality: 'curious',
+    greetings: {
+      en: { hello: "Greetings, Earth learner!", wellDone: "Most impressive Earth skills!", goodbye: "Until our paths cross again!" },
+      es: { hello: "¡Saludos, aprendiz de la Tierra!", wellDone: "¡Habilidades terrestres muy impresionantes!", goodbye: "¡Hasta que nuestros caminos se crucen de nuevo!" },
+      hi: { hello: "नमस्कार, पृथ्वी के शिक्षार्थी!", wellDone: "बहुत प्रभावशाली पृथ्वी कौशल!", goodbye: "जब तक हमारे रास्ते फिर से न मिलें!" },
+      fr: { hello: "Salutations, apprenant terrien!", wellDone: "Compétences terriennes très impressionnantes!", goodbye: "Jusqu'à ce que nos chemins se croisent à nouveau!" }
+    }
+  },
+  // Default terrain-based guides can continue to be used
   forest: { emoji: '👧', name: 'Flora', color: 'bg-green-100 border-green-300 text-green-800' },
   desert: { emoji: '👦', name: 'Sandy', color: 'bg-amber-100 border-amber-300 text-amber-800' },
   river: { emoji: '🧒', name: 'Marina', color: 'bg-blue-100 border-blue-300 text-blue-800' },
@@ -16,36 +78,91 @@ const guideAppearances = {
   default: { emoji: '🧙‍♂️', name: 'Wizzy', color: 'bg-violet-100 border-violet-300 text-violet-800' }
 };
 
-// Types of tips the guide can provide
-const tipTypes = [
-  "Remember to listen carefully to the pronunciation!",
-  "Take your time with each word, no need to rush.",
-  "Look for patterns in the spelling.",
-  "If you're stuck, try sounding out the word slowly.",
-  "You can use your magic specs to see special hints!",
-  "Practice makes perfect - keep trying!",
-  "Great job! You're doing amazing!",
-  "Your magic lens can help reveal hidden letters.",
-  "When in doubt, break the word into smaller parts.",
-  "You're on an adventure - enjoy the journey!"
-];
+// Modified tip types based on personality
+const getTipsByPersonality = (personality: string = 'wise') => {
+  const commonTips = [
+    "Look for patterns in the spelling.",
+    "Take your time with each word, no need to rush.",
+    "If you're stuck, try sounding out the word slowly.",
+    "Practice makes perfect - keep trying!"
+  ];
+  
+  const personalityTips = {
+    wise: [
+      "Remember to listen carefully to the pronunciation!",
+      "When in doubt, break the word into smaller parts.",
+      "The ancient scholars would approve of your dedication.",
+      "Knowledge is a journey, not a destination."
+    ],
+    adventurous: [
+      "Another word conquered on your spelling adventure!",
+      "Let's explore the world of words together!",
+      "Brave explorers are never afraid to try!",
+      "What exciting new words will we discover today?"
+    ],
+    logical: [
+      "Analyzing word structure improves recall by 42%.",
+      "Statistical analysis shows your improvement curve is optimal.",
+      "Memory processes engaged. Learning sequence initiated.",
+      "Systematic approach yields optimal spelling results."
+    ],
+    energetic: [
+      "AWESOME! Your spelling powers are INCREDIBLE!",
+      "You're BLAZING through these words like a CHAMPION!",
+      "WOW! That was SPECTACULAR spelling!",
+      "Your energy for learning is UNSTOPPABLE!"
+    ],
+    curious: [
+      "Fascinating how these Earth words connect together!",
+      "Your species' language contains such interesting patterns!",
+      "I'm curious - how do you remember all these spellings?",
+      "What an interesting word! I've added it to my database."
+    ]
+  };
+  
+  return [...commonTips, ...(personalityTips[personality as keyof typeof personalityTips] || personalityTips.wise)];
+};
 
 interface GuideCharacterProps {
   terrain?: TerrainType;
   isAdventure?: boolean;
   onUseMagicItem?: () => void;
+  selectedAvatar?: string; // new prop for selected avatar
+  selectedLanguage?: string; // new prop for selected language code
+  onChangeAvatar?: () => void; // new prop to handle avatar change
 }
 
 const GuideCharacter: React.FC<GuideCharacterProps> = ({ 
   terrain = 'forest',
   isAdventure = true,
-  onUseMagicItem
+  onUseMagicItem,
+  selectedAvatar,
+  selectedLanguage,
+  onChangeAvatar
 }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [currentTip, setCurrentTip] = useState('');
   const [magicItemUsed, setMagicItemUsed] = useState(false);
+  const [greetingType, setGreetingType] = useState<'hello' | 'wellDone' | 'goodbye'>('hello');
+  const { selectedLanguage: gameLanguage } = useGameStore();
   
-  const guide = guideAppearances[terrain] || guideAppearances.default;
+  // Determine which avatar to show
+  const avatarKey = selectedAvatar || terrain;
+  const guide = guideAppearances[avatarKey as keyof typeof guideAppearances] || guideAppearances.default;
+  const personality = (guide as any).personality || 'wise';
+  
+  // Get the language for greetings
+  const languageCode = selectedLanguage || (gameLanguage ? gameLanguage.id.split('-')[0] : 'en');
+  const tipTypes = getTipsByPersonality(personality);
+  
+  // Show greeting in the selected language or fallback to English
+  const getGreeting = () => {
+    if ((guide as any).greetings) {
+      const langGreetings = (guide as any).greetings[languageCode] || (guide as any).greetings.en;
+      return langGreetings[greetingType];
+    }
+    return "Hello!";
+  };
   
   // Randomly show guide messages
   useEffect(() => {
@@ -54,12 +171,13 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
       const timer = setTimeout(() => {
         const randomTip = tipTypes[Math.floor(Math.random() * tipTypes.length)];
         setCurrentTip(randomTip);
+        setGreetingType(Math.random() > 0.8 ? 'wellDone' : 'hello');
         setShowMessage(true);
       }, 5000 + Math.random() * 15000); // Random time between 5-20 seconds
       
       return () => clearTimeout(timer);
     }
-  }, [showMessage]);
+  }, [showMessage, tipTypes]);
   
   const handleUseMagicItem = () => {
     setMagicItemUsed(true);
@@ -113,6 +231,18 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
             </div>
           </motion.div>
           
+          {/* Avatar change button */}
+          {onChangeAvatar && (
+            <motion.div
+              className="absolute -top-16 -right-10 p-3 rounded-full bg-white shadow-md cursor-pointer"
+              whileHover={{ scale: 1.1, rotate: -5 }}
+              whileTap={{ scale: 0.9, rotate: 5 }}
+              onClick={onChangeAvatar}
+            >
+              <UserRound size={24} className="text-gray-600" />
+            </motion.div>
+          )}
+          
           {/* Guide character bubble */}
           <motion.div
             className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${
@@ -122,8 +252,15 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
             whileTap={{ scale: 0.9 }}
             onClick={() => {
               if (!showMessage) {
-                const randomTip = tipTypes[Math.floor(Math.random() * tipTypes.length)];
-                setCurrentTip(randomTip);
+                // Alternate between greetings and tips
+                if (Math.random() > 0.5) {
+                  const randomType = Math.random() > 0.7 ? 'goodbye' : (Math.random() > 0.5 ? 'wellDone' : 'hello');
+                  setGreetingType(randomType as 'hello' | 'wellDone' | 'goodbye');
+                  setCurrentTip(getGreeting());
+                } else {
+                  const randomTip = tipTypes[Math.floor(Math.random() * tipTypes.length)];
+                  setCurrentTip(randomTip);
+                }
                 setShowMessage(true);
               }
             }}
@@ -183,7 +320,7 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
             
             <div className="flex items-start gap-2">
               <div className="pt-1">
-                {guide.emoji === '👑' ? (
+                {(guide as any).personality === 'wise' ? (
                   <Lightbulb className="text-yellow-600 h-5 w-5" />
                 ) : (
                   <MessageCircle className="text-blue-600 h-5 w-5" />

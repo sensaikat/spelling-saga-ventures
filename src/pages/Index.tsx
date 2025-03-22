@@ -1,18 +1,26 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import LanguageSelector from '../components/LanguageSelector';
 import MultiLanguageSelector from '../components/MultiLanguageSelector';
 import { languages, useGameStore } from '../utils/game';
-import { Settings, Book, Map } from 'lucide-react';
+import { Settings, Book, Map, UserCog } from 'lucide-react';
+import GuideCharacter from '../components/GuideCharacter';
+import AvatarCustomizer, { AvatarOptions } from '../components/AvatarCustomizer';
 
 const Index = () => {
   const navigate = useNavigate();
   const { selectLanguage, checkAndUpdateStreak } = useGameStore();
+  const [showAvatarCustomizer, setShowAvatarCustomizer] = useState(false);
+  const [avatarOptions, setAvatarOptions] = useState<AvatarOptions>(() => {
+    // Try to load saved avatar options from localStorage
+    const savedOptions = localStorage.getItem('spelling-saga-avatar-options');
+    return savedOptions ? JSON.parse(savedOptions) : { avatarType: 'wizard', languageCode: 'en' };
+  });
   
   // Check and update streak when app loads
-  React.useEffect(() => {
+  useEffect(() => {
     checkAndUpdateStreak();
   }, [checkAndUpdateStreak]);
   
@@ -23,6 +31,11 @@ const Index = () => {
   
   const handleMultiLanguageSelect = () => {
     navigate('/multi-language');
+  };
+  
+  const handleAvatarOptionsSave = (options: AvatarOptions) => {
+    setAvatarOptions(options);
+    localStorage.setItem('spelling-saga-avatar-options', JSON.stringify(options));
   };
   
   const containerVariants = {
@@ -72,6 +85,15 @@ const Index = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="p-2 rounded-full bg-white shadow-sm border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
+              onClick={() => setShowAvatarCustomizer(true)}
+              aria-label="Customize Avatar"
+            >
+              <UserCog size={20} />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="p-2 rounded-full bg-white shadow-sm border border-gray-200 text-gray-600 hover:text-gray-900 transition-colors"
               onClick={() => navigate('/settings')}
               aria-label="Settings"
             >
@@ -104,7 +126,7 @@ const Index = () => {
               className="glass-panel p-6"
             >
               <h2 className="text-2xl font-medium mb-6 text-center">Single Language Mode</h2>
-              <LanguageSelector />
+              <LanguageSelector onSelect={handleLanguageSelect} />
             </motion.div>
             
             <motion.div
@@ -139,6 +161,22 @@ const Index = () => {
           <p className="mt-1">© 2023 Spelling Saga</p>
         </motion.div>
       </div>
+      
+      {/* Add the GuideCharacter component */}
+      <GuideCharacter 
+        selectedAvatar={avatarOptions.avatarType}
+        selectedLanguage={avatarOptions.languageCode}
+        onChangeAvatar={() => setShowAvatarCustomizer(true)}
+        isAdventure={false}
+      />
+      
+      {/* Avatar Customizer Dialog */}
+      <AvatarCustomizer
+        open={showAvatarCustomizer}
+        onOpenChange={setShowAvatarCustomizer}
+        onSave={handleAvatarOptionsSave}
+        initialOptions={avatarOptions}
+      />
     </div>
   );
 };
