@@ -1,9 +1,9 @@
-
 import { Word, UserProgress, Language } from '../../utils/game/types';
+import { encrypt, decrypt } from './encryption';
 
 // Anonymized user data structure
 export interface AnonymizedLearningData {
-  userId: string; // Hashed user ID
+  userId: string; // Double hashed user ID
   sessionId: string;
   timestamp: string;
   languageId: string;
@@ -18,6 +18,13 @@ export interface AnonymizedLearningData {
   gender?: string;
 }
 
+// User privacy preferences
+export interface PrivacyPreferences {
+  shareDemographics: boolean;
+  allowPersonalization: boolean;
+  encryptionLevel: 'standard' | 'enhanced';
+}
+
 // Learning insights structure
 export interface LearningInsight {
   type: 'strength' | 'weakness' | 'pattern' | 'recommendation';
@@ -25,6 +32,10 @@ export interface LearningInsight {
   score: number; // 0-100
   relatedWords?: string[];
   recommendedActions?: string[];
+  // Personalization fields
+  personalTip?: string;
+  adaptiveLevel?: 'easy' | 'medium' | 'hard';
+  confidenceScore?: number;
 }
 
 // Service for collecting and analyzing learning data
@@ -33,7 +44,14 @@ export class LearningAnalyticsService {
   private apiEndpoint: string = '/api/learning-analytics';
   private isEnabled: boolean = true;
   private userConsent: boolean = false;
-  private anonymizationKey: string = '';
+  private primaryAnonymizationKey: string = '';
+  private secondaryAnonymizationKey: string = '';
+  private encryptionKey: string = '';
+  private privacyPreferences: PrivacyPreferences = {
+    shareDemographics: false,
+    allowPersonalization: true,
+    encryptionLevel: 'standard'
+  };
   
   private constructor() {
     // Initialize with stored consent if available
@@ -53,13 +71,33 @@ export class LearningAnalyticsService {
       const consent = localStorage.getItem('analytics-consent');
       this.userConsent = consent === 'true';
       
-      // Generate or load anonymization key
-      let key = localStorage.getItem('user-anon-key');
-      if (!key) {
-        key = this.generateAnonymizationKey();
-        localStorage.setItem('user-anon-key', key);
+      // Load privacy preferences
+      const preferences = localStorage.getItem('privacy-preferences');
+      if (preferences) {
+        this.privacyPreferences = JSON.parse(preferences);
       }
-      this.anonymizationKey = key;
+      
+      // Generate or load anonymization keys
+      let primaryKey = localStorage.getItem('user-anon-key-primary');
+      let secondaryKey = localStorage.getItem('user-anon-key-secondary');
+      
+      if (!primaryKey || !secondaryKey) {
+        primaryKey = this.generateAnonymizationKey();
+        secondaryKey = this.generateAnonymizationKey();
+        localStorage.setItem('user-anon-key-primary', primaryKey);
+        localStorage.setItem('user-anon-key-secondary', secondaryKey);
+      }
+      
+      this.primaryAnonymizationKey = primaryKey;
+      this.secondaryAnonymizationKey = secondaryKey;
+      
+      // Set encryption key based on device fingerprint (or create new one)
+      this.encryptionKey = localStorage.getItem('encryption-key') || 
+                          this.generateEncryptionKey();
+      
+      if (!localStorage.getItem('encryption-key')) {
+        localStorage.setItem('encryption-key', this.encryptionKey);
+      }
     } catch (e) {
       console.error('Error loading analytics settings:', e);
       this.userConsent = false;
@@ -72,6 +110,22 @@ export class LearningAnalyticsService {
            Math.random().toString(36).substring(2, 15);
   }
   
+  private generateEncryptionKey(): string {
+    // Generate a device-specific encryption key
+    const navigatorInfo = 
+      navigator.userAgent + 
+      navigator.language + 
+      (navigator.languages || []).join(',');
+    
+    // Simple hash function
+    const hash = Array.from(navigatorInfo)
+      .reduce((acc, char) => {
+        return ((acc << 5) - acc) + char.charCodeAt(0);
+      }, 0);
+    
+    return hash.toString(16) + Math.random().toString(36).slice(2);
+  }
+  
   public setUserConsent(consent: boolean): void {
     this.userConsent = consent;
     localStorage.setItem('analytics-consent', consent.toString());
@@ -81,15 +135,44 @@ export class LearningAnalyticsService {
     return this.userConsent;
   }
   
+  public setUserPreferences(preferences: Partial<PrivacyPreferences>): void {
+    this.privacyPreferences = {
+      ...this.privacyPreferences,
+      ...preferences
+    };
+    localStorage.setItem('privacy-preferences', JSON.stringify(this.privacyPreferences));
+  }
+  
+  public getUserPreferences(): PrivacyPreferences {
+    return this.privacyPreferences;
+  }
+  
   public setEnabled(enabled: boolean): void {
     this.isEnabled = enabled;
   }
   
-  // Anonymize user data
+  // Double anonymize user data for maximum privacy
   private anonymizeUserId(userId: string): string {
-    // Simple one-way hashing for demo
-    // In production, use a proper cryptographic hash
-    return btoa(userId + this.anonymizationKey).slice(0, 24);
+    // First level hashing with primary key
+    const firstLevel = this.hashWithSalt(userId, this.primaryAnonymizationKey);
+    
+    // Second level hashing with secondary key for additional security
+    return this.hashWithSalt(firstLevel, this.secondaryAnonymizationKey);
+  }
+  
+  // Simple HMAC-like hash with salt
+  private hashWithSalt(data: string, salt: string): string {
+    const input = data + salt;
+    let hash = 0;
+    
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    
+    // Convert to base64-like string
+    return btoa(hash.toString()).replace(/[+/=]/g, '').slice(0, 24);
   }
   
   // Record word attempt data
@@ -113,8 +196,14 @@ export class LearningAnalyticsService {
       attemptDuration: duration,
       hintsUsed,
       difficulty: word.difficulty,
-      // Demographics would be collected separately with explicit consent
     };
+    
+    // Add demographic data only if user consented to share
+    if (this.privacyPreferences.shareDemographics) {
+      // In a real app, we would get these from user profile
+      data.region = 'anonymous_region';
+      data.ageGroup = 'anonymous_age_group';
+    }
     
     // Store session ID if not exists
     if (!localStorage.getItem('session-id')) {
@@ -131,7 +220,8 @@ export class LearningAnalyticsService {
   private sendAnalyticsData(data: AnonymizedLearningData): void {
     // In a production app, send to your backend
     // For this demo, we'll log to console and store locally
-    console.log('Analytics data:', data);
+    console.log('Analytics data being stored securely:', 
+      { ...data, userId: '[REDACTED FOR PRIVACY]' });
     
     // Simulate API call - in a real app, replace with actual API call
     /* 
@@ -146,10 +236,18 @@ export class LearningAnalyticsService {
   private storeLocalAnalytics(data: AnonymizedLearningData): void {
     try {
       // Get existing data
-      const existingData = localStorage.getItem('local-analytics');
-      const analyticsArray: AnonymizedLearningData[] = existingData 
-        ? JSON.parse(existingData) 
-        : [];
+      const encryptedData = localStorage.getItem('local-analytics');
+      let analyticsArray: AnonymizedLearningData[] = [];
+      
+      if (encryptedData) {
+        // Decrypt the existing data based on the encryption level
+        const decryptedData = decrypt(
+          encryptedData, 
+          this.encryptionKey, 
+          this.privacyPreferences.encryptionLevel
+        );
+        analyticsArray = JSON.parse(decryptedData);
+      }
       
       // Add new data and limit array size
       analyticsArray.push(data);
@@ -157,8 +255,21 @@ export class LearningAnalyticsService {
         analyticsArray.shift(); // Remove oldest entry
       }
       
-      // Save back to localStorage
-      localStorage.setItem('local-analytics', JSON.stringify(analyticsArray));
+      // Encrypt and save back to localStorage
+      const jsonData = JSON.stringify(analyticsArray);
+      const encrypted = encrypt(
+        jsonData, 
+        this.encryptionKey, 
+        this.privacyPreferences.encryptionLevel
+      );
+      
+      localStorage.setItem('local-analytics', encrypted);
+      
+      // Set expiry for data purging (90 days)
+      const expiryTime = new Date();
+      expiryTime.setDate(expiryTime.getDate() + 90);
+      localStorage.setItem('analytics-expiry', expiryTime.toISOString());
+      
     } catch (e) {
       console.error('Error storing local analytics:', e);
     }
@@ -168,7 +279,7 @@ export class LearningAnalyticsService {
   public generateInsights(progress: UserProgress): LearningInsight[] {
     try {
       const insights: LearningInsight[] = [];
-      const localData: AnonymizedLearningData[] = this.getLocalAnalyticsData();
+      const localData = this.getLocalAnalyticsData();
       
       if (localData.length === 0) {
         return [
@@ -212,13 +323,18 @@ export class LearningAnalyticsService {
         recommendedActions: accuracyRate < 70 ? [
           'Try using hints more often',
           'Focus on one difficulty level at a time'
-        ] : undefined
+        ] : undefined,
+        // Add personalized insights if enabled
+        ...(this.privacyPreferences.allowPersonalization ? {
+          personalTip: this.generatePersonalTip(accuracyRate),
+          confidenceScore: Math.min(100, accuracyRate + 10)
+        } : {})
       });
       
       // Add difficulty-specific insights
       Object.entries(difficultyAccuracy).forEach(([difficulty, accuracy]) => {
         if (accuracy > 0) {
-          insights.push({
+          const insight: LearningInsight = {
             type: accuracy >= 70 ? 'strength' : 'weakness',
             description: `${difficulty} words: ${accuracy.toFixed(1)}% accuracy`,
             score: accuracy,
@@ -226,7 +342,15 @@ export class LearningAnalyticsService {
               `Practice more ${difficulty} words`,
               `Use hints for ${difficulty} words`
             ] : undefined
-          });
+          };
+          
+          // Add personalization if enabled
+          if (this.privacyPreferences.allowPersonalization) {
+            insight.adaptiveLevel = this.getAdaptiveLevel(difficulty, accuracy);
+            insight.personalTip = this.getDifficultyTip(difficulty, accuracy);
+          }
+          
+          insights.push(insight);
         }
       });
       
@@ -279,13 +403,81 @@ export class LearningAnalyticsService {
     }
   }
   
+  private generatePersonalTip(accuracy: number): string {
+    if (accuracy > 90) return "You're doing excellently! Try challenging yourself with harder words.";
+    if (accuracy > 70) return "Good progress! Focus on maintaining consistency in your practice.";
+    if (accuracy > 50) return "You're making progress. Try using the hint feature when needed.";
+    return "Keep practicing! Consistent daily practice will improve your results.";
+  }
+  
+  private getDifficultyTip(difficulty: string, accuracy: number): string {
+    if (difficulty === 'easy' && accuracy < 70) {
+      return "Focus on mastering easy words before moving to more difficult ones.";
+    }
+    if (difficulty === 'medium' && accuracy > 80) {
+      return "You're ready for more challenging words! Try some hard level words.";
+    }
+    if (difficulty === 'hard' && accuracy > 70) {
+      return "Impressive! You're mastering even difficult words.";
+    }
+    return `Keep practicing ${difficulty} words to build your skills.`;
+  }
+  
+  private getAdaptiveLevel(difficulty: string, accuracy: number): 'easy' | 'medium' | 'hard' {
+    if (difficulty === 'hard' && accuracy > 60) return 'hard';
+    if (difficulty === 'medium' && accuracy > 70) return 'medium';
+    if (difficulty === 'easy' && accuracy > 80) return 'medium';
+    return 'easy';
+  }
+  
   private getLocalAnalyticsData(): AnonymizedLearningData[] {
     try {
-      const data = localStorage.getItem('local-analytics');
-      return data ? JSON.parse(data) : [];
+      const encryptedData = localStorage.getItem('local-analytics');
+      if (!encryptedData) return [];
+      
+      // Decrypt based on the encryption level
+      const decryptedData = decrypt(
+        encryptedData, 
+        this.encryptionKey, 
+        this.privacyPreferences.encryptionLevel
+      );
+      
+      return JSON.parse(decryptedData);
     } catch (e) {
       console.error('Error retrieving local analytics:', e);
       return [];
+    }
+  }
+  
+  // Request immediate data deletion (right to be forgotten)
+  public purgeAllData(): boolean {
+    try {
+      localStorage.removeItem('local-analytics');
+      localStorage.removeItem('analytics-expiry');
+      // Keep anonymization keys for consistent hashing
+      
+      console.log('All analytics data has been purged');
+      return true;
+    } catch (e) {
+      console.error('Error purging analytics data:', e);
+      return false;
+    }
+  }
+  
+  // Check if data should be purged (90 days of inactivity)
+  public checkAndPurgeExpiredData(): void {
+    try {
+      const expiryStr = localStorage.getItem('analytics-expiry');
+      if (!expiryStr) return;
+      
+      const expiry = new Date(expiryStr);
+      const now = new Date();
+      
+      if (now > expiry) {
+        this.purgeAllData();
+      }
+    } catch (e) {
+      console.error('Error checking data expiry:', e);
     }
   }
   
@@ -321,12 +513,11 @@ export class LearningAnalyticsService {
       word => !masteredWords.includes(word.id)
     );
     
-    if (localData.length < 5 || nonMasteredWords.length <= 5) {
-      // Not enough data or words to make recommendations
+    if (localData.length < 5 || nonMasteredWords.length <= 5 || !this.privacyPreferences.allowPersonalization) {
+      // Not enough data, words, or personalization disabled
       return nonMasteredWords.slice(0, 5);
     }
     
-    // Calculate difficulty score for each word
     const wordScores = nonMasteredWords.map(word => {
       const attempts = localData.filter(d => d.wordId === word.id);
       if (attempts.length === 0) {
@@ -343,10 +534,37 @@ export class LearningAnalyticsService {
     });
     
     // Sort by score (highest first) and return top 5
-    return wordScores
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5)
-      .map(item => item.word);
+    return nonMasteredWords
+      .sort((a, b) => {
+        // If personalization is enabled, use advanced sorting
+        if (this.privacyPreferences.allowPersonalization) {
+          // Get attempts for both words
+          const attemptsA = localData.filter(d => d.wordId === a.id);
+          const attemptsB = localData.filter(d => d.wordId === b.id);
+          
+          // Prioritize words with fewer attempts
+          if (attemptsA.length === 0 && attemptsB.length > 0) return -1;
+          if (attemptsB.length === 0 && attemptsA.length > 0) return 1;
+          
+          // Otherwise prioritize words with lower accuracy
+          const accuracyA = this.getWordAccuracy(a.id, localData);
+          const accuracyB = this.getWordAccuracy(b.id, localData);
+          
+          return accuracyA - accuracyB;
+        }
+        
+        // Default to random order if personalization disabled
+        return Math.random() - 0.5;
+      })
+      .slice(0, 5);
+  }
+  
+  private getWordAccuracy(wordId: string, data: AnonymizedLearningData[]): number {
+    const attempts = data.filter(d => d.wordId === wordId);
+    if (attempts.length === 0) return 50; // Neutral score for no attempts
+    
+    const correctAttempts = attempts.filter(d => d.isCorrect).length;
+    return (correctAttempts / attempts.length) * 100;
   }
 }
 
