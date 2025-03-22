@@ -1,4 +1,3 @@
 
-export { default as InsightsContainer } from './InsightsContainer';
-export { default as RecommendedWordsCard } from './RecommendedWordsCard';
-export { default as StrengthWeaknessCard } from './StrengthWeaknessCard';
+export * from './components';
+export * from './containers';

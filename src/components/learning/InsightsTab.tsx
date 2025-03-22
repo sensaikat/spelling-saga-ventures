@@ -3,8 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { LearningInsight } from '../../services/analytics/types';
 import { Word } from '../../utils/game/types';
-import InsightsContainer from './insights/InsightsContainer';
-import RecommendedWordsCard from './insights/RecommendedWordsCard';
+import { InsightsContainer, RecommendedWordsCard } from './insights/containers';
 
 interface InsightsTabProps {
   insights: LearningInsight[];

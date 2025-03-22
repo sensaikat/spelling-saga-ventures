@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { BarChart2, BookOpen } from 'lucide-react';
-import { LearningInsight } from '../../../services/analytics/types';
-import StrengthWeaknessCard from './StrengthWeaknessCard';
+import { BarChart2 } from 'lucide-react';
+import { LearningInsight } from '../../../../services/analytics/types';
+import { EmptyInsightsState, StrengthWeaknessCard } from '../components';
 import { 
   Card,
   CardContent,
@@ -25,10 +24,7 @@ const InsightsContainer: React.FC<InsightsContainerProps> = ({ insights }) => {
           <CardDescription>Complete more exercises to see insights</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8 text-gray-500">
-            <BookOpen className="mx-auto mb-3 h-12 w-12 opacity-50" />
-            <p>Keep practicing to receive personalized insights and recommendations.</p>
-          </div>
+          <EmptyInsightsState />
         </CardContent>
       </Card>
     );
