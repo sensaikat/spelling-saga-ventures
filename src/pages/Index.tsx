@@ -5,9 +5,16 @@ import { motion } from 'framer-motion';
 import LanguageSelector from '../components/LanguageSelector';
 import MultiLanguageSelector from '../components/MultiLanguageSelector';
 import { languages, useGameStore } from '../utils/game';
-import { Settings, Book, Map, UserCog } from 'lucide-react';
+import { Settings, Book, Map, UserCog, Gamepad, Globe, BookOpen } from 'lucide-react';
 import GuideCharacter from '../components/GuideCharacter';
 import AvatarCustomizer, { AvatarOptions } from '../components/AvatarCustomizer';
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from '../components/ui/tabs';
+import { Button } from '../components/ui/button';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -31,6 +38,10 @@ const Index = () => {
   
   const handleMultiLanguageSelect = () => {
     navigate('/multi-language');
+  };
+  
+  const handleGameModeNavigate = (path: string) => {
+    navigate(path);
   };
   
   const handleAvatarOptionsSave = (options: AvatarOptions) => {
@@ -103,7 +114,7 @@ const Index = () => {
         </motion.div>
       
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -111,48 +122,118 @@ const Index = () => {
           <h1 className="text-4xl md:text-6xl font-display font-bold text-gray-800 mb-4">
             Spelling Saga
           </h1>
-          <p className="text-xl text-gray-600">Choose a language to begin your adventure</p>
+          <p className="text-xl text-gray-600">Choose your adventure and start learning!</p>
         </motion.div>
-      
+        
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto mb-12"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <motion.div
-              variants={itemVariants}
-              className="glass-panel p-6"
-            >
-              <h2 className="text-2xl font-medium mb-6 text-center">Single Language Mode</h2>
-              <LanguageSelector onSelect={handleLanguageSelect} />
-            </motion.div>
+          <Tabs defaultValue="game-type" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="game-type" className="text-lg py-3">
+                <Gamepad className="mr-2" size={20} />
+                Game Type
+              </TabsTrigger>
+              <TabsTrigger value="language" className="text-lg py-3">
+                <Globe className="mr-2" size={20} />
+                Language
+              </TabsTrigger>
+            </TabsList>
             
-            <motion.div
-              variants={itemVariants}
-              className="glass-panel p-6"
-            >
-              <h2 className="text-2xl font-medium mb-6 text-center">Multi-Language Mode</h2>
-              <div className="flex flex-col items-center">
-                <p className="text-gray-600 mb-4">
-                  Challenge yourself with vocabulary from multiple languages at once.
-                </p>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-game-purple hover:bg-purple-600 text-white px-6 py-3 rounded-full text-lg"
-                  onClick={handleMultiLanguageSelect}
+            <TabsContent value="game-type" className="p-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <motion.div
+                  variants={itemVariants}
+                  className="glass-panel p-6 border border-purple-100 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-shadow"
                 >
-                  Start Multi-Language Mode
-                </motion.button>
+                  <div className="flex justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-game-purple/10 flex items-center justify-center">
+                      <Gamepad size={32} className="text-game-purple" />
+                    </div>
+                  </div>
+                  <h2 className="text-2xl font-medium mb-4 text-center">Single Game Mode</h2>
+                  <p className="text-gray-600 mb-6 text-center">
+                    Practice your spelling skills with individual games and challenges
+                  </p>
+                  <Button 
+                    className="w-full bg-game-purple hover:bg-purple-600"
+                    onClick={() => handleGameModeNavigate('/game-mode')}
+                  >
+                    Start Single Game
+                  </Button>
+                </motion.div>
+                
+                <motion.div
+                  variants={itemVariants}
+                  className="glass-panel p-6 border border-blue-100 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-game-blue/10 flex items-center justify-center">
+                      <Map size={32} className="text-game-blue" />
+                    </div>
+                  </div>
+                  <h2 className="text-2xl font-medium mb-4 text-center">Adventure Mode</h2>
+                  <p className="text-gray-600 mb-6 text-center">
+                    Embark on a story-driven journey while learning vocabulary and spelling
+                  </p>
+                  <Button 
+                    className="w-full bg-game-blue hover:bg-blue-600"
+                    onClick={() => handleGameModeNavigate('/adventure')}
+                  >
+                    Start Adventure
+                  </Button>
+                </motion.div>
               </div>
-            </motion.div>
-          </div>
+            </TabsContent>
+            
+            <TabsContent value="language" className="p-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <motion.div
+                  variants={itemVariants}
+                  className="glass-panel p-6 border border-green-100 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-game-green/10 flex items-center justify-center">
+                      <Globe size={32} className="text-game-green" />
+                    </div>
+                  </div>
+                  <h2 className="text-2xl font-medium mb-4 text-center">Single Language Mode</h2>
+                  <p className="text-gray-600 mb-4 text-center">
+                    Focus on mastering vocabulary in one language at a time
+                  </p>
+                  <LanguageSelector onSelect={handleLanguageSelect} />
+                </motion.div>
+                
+                <motion.div
+                  variants={itemVariants}
+                  className="glass-panel p-6 border border-red-100 rounded-xl bg-white/80 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="flex justify-center mb-6">
+                    <div className="w-16 h-16 rounded-full bg-game-red/10 flex items-center justify-center">
+                      <BookOpen size={32} className="text-game-red" />
+                    </div>
+                  </div>
+                  <h2 className="text-2xl font-medium mb-4 text-center">Multi-Language Mode</h2>
+                  <p className="text-gray-600 mb-6 text-center">
+                    Challenge yourself with vocabulary from multiple languages at once
+                  </p>
+                  <Button 
+                    className="w-full bg-game-red hover:bg-red-600"
+                    onClick={handleMultiLanguageSelect}
+                  >
+                    Start Multi-Language Mode
+                  </Button>
+                </motion.div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </motion.div>
         
         <motion.div 
-          className="text-center mt-16 text-sm text-gray-500"
+          className="text-center mt-12 text-sm text-gray-500"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 1 }}
