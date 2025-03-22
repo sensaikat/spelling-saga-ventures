@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Location } from '../../contexts/adventure/types';
-import { terrainIcons } from './TerrainBackground';
+import { terrainIcons } from './constants/terrainData';
 import MissionInfo from './MissionInfo';
 import TipsSection from './TipsSection';
 import ChallengeButton from './ChallengeButton';

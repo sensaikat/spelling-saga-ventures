@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TerrainType } from '../../contexts/adventure/types';
-import { terrainCompanions } from './TerrainBackground';
+import { terrainCompanions } from './constants/terrainData';
 import { useAudio } from '../../contexts/theme/ThemeContext';
 import { ThemeControls } from '../theme/ThemeControls';
 
