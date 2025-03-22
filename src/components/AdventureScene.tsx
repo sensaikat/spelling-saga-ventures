@@ -1,66 +1,31 @@
 
-import React, { useState, useEffect } from 'react';
-import { useAdventure } from '../contexts/adventure/useAdventure';
-import { useGameStore } from '../utils/game';
-import { toast } from '@/components/ui/use-toast';
-import { WordCard } from './word-card';
-
-// Import the refactored components
+import React from 'react';
+import { useAdventureScene } from '../hooks/useAdventureScene';
 import TerrainBackground from './adventure/TerrainBackground';
 import AdventureHeader from './adventure/AdventureHeader';
 import AdventureContent from './adventure/AdventureContent';
 import AdventureDialog from './adventure/AdventureDialog';
+import AdventureMagicItems from './adventure/AdventureMagicItems';
 
 const AdventureScene: React.FC<{
   onStartChallenge: () => void;
   onReturnToMap: () => void;
 }> = ({ onStartChallenge, onReturnToMap }) => {
-  const { getCurrentLocation, character, completeLocation, addCredits, addStar, setStoryPhase } = useAdventure();
-  const { selectedLanguage } = useGameStore();
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogType, setDialogType] = useState<'intro' | 'reward'>('intro');
-  const [rewardPoints, setRewardPoints] = useState(0);
-  const [showTips, setShowTips] = useState(false);
-  
-  const currentLocation = getCurrentLocation();
-  
-  useEffect(() => {
-    setDialogType('intro');
-    setShowDialog(true);
-    // After intro dialog is shown, we'll set the story phase
-    if (character.currentStoryPhase === 'introduction') {
-      setStoryPhase('introduction');
-    }
-  }, []);
+  const {
+    currentLocation,
+    character,
+    selectedLanguage,
+    showDialog,
+    setShowDialog,
+    dialogType,
+    rewardPoints,
+    showTips,
+    handleContinue,
+    handleUseMagicItem,
+    handleToggleTips
+  } = useAdventureScene(onStartChallenge, onReturnToMap);
   
   if (!currentLocation) return null;
-  
-  const handleCompleteChallenge = (points: number) => {
-    setRewardPoints(points);
-    setDialogType('reward');
-    setShowDialog(true);
-    
-    completeLocation(currentLocation.id);
-    addCredits(points);
-    
-    if (points >= 80) {
-      addStar();
-      toast({
-        title: "⭐ Star Earned!",
-        description: "Great job! You've earned a star for excellent performance!",
-        duration: 3000,
-      });
-    }
-  };
-  
-  const handleContinue = () => {
-    if (dialogType === 'intro') {
-      // When intro dialog is closed, move to exploration phase
-      setStoryPhase('exploration');
-    } else if (dialogType === 'reward') {
-      onReturnToMap();
-    }
-  };
   
   return (
     <>
@@ -71,7 +36,7 @@ const AdventureScene: React.FC<{
             character={character}
             selectedLanguage={selectedLanguage}
             onReturnToMap={onReturnToMap}
-            onToggleTips={() => setShowTips(!showTips)}
+            onToggleTips={handleToggleTips}
             showTips={showTips}
           />
           
@@ -79,12 +44,13 @@ const AdventureScene: React.FC<{
             currentLocation={currentLocation}
             showTips={showTips}
             onStartChallenge={() => {
-              setStoryPhase('challenge');
               onStartChallenge();
             }}
           />
         </div>
       </TerrainBackground>
+      
+      <AdventureMagicItems onUseMagicItem={handleUseMagicItem} />
       
       <AdventureDialog
         open={showDialog}

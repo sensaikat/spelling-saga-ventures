@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Star, Trophy, Sparkles, HelpCircle } from 'lucide-react';
