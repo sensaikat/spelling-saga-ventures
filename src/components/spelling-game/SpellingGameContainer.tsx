@@ -45,8 +45,13 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     handleAlphabetHelperToggle,
     handleCharacterClick,
     handleInputSelect,
-    handleInputChange
+    handleInputChange: originalHandleInputChange
   } = useSpellingGameContainer(isAdventure, onAdventureComplete, terrain);
+  
+  // Adapter function to match the expected signature
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    originalHandleInputChange(e, setUserInput);
+  };
   
   if (!currentWord && wordCount > 0) {
     return <div>Loading game...</div>;

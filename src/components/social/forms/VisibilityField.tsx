@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 
-const VisibilityField = () => {
+export const VisibilityField = () => {
   const form = useFormContext();
   
   return (

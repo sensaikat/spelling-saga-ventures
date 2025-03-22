@@ -4,11 +4,7 @@ import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-interface LocationFieldProps {
-  type: string;
-}
-
-const LocationField: React.FC<LocationFieldProps> = ({ type }) => {
+export const LocationField = ({ type = "local" }) => {
   const form = useFormContext();
   
   return (

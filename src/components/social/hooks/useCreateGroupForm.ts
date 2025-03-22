@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { groupFormSchema } from '../forms/group-form-schema';
-import { useStore as useSocialGroupsStore } from '../../../contexts/social/store';
-import { Group } from '../../../contexts/social/types';
+import { useSocialGroupsStore } from '../../../contexts/social/store';
+import { SocialGroup } from '../../../contexts/social/types';
 
 export type GroupFormValues = z.infer<typeof groupFormSchema>;
 
@@ -16,29 +16,20 @@ export const useCreateGroupForm = (onSuccess: () => void) => {
     defaultValues: {
       name: '',
       description: '',
-      type: 'study',
+      type: 'family',
       location: '',
       isPublic: true,
     },
   });
 
   const onSubmit = (values: GroupFormValues) => {
-    const newGroup: Group = {
+    const newGroup = {
       id: Date.now().toString(),
       name: values.name,
       description: values.description,
       type: values.type,
       location: values.location,
       isPublic: values.isPublic,
-      members: [
-        {
-          id: '1',
-          name: 'You',
-          role: 'admin',
-          avatar: '/assets/avatars/avatar-1.png',
-        },
-      ],
-      createdAt: new Date().toISOString(),
     };
 
     addGroup(newGroup);

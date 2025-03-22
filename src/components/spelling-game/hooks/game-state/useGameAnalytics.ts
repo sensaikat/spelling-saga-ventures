@@ -8,7 +8,7 @@ export const useGameAnalytics = () => {
   const wordStartTimeRef = useRef<number>(Date.now());
   const wordHintsUsedRef = useRef<number>(0);
   
-  const recordWordAttempt = (word: Word, correct: boolean, selectedLanguage: Language) => {
+  const recordWordAttempt = (word: Word, correct: boolean, selectedLanguage: Language | string) => {
     const attemptDuration = Date.now() - wordStartTimeRef.current;
     
     learningAnalytics.recordWordAttempt(

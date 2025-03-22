@@ -58,10 +58,10 @@ export const useWordSubmission = ({
     updateProgress(currentWord.id, correct);
     
     if (correct) {
-      setScore(prev => prev + 10);
+      setScore(score + 10);
       addPlayerPoints(10);
     } else {
-      setRemainingLives(prev => prev - 1);
+      setRemainingLives(remainingLives - 1);
       
       if (remainingLives <= 1) {
         setTimeout(() => {
@@ -73,7 +73,7 @@ export const useWordSubmission = ({
     
     setTimeout(() => {
       if (currentWordIndex < filteredWords.length - 1) {
-        setCurrentWordIndex(prev => prev + 1);
+        setCurrentWordIndex(currentWordIndex + 1);
         setUserInput('');
         setIsCorrect(null);
         setShowResult(false);
@@ -92,7 +92,7 @@ export const useWordSubmission = ({
       recordWordAttempt(currentWord, false, selectedLanguage);
     }
     
-    setRemainingLives(prev => prev - 1);
+    setRemainingLives(remainingLives - 1);
     setIsCorrect(false);
     setShowResult(true);
     
@@ -105,7 +105,7 @@ export const useWordSubmission = ({
     
     setTimeout(() => {
       if (currentWordIndex < filteredWords.length - 1) {
-        setCurrentWordIndex(prev => prev + 1);
+        setCurrentWordIndex(currentWordIndex + 1);
         setUserInput('');
         setIsCorrect(null);
         setShowResult(false);

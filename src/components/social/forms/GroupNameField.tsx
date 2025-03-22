@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-const GroupNameField = () => {
+export const GroupNameField = () => {
   const form = useFormContext();
   
   return (

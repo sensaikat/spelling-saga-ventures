@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form';
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const GroupTypeField = () => {
+export const GroupTypeField = () => {
   const form = useFormContext();
   
   return (

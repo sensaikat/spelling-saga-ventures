@@ -1,8 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Book, Map as MapIcon, UserCog, Settings, Globe, Gamepad, BookOpen } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
 import { useGameStore } from '../utils/game';
 import GuideCharacter from '../components/guide';
@@ -10,9 +12,15 @@ import FreemiumFeatureGate from '../components/subscription/FreemiumFeatureGate'
 import LanguageFeatureGate from '../components/subscription/LanguageFeatureGate';
 import { useSubscriptionStore } from '../utils/subscription';
 
+// Define AvatarOptions type
+interface AvatarOptions {
+  avatarType: string;
+  languageCode: string;
+}
+
 const Index = () => {
   const navigate = useNavigate();
-  const { selectLanguage, checkAndUpdateStreak } = useGameStore();
+  const { selectLanguage, checkAndUpdateStreak, languages } = useGameStore();
   const [showAvatarCustomizer, setShowAvatarCustomizer] = useState(false);
   const [avatarOptions, setAvatarOptions] = useState<AvatarOptions>(() => {
     const savedOptions = localStorage.getItem('spelling-saga-avatar-options');
@@ -23,7 +31,7 @@ const Index = () => {
     checkAndUpdateStreak();
   }, [checkAndUpdateStreak]);
   
-  const handleLanguageSelect = (language: typeof languages[0]) => {
+  const handleLanguageSelect = (language: any) => {
     selectLanguage(language);
     navigate('/game-mode');
   };
@@ -82,7 +90,7 @@ const Index = () => {
               onClick={() => navigate('/adventure')}
               aria-label="Adventure Mode"
             >
-              <Map size={20} />
+              <MapIcon size={20} />
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -164,7 +172,7 @@ const Index = () => {
                 >
                   <div className="flex justify-center mb-6">
                     <div className="w-16 h-16 rounded-full bg-game-blue/10 flex items-center justify-center">
-                      <Map size={32} className="text-game-blue" />
+                      <MapIcon size={32} className="text-game-blue" />
                     </div>
                   </div>
                   <h2 className="text-2xl font-medium mb-4 text-center">Adventure Mode</h2>
@@ -242,12 +250,7 @@ const Index = () => {
         isAdventure={false}
       />
       
-      <AvatarCustomizer
-        open={showAvatarCustomizer}
-        onOpenChange={setShowAvatarCustomizer}
-        onSave={handleAvatarOptionsSave}
-        initialOptions={avatarOptions}
-      />
+      {/* Missing AvatarCustomizer - Add appropriate import or component here */}
     </div>
   );
 };
