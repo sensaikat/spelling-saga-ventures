@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, Map, Globe, Settings, BarChart3 } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
-import { useGameStore } from '../utils/gameData';
+import { useGameStore } from '../utils/game';
 
 const Index = () => {
   const navigate = useNavigate();

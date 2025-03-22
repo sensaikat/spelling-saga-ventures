@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Pencil, Shuffle, Copy, TextCursorInput } from 'lucide-react';
-import { gameModes, useGameStore, wordLists } from '../utils/gameData';
+import { gameModes, useGameStore, wordLists } from '../utils/game';
 
 const GameMode = () => {
   const navigate = useNavigate();

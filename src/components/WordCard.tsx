@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Word } from '../utils/gameData';
+import { Word } from '../utils/game';
 import { Volume, HelpCircle } from 'lucide-react';
 
 interface WordCardProps {

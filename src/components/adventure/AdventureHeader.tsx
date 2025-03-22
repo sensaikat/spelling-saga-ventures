@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Star, Trophy, Sparkles, HelpCircle } from 'lucide-react';
 import { Character, Location } from '../../contexts/adventure/types';
-import { Language } from '../../utils/gameData';
+import { Language } from '../../utils/game';
 
 interface AdventureHeaderProps {
   currentLocation: Location;

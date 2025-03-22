@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Languages, Globe, Download, Trash, Wifi, WifiOff, Search, X } from 'lucide-react';
-import { languages, useGameStore } from '../utils/gameData';
+import { languages, useGameStore } from '../utils/game';
 import { Input } from '@/components/ui/input';
 import { 
   Select,

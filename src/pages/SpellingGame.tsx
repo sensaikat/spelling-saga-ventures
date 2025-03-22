@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useGameStore, Word } from '../utils/gameData';
+import { useGameStore, Word } from '../utils/game';
 import WordCard from '../components/WordCard';
 import GameControls from '../components/GameControls';
 import AlphabetHelper from '../components/alphabet-helper';

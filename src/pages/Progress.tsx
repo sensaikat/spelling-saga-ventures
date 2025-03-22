@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Star, Calendar, Award, BarChart } from 'lucide-react';
-import { useGameStore, Word, wordLists } from '../utils/gameData';
+import { useGameStore, Word, wordLists } from '../utils/game';
 
 const Progress = () => {
   const navigate = useNavigate();
