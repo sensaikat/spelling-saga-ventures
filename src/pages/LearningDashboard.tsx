@@ -2,7 +2,7 @@
 import React from 'react';
 import { Brain, PieChart, Shield } from 'lucide-react';
 import { useLearningDashboard } from '../hooks/useLearningDashboard';
-import PrivacyConsentDialog from '../components/learning/PrivacyConsentDialog';
+import { PrivacyConsentDialog } from '../components/learning/privacy';
 import DashboardHeader from '../components/learning/DashboardHeader';
 import InsightsTab from '../components/learning/InsightsTab';
 import StatisticsTab from '../components/learning/StatisticsTab';
