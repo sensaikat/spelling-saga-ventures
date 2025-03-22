@@ -26,6 +26,8 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     showHint,
     remainingLives,
     showGuide,
+    timeRemaining,
+    isTimerRunning,
     
     // Game controls
     audioEnabled,
@@ -45,13 +47,8 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     handleAlphabetHelperToggle,
     handleCharacterClick,
     handleInputSelect,
-    handleInputChange: originalHandleInputChange
+    handleInputChange
   } = useSpellingGameContainer(isAdventure, onAdventureComplete, terrain);
-  
-  // Adapter function to match the expected signature
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    originalHandleInputChange(e, setUserInput);
-  };
   
   if (!currentWord && wordCount > 0) {
     return <div>Loading game...</div>;
@@ -75,6 +72,8 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
           audioEnabled={audioEnabled}
           isSpeaking={isSpeaking}
           showAlphabetHelper={showAlphabetHelper}
+          timeRemaining={timeRemaining}
+          isTimerRunning={isTimerRunning}
           handleSubmit={handleSubmit}
           handleSkipClick={handleSkipClick}
           handleShowHint={handleShowHint}
@@ -84,7 +83,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
           speakWord={speakWord}
           handleAlphabetHelperToggle={handleAlphabetHelperToggle}
           handleInputSelect={handleInputSelect}
-          handleInputChange={handleInputChange}
+          handleInputChange={(e) => handleInputChange(e, setUserInput)}
           handleCharacterClick={handleCharacterClick}
           cursorPosition={cursorPosition}
         />
@@ -103,6 +102,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
         showGuide={showGuide}
         isAdventure={isAdventure}
         terrain={terrain}
+        timeRemaining={timeRemaining}
       />
     </div>
   );

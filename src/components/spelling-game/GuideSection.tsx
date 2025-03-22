@@ -18,6 +18,7 @@ const GuideSection: React.FC<GuideSectionProps> = ({
   timeRemaining
 }) => {
   const [nudged, setNudged] = useState(false);
+  const [proactiveMessage, setProactiveMessage] = useState<string | null>(null);
   
   // Provide time-based nudges
   useEffect(() => {
@@ -36,11 +37,13 @@ const GuideSection: React.FC<GuideSectionProps> = ({
         description: randomMessage,
       });
       
+      setProactiveMessage(randomMessage);
       setNudged(true);
     }
     
     if (timeRemaining !== undefined && timeRemaining > 20) {
       setNudged(false);
+      setProactiveMessage(null);
     }
   }, [timeRemaining, nudged]);
   
@@ -48,8 +51,7 @@ const GuideSection: React.FC<GuideSectionProps> = ({
     <div className="fixed bottom-4 right-4 z-50">
       <GuideCharacter
         selectedAvatar={isAdventure ? terrain : 'default'}
-        showGuide={showGuide}
-        proactiveMessage={nudged ? null : undefined}
+        proactiveMessage={proactiveMessage}
       />
     </div>
   );

@@ -2,83 +2,128 @@
 import { useState, useEffect, useRef } from 'react';
 import { toast } from '@/hooks/use-toast';
 
-interface UseGameTimerProps {
-  defaultTime?: number; // in seconds
-  onTimeUp?: () => void;
-  isEnabled?: boolean;
+export interface UseGameTimerProps {
+  enabled?: boolean;
+  initialTime?: number;
+  onTimerEnd?: () => void;
+  onTimeWarning?: () => void;
 }
 
-export const useGameTimer = ({ 
-  defaultTime = 30, 
-  onTimeUp, 
-  isEnabled = true 
-}: UseGameTimerProps = {}) => {
-  const [timeRemaining, setTimeRemaining] = useState(defaultTime);
-  const [isRunning, setIsRunning] = useState(false);
-  const [hasGivenWarning, setHasGivenWarning] = useState(false);
+export const useGameTimer = ({
+  enabled = true,
+  initialTime = 30,
+  onTimerEnd,
+  onTimeWarning,
+}: UseGameTimerProps) => {
+  const [timeRemaining, setTimeRemaining] = useState(initialTime);
+  const [isRunning, setIsRunning] = useState(enabled);
+  const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Start the timer
+  const hasWarned = useRef(false);
+  
+  // Start timer
   const startTimer = () => {
-    if (isEnabled) {
+    if (!isRunning) {
       setIsRunning(true);
-      setHasGivenWarning(false);
+      setIsPaused(false);
     }
   };
-
-  // Pause the timer
+  
+  // Pause timer
   const pauseTimer = () => {
-    setIsRunning(false);
+    if (isRunning && !isPaused) {
+      setIsPaused(true);
+    }
   };
-
-  // Reset the timer
+  
+  // Resume timer
+  const resumeTimer = () => {
+    if (isRunning && isPaused) {
+      setIsPaused(false);
+    }
+  };
+  
+  // Stop timer
+  const stopTimer = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+  
+  // Reset timer
   const resetTimer = (newTime?: number) => {
-    setTimeRemaining(newTime || defaultTime);
-    setIsRunning(false);
-    setHasGivenWarning(false);
+    setTimeRemaining(newTime || initialTime);
+    hasWarned.current = false;
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (enabled) {
+      setIsRunning(true);
+      setIsPaused(false);
+    }
   };
-
-  // Set a custom time
-  const setCustomTime = (seconds: number) => {
-    setTimeRemaining(seconds);
-  };
-
-  // Timer logic
+  
+  // Warning at low time
   useEffect(() => {
-    if (isRunning && timeRemaining > 0) {
-      timerRef.current = setTimeout(() => {
-        setTimeRemaining(prev => prev - 1);
-        
-        // Give a warning when 10 seconds remain
-        if (timeRemaining === 10 && !hasGivenWarning) {
-          toast({
-            title: "Time's running out!",
-            description: "Hurry up, only 10 seconds left!",
-            variant: "warning",
-          });
-          setHasGivenWarning(true);
-        }
-      }, 1000);
-    } else if (isRunning && timeRemaining === 0) {
-      setIsRunning(false);
-      if (onTimeUp) {
-        onTimeUp();
+    if (isRunning && timeRemaining <= 10 && !hasWarned.current) {
+      toast({
+        title: "Time is running out!",
+        description: "Hurry up and answer before time expires!",
+        variant: "default",
+      });
+      hasWarned.current = true;
+      if (onTimeWarning) {
+        onTimeWarning();
       }
     }
-
+  }, [timeRemaining, isRunning, onTimeWarning]);
+  
+  // Timer effect
+  useEffect(() => {
+    if (isRunning && !isPaused && timeRemaining > 0) {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          const newTime = prev - 1;
+          if (newTime <= 0) {
+            stopTimer();
+            if (onTimerEnd) {
+              onTimerEnd();
+            }
+            return 0;
+          }
+          return newTime;
+        });
+      }, 1000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    
     return () => {
       if (timerRef.current) {
-        clearTimeout(timerRef.current);
+        clearInterval(timerRef.current);
       }
     };
-  }, [isRunning, timeRemaining, onTimeUp, hasGivenWarning]);
-
+  }, [isRunning, isPaused, timeRemaining, onTimerEnd]);
+  
+  // Handle disabled state
+  useEffect(() => {
+    if (!enabled && isRunning) {
+      stopTimer();
+    }
+  }, [enabled, isRunning]);
+  
   return {
     timeRemaining,
     isRunning,
+    isPaused,
     startTimer,
     pauseTimer,
-    resetTimer,
-    setCustomTime
+    resumeTimer,
+    stopTimer,
+    resetTimer
   };
 };

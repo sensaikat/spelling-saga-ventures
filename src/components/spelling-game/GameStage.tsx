@@ -5,7 +5,6 @@ import { GameForm } from './GameForm';
 import { GameHeader } from './GameHeader';
 import { GameControlsContainer } from '../game-controls/GameControlsContainer';
 import { GameStageProps } from './types';
-import { useNavigate } from 'react-router-dom';
 
 export const GameStage: React.FC<GameStageProps> = ({
   currentWord,
@@ -37,8 +36,6 @@ export const GameStage: React.FC<GameStageProps> = ({
   handleCharacterClick,
   cursorPosition
 }) => {
-  const navigate = useNavigate();
-  
   const progressPercentage = (currentIndex / wordCount) * 100;
   
   return (

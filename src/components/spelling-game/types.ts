@@ -1,5 +1,8 @@
+
 import { Word } from "../../utils/game";
 import { TerrainType } from "../../contexts/adventure/types";
+
+export type InputStatus = 'idle' | 'correct' | 'incorrect';
 
 export interface SpellingGameContainerProps {
   isAdventure?: boolean;
@@ -33,7 +36,7 @@ export interface GameStageProps {
   speakWord: (word: Word) => void;
   handleAlphabetHelperToggle: () => void;
   handleInputSelect: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>, setUserInput: (value: string) => void) => void;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCharacterClick: (char: string) => void;
   cursorPosition: number;
 }

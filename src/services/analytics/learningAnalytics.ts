@@ -1,13 +1,27 @@
 
 import { LearningAnalyticsService } from './core';
-import { Word } from './types';
 
 // Export singleton instance
 export const learningAnalytics = LearningAnalyticsService.getInstance();
 
-// Re-export types
-export { LearningInsightType } from './types';
-export type { Word } from './types';
+// LearningInsightType enum
+export enum LearningInsightType {
+  SPELLING_PATTERN = 'spelling_pattern',
+  WEEKLY_PROGRESS = 'weekly_progress',
+  COMMON_MISTAKES = 'common_mistakes',
+  STRENGTH_AREA = 'strength_area',
+  RECOMMENDED_WORDS = 'recommended_words'
+}
+
+// Export Word type
+export interface Word {
+  id: string;
+  text: string;
+  difficulty: string;
+  category?: string;
+  language?: string;
+  translation?: string;
+}
 
 // Export LearningInsight type
 export interface LearningInsight {
