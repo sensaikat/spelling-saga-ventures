@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAdventure } from '../contexts/adventure/useAdventure';
-import { useGameStore } from '../utils/gameData';
+import { useGameStore } from '../utils/game';
 import { toast } from '@/components/ui/use-toast';
 
 // Import the refactored components
@@ -24,7 +23,6 @@ const AdventureScene: React.FC<{
   const currentLocation = getCurrentLocation();
   
   useEffect(() => {
-    // Show intro dialog when the component mounts
     setDialogType('intro');
     setShowDialog(true);
   }, []);
@@ -36,13 +34,9 @@ const AdventureScene: React.FC<{
     setDialogType('reward');
     setShowDialog(true);
     
-    // Mark the location as completed
     completeLocation(currentLocation.id);
-    
-    // Add credits based on points earned
     addCredits(points);
     
-    // Add a star if they scored well
     if (points >= 80) {
       addStar();
       toast({

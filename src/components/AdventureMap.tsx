@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Lock, Check, ChevronRight, Star, Trophy, Rocket } from 'lucide-react';
 import { Location, useAdventure } from '../contexts/adventure';
-import { useGameStore } from '../utils/gameData';
+import { useGameStore } from '../utils/game';
 
 const terrainColors = {
   forest: 'bg-gradient-to-br from-green-100 to-green-300 border-green-500 text-green-800',

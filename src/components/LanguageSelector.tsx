@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { languages, useGameStore } from '../utils/gameData';
-import { motion } from 'framer-motion';
+import { languages, useGameStore } from '../utils/game';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -30,7 +29,6 @@ const LanguageSelector = () => {
     setSelectedIndex(index);
     selectLanguage(language);
     
-    // Delay navigation to show the selection animation
     setTimeout(() => {
       navigate('/game-mode');
     }, 800);

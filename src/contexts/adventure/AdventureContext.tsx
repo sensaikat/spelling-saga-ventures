@@ -1,6 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useGameStore } from '../../utils/gameData';
+import { useGameStore } from '../../utils/game';
 import { AdventureContextType, Location } from './types';
 import { defaultCharacter, defaultLocations } from './defaultData';
 
@@ -12,7 +11,6 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [character, setCharacter] = useState(defaultCharacter);
   const { addPoints } = useGameStore();
 
-  // Load saved state from localStorage
   useEffect(() => {
     const savedAdventure = localStorage.getItem('languageAdventure');
     if (savedAdventure) {
@@ -27,7 +25,6 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, []);
 
-  // Save state to localStorage
   useEffect(() => {
     localStorage.setItem('languageAdventure', JSON.stringify({
       locations,
@@ -47,17 +44,14 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       loc.id === locationId ? { ...loc, isCompleted: true } : loc
     ));
 
-    // Find the next location and unlock it
     const currentIndex = locations.findIndex(loc => loc.id === locationId);
     if (currentIndex >= 0 && currentIndex < locations.length - 1) {
       const nextLocation = locations[currentIndex + 1];
       unlockLocation(nextLocation.id);
     }
 
-    // Award 50 credits for completing a location
     addCredits(50);
     
-    // Also add points to the main game store
     addPoints(50);
   };
 
