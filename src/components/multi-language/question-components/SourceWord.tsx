@@ -13,13 +13,13 @@ const SourceWord: React.FC<SourceWordProps> = ({ word, languageId }) => {
   const { speakWord, isSpeaking } = useSpeech();
   
   return (
-    <div className="text-center mb-8">
+    <div className="text-center my-8">
       <div className="flex items-center justify-center mb-3">
         <div className="bg-white rounded-lg px-8 py-4 shadow-sm border border-gray-200 inline-block">
           <h3 className="text-2xl font-medium">{word.text}</h3>
         </div>
         <button 
-          className={`ml-2 p-2 rounded-full ${isSpeaking ? 'bg-game-blue/10 text-game-blue' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} transition-colors`}
+          className={`ml-3 p-2 rounded-full ${isSpeaking ? 'bg-game-blue/10 text-game-blue' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'} transition-colors`}
           onClick={() => speakWord(word.text, languageId)}
           aria-label={`Pronounce ${word.text}`}
         >

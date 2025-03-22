@@ -5,6 +5,8 @@ export const useSpeech = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const speakWord = (text: string, languageId: string) => {
+    if (!text || !languageId) return;
+    
     if ('speechSynthesis' in window) {
       // Cancel any ongoing speech
       window.speechSynthesis.cancel();
@@ -21,9 +23,12 @@ export const useSpeech = () => {
       
       utterance.onerror = () => {
         setIsSpeaking(false);
+        console.error('Speech synthesis error');
       };
       
       window.speechSynthesis.speak(utterance);
+    } else {
+      console.log('Speech synthesis not supported in this browser');
     }
   };
   
