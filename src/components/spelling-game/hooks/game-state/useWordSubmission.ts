@@ -1,13 +1,14 @@
 
 import { Word } from '../../../../utils/game';
+import { Language } from '../../../../utils/game/types';
 
 interface UseWordSubmissionProps {
-  currentWord: Word | null;
+  currentWord: Word;
   filteredWords: Word[];
   currentWordIndex: number;
   setCurrentWordIndex: (index: number) => void;
   setUserInput: (input: string) => void;
-  setIsCorrect: (isCorrect: boolean | null) => void;
+  setIsCorrect: (correct: boolean | null) => void;
   setShowResult: (show: boolean) => void;
   setShowHint: (show: boolean) => void;
   setGameCompleted: (completed: boolean) => void;
@@ -15,10 +16,10 @@ interface UseWordSubmissionProps {
   setScore: (score: number) => void;
   remainingLives: number;
   setRemainingLives: (lives: number) => void;
-  recordWordAttempt: (word: Word, correct: boolean, selectedLanguage: string) => void;
+  recordWordAttempt: (word: Word, correct: boolean, selectedLanguage: Language | string) => void;
   updateProgress: (wordId: string, isCorrect: boolean) => void;
   addPlayerPoints: (points: number) => void;
-  selectedLanguage: any;
+  selectedLanguage: Language | null | string;
 }
 
 export const useWordSubmission = ({
@@ -40,46 +41,46 @@ export const useWordSubmission = ({
   addPlayerPoints,
   selectedLanguage
 }: UseWordSubmissionProps) => {
-  
   const handleSubmit = (e: React.FormEvent, userInput: string) => {
     e.preventDefault();
     
     if (!currentWord) return;
     
-    const correct = userInput.toLowerCase().trim() === currentWord.text.toLowerCase();
-    setIsCorrect(correct);
+    const isCorrect = userInput.trim().toLowerCase() === currentWord.text.toLowerCase();
+    
+    setIsCorrect(isCorrect);
     setShowResult(true);
     
-    // Record analytics data
+    // Record analytics
     if (selectedLanguage) {
-      recordWordAttempt(currentWord, correct, selectedLanguage);
+      recordWordAttempt(currentWord, isCorrect, selectedLanguage);
     }
     
-    updateProgress(currentWord.id, correct);
-    
-    if (correct) {
+    // Update score
+    if (isCorrect) {
       setScore(score + 10);
-      addPlayerPoints(10);
+      addPlayerPoints(2);
     } else {
       setRemainingLives(remainingLives - 1);
-      
-      if (remainingLives <= 1) {
-        setTimeout(() => {
-          setGameCompleted(true);
-        }, 1500);
-        return;
-      }
     }
     
+    // Update progress
+    if (currentWord.id) {
+      updateProgress(currentWord.id, isCorrect);
+    }
+    
+    // Move to next word after a delay
     setTimeout(() => {
-      if (currentWordIndex < filteredWords.length - 1) {
+      setShowResult(false);
+      setShowHint(false);
+      
+      if (currentWordIndex >= filteredWords.length - 1 || remainingLives <= 1 && !isCorrect) {
+        // Game over
+        setGameCompleted(true);
+      } else if (isCorrect || remainingLives > 1) {
+        // Move to next word
         setCurrentWordIndex(currentWordIndex + 1);
         setUserInput('');
-        setIsCorrect(null);
-        setShowResult(false);
-        setShowHint(false);
-      } else {
-        setGameCompleted(true);
       }
     }, 1500);
   };
@@ -87,33 +88,28 @@ export const useWordSubmission = ({
   const handleSkip = () => {
     if (!currentWord) return;
     
-    // Record skipped word as incorrect for analytics
+    // Record as incorrect
     if (selectedLanguage) {
       recordWordAttempt(currentWord, false, selectedLanguage);
     }
     
+    // Reduce score or lives
     setRemainingLives(remainingLives - 1);
-    setIsCorrect(false);
-    setShowResult(true);
     
+    // Check if game is over
     if (remainingLives <= 1) {
-      setTimeout(() => {
-        setGameCompleted(true);
-      }, 1500);
+      setGameCompleted(true);
       return;
     }
     
-    setTimeout(() => {
-      if (currentWordIndex < filteredWords.length - 1) {
-        setCurrentWordIndex(currentWordIndex + 1);
-        setUserInput('');
-        setIsCorrect(null);
-        setShowResult(false);
-        setShowHint(false);
-      } else {
-        setGameCompleted(true);
-      }
-    }, 1500);
+    // Move to next word
+    if (currentWordIndex < filteredWords.length - 1) {
+      setCurrentWordIndex(currentWordIndex + 1);
+      setUserInput('');
+      setShowHint(false);
+    } else {
+      setGameCompleted(true);
+    }
   };
   
   return {

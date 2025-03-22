@@ -16,7 +16,7 @@ export const useCreateGroupForm = (onSuccess: () => void) => {
     defaultValues: {
       name: '',
       description: '',
-      type: 'family',
+      type: 'family', // Changed from 'study' to 'family' to match allowed types
       location: '',
       isPublic: true,
     },

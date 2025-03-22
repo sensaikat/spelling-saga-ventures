@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Book, Map as MapIcon, UserCog, Settings, Globe, Gamepad, BookOpen } from 'lucide-react';
+import { Book, MapIcon, UserCog, Settings, Globe, Gamepad, BookOpen } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
 import { useGameStore } from '../utils/game';
 import GuideCharacter from '../components/guide';
 import FreemiumFeatureGate from '../components/subscription/FreemiumFeatureGate';
 import LanguageFeatureGate from '../components/subscription/LanguageFeatureGate';
 import { useSubscriptionStore } from '../utils/subscription';
+import AvatarCustomizer from '../components/AvatarCustomizer';
 
 // Define AvatarOptions type
 interface AvatarOptions {
@@ -20,7 +21,7 @@ interface AvatarOptions {
 
 const Index = () => {
   const navigate = useNavigate();
-  const { selectLanguage, checkAndUpdateStreak, languages } = useGameStore();
+  const { selectLanguage, checkAndUpdateStreak, selectedLanguage } = useGameStore();
   const [showAvatarCustomizer, setShowAvatarCustomizer] = useState(false);
   const [avatarOptions, setAvatarOptions] = useState<AvatarOptions>(() => {
     const savedOptions = localStorage.getItem('spelling-saga-avatar-options');
@@ -250,7 +251,14 @@ const Index = () => {
         isAdventure={false}
       />
       
-      {/* Missing AvatarCustomizer - Add appropriate import or component here */}
+      {showAvatarCustomizer && (
+        <AvatarCustomizer
+          open={showAvatarCustomizer}
+          onOpenChange={setShowAvatarCustomizer}
+          onSave={handleAvatarOptionsSave}
+          initialOptions={avatarOptions}
+        />
+      )}
     </div>
   );
 };
