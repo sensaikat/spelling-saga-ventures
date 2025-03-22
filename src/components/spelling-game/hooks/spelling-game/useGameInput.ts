@@ -9,7 +9,12 @@ export const useGameInput = () => {
   
   const checkAnswer = (currentWord: Word | null, userInputValue: string): boolean => {
     if (!currentWord) return false;
-    return userInputValue.trim() === currentWord.text.trim();
+    return userInputValue.trim().toLowerCase() === currentWord.text.trim().toLowerCase();
+  };
+  
+  const clearInput = () => {
+    setUserInput('');
+    setInputStatus(null);
   };
   
   return {
@@ -19,6 +24,7 @@ export const useGameInput = () => {
     setInputStatus,
     isCheckingAnswer,
     setIsCheckingAnswer,
-    checkAnswer
+    checkAnswer,
+    clearInput
   };
 };

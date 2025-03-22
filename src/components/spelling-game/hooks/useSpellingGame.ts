@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { Word } from '../../utils/game';
-import { useGameStore } from '../../utils/game';
+import { Word } from '../../../utils/game';
+import { useGameStore } from '../../../utils/game';
 import { toast } from '@/components/ui/use-toast';
 import { 
   useGameInput, 
@@ -51,7 +51,7 @@ export const useSpellingGame = (
     startTimer,
     stopTimer,
     resetTimer
-  } = useGameTimer();
+  } = useGameTimer(gameFinished);
   
   // Game hints hook
   const {
@@ -84,7 +84,7 @@ export const useSpellingGame = (
       return;
     }
     
-    const result = await checkAnswer(userInput, currentWord.text);
+    const result = await checkAnswer(currentWord, userInput);
     
     if (result) {
       // Correct answer

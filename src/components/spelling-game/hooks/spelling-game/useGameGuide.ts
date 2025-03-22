@@ -9,15 +9,17 @@ export const useGameGuide = () => {
     setShowGuide(true);
     setGuideMessage(message);
     
-    // Hide the guide after animation
-    setTimeout(() => {
-      setShowGuide(false);
-    }, 2000);
+    // Hide the guide after animation (removed the auto-hide)
+  };
+  
+  const hideGuide = () => {
+    setShowGuide(false);
   };
   
   return {
     showGuide,
     guideMessage,
-    showGuideWithMessage
+    showGuideWithMessage,
+    hideGuide
   };
 };

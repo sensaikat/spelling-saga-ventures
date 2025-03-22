@@ -20,9 +20,20 @@ export const useGameTimer = (gameFinished: boolean) => {
   const resetTimer = () => {
     setElapsedTime(0);
   };
+
+  const startTimer = () => {
+    // Timer starts automatically via useEffect when gameFinished is false
+    setElapsedTime(0);
+  };
+
+  const stopTimer = () => {
+    // Timer stops automatically via useEffect when gameFinished is true
+  };
   
   return {
     elapsedTime,
-    resetTimer
+    resetTimer,
+    startTimer,
+    stopTimer
   };
 };
