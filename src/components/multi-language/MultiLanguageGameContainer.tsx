@@ -9,10 +9,10 @@ import { useGameStore, Word } from '../../utils/game';
 import { Language } from '../../utils/game/types';
 import {
   MultiLanguageWordList,
-  MultiLanguageQuestion,
+  MultiLanguageQuestion as QuestionType,
   MultiLanguageGameState
 } from './types';
-import MultiLanguageQuestion from './MultiLanguageQuestion';
+import MultiLanguageQuestionComponent from './MultiLanguageQuestion';
 import MultiLanguageResult from './MultiLanguageResult';
 
 interface MultiLanguageGameContainerProps {
@@ -248,7 +248,7 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
             </div>
             
             {gameState.currentQuestion && (
-              <MultiLanguageQuestion
+              <MultiLanguageQuestionComponent
                 question={gameState.currentQuestion}
                 onAnswer={handleAnswer}
               />
