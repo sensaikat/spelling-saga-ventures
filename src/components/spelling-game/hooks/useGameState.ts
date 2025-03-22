@@ -1,5 +1,6 @@
 
 import { useGameCore } from './game-state';
+import { Word } from '../../../utils/game';
 
 export const useGameState = (
   isAdventure: boolean,
