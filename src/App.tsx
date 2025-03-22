@@ -12,6 +12,7 @@ import LearningDashboard from './pages/LearningDashboard';
 import AdventureMap from './pages/AdventureMap';
 import AdventureScene from './pages/AdventureScene';
 import Subscription from './pages/Subscription';
+import Admin from './pages/Admin';
 import { AdventureProvider } from './contexts/adventure';
 import './App.css';
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="/adventure" element={<AdventureMap />} />
           <Route path="/adventure/:locationId" element={<AdventureScene />} />
           <Route path="/subscription" element={<Subscription />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
