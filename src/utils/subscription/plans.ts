@@ -1,4 +1,3 @@
-
 import { SubscriptionPlan } from './types';
 
 export const subscriptionPlans: SubscriptionPlan[] = [
@@ -8,7 +7,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     price: 0,
     billingCycle: 'monthly',
     features: [
-      'Access to 3 languages',
+      'Access to 8 languages',
       '10 games per day',
       'Basic progress tracking',
       'Single language mode only',
@@ -63,8 +62,8 @@ export const subscriptionPlans: SubscriptionPlan[] = [
 
 export const featureLimits = {
   languages: {
-    free: 3,
-    premium: -1, // -1 means unlimited
+    free: 8,
+    premium: -1,
   },
   gamePlay: {
     daily: 10,
@@ -90,3 +89,5 @@ export const premiumFeatureLimits = {
   adventureMode: true,
   offlineMode: true,
 };
+
+export const freeTierLanguages = ['en', 'es', 'fr', 'bn', 'ta', 'pl', 'ar', 'fil'];

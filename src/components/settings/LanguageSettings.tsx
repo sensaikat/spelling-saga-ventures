@@ -41,9 +41,11 @@ const LanguageSettings = () => {
 
   // Group languages by regions
   const languageGroups = {
-    'Asian': ['hi', 'zh', 'bn', 'or', 'ta', 'te'],
-    'European': ['en', 'es', 'fr', 'pl'],
-    'Middle Eastern': ['ar']
+    'Asian': ['hi', 'zh', 'bn', 'ta', 'te', 'as', 'or', 'gu'],
+    'European': ['en', 'es', 'fr', 'pl', 'de', 'ro', 'ru'],
+    'Middle Eastern': ['ar', 'ur', 'ps'],
+    'South East Asian': ['fil', 'si'],
+    'Free Tier': ['en', 'es', 'fr', 'bn', 'ta', 'pl', 'ar', 'fil']
   };
   
   return (
@@ -100,6 +102,11 @@ const LanguageSettings = () => {
                     <div className="font-medium">{lang.name}</div>
                     <div className="text-sm text-gray-500">{lang.nativeName}</div>
                   </div>
+                  {languageGroups['Free Tier'].includes(lang.id) && (
+                    <span className="ml-auto text-xs px-2 py-0.5 bg-green-100 text-green-800 rounded-full">
+                      Free
+                    </span>
+                  )}
                 </div>
               ))
             )}
@@ -113,42 +120,61 @@ const LanguageSettings = () => {
               <SelectValue placeholder="Choose a language" />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(languageGroups).map(([group, ids]) => (
-                <SelectGroup key={group}>
-                  <SelectLabel>{group}</SelectLabel>
-                  {languages
-                    .filter(lang => ids.includes(lang.id))
-                    .map(lang => (
-                      <SelectItem key={lang.id} value={lang.id}>
-                        <div className="flex items-center">
-                          <span className="mr-2">{lang.flag}</span>
-                          {lang.name} ({lang.nativeName})
-                        </div>
-                      </SelectItem>
-                    ))
-                  }
-                </SelectGroup>
-              ))}
+              <SelectGroup>
+                <SelectLabel>Free Tier Languages</SelectLabel>
+                {languages
+                  .filter(lang => languageGroups['Free Tier'].includes(lang.id))
+                  .map(lang => (
+                    <SelectItem key={lang.id} value={lang.id}>
+                      <div className="flex items-center">
+                        <span className="mr-2">{lang.flag}</span>
+                        {lang.name} ({lang.nativeName})
+                      </div>
+                    </SelectItem>
+                  ))
+                }
+              </SelectGroup>
+              {Object.entries(languageGroups)
+                .filter(([group]) => group !== 'Free Tier')
+                .map(([group, ids]) => (
+                  <SelectGroup key={group}>
+                    <SelectLabel>{group}</SelectLabel>
+                    {languages
+                      .filter(lang => ids.includes(lang.id))
+                      .map(lang => (
+                        <SelectItem key={lang.id} value={lang.id}>
+                          <div className="flex items-center">
+                            <span className="mr-2">{lang.flag}</span>
+                            {lang.name} ({lang.nativeName})
+                          </div>
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectGroup>
+                ))}
             </SelectContent>
           </Select>
         )}
       </div>
       
       <div className="flex flex-wrap gap-2 mt-4">
-        {languages.slice(0, 5).map(lang => (
-          <button
-            key={lang.id}
-            className={`px-3 py-1.5 rounded-full text-sm flex items-center space-x-1 ${
-              selectedLanguage?.id === lang.id 
-                ? 'bg-game-blue text-white' 
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
-            onClick={() => handleLanguageChange(lang.id)}
-          >
-            <span>{lang.flag}</span>
-            <span>{lang.name}</span>
-          </button>
-        ))}
+        {languages
+          .filter(lang => languageGroups['Free Tier'].includes(lang.id))
+          .slice(0, 5)
+          .map(lang => (
+            <button
+              key={lang.id}
+              className={`px-3 py-1.5 rounded-full text-sm flex items-center space-x-1 ${
+                selectedLanguage?.id === lang.id 
+                  ? 'bg-game-blue text-white' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              }`}
+              onClick={() => handleLanguageChange(lang.id)}
+            >
+              <span>{lang.flag}</span>
+              <span>{lang.name}</span>
+            </button>
+          ))}
         <button className="px-3 py-1.5 rounded-full text-sm bg-gray-100 hover:bg-gray-200 text-gray-700">
           + More
         </button>

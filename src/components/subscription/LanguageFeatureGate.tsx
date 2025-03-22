@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Language } from '../../utils/game';
+import { freeTierLanguages } from '../../utils/subscription/plans';
 
 interface LanguageFeatureGateProps {
   language: Language;
@@ -16,7 +17,11 @@ const LanguageFeatureGate = ({ language, availableLanguageIds, children }: Langu
   const navigate = useNavigate();
   const { hasLanguageAccess } = useSubscriptionStore();
   
-  const hasAccess = hasLanguageAccess(language.id, availableLanguageIds);
+  // Check if the language is in the free tier list
+  const isFreeTier = freeTierLanguages.includes(language.id);
+  
+  // Allow access if language is in free tier or user has premium access
+  const hasAccess = isFreeTier || hasLanguageAccess(language.id, availableLanguageIds);
   
   if (hasAccess) {
     return <>{children}</>;
