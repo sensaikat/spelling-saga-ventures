@@ -1,9 +1,10 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Star, Calendar, Award, BarChart, BarChart2, Users } from 'lucide-react';
 import { useGameStore, Word, wordLists } from '../utils/game';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ChildProgressReport from '../components/progress/ChildProgressReport';
 
 const Progress = () => {
@@ -110,79 +111,81 @@ const Progress = () => {
               streak={progress.streakDays}
             />
           ) : (
-            <motion.div 
-              className="glass-panel p-6 mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.4 }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <BarChart size={20} className="text-game-blue" />
-                <h3 className="text-xl font-medium">Overall Progress</h3>
-              </div>
-              
-              <div className="w-full bg-gray-200 h-6 rounded-full mb-2">
-                <motion.div 
-                  className="bg-game-blue h-full rounded-full flex items-center justify-end pr-2"
-                  style={{ width: `${masteredPercentage}%` }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${masteredPercentage}%` }}
-                  transition={{ duration: 1, delay: 0.6 }}
-                >
-                  {masteredPercentage >= 10 && (
-                    <span className="text-xs font-medium text-white">{masteredPercentage}%</span>
-                  )}
-                </motion.div>
-              </div>
-              
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>Beginner</span>
-                <span>Intermediate</span>
-                <span>Advanced</span>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              className="glass-panel p-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.6 }}
-            >
-              <h3 className="text-xl font-medium mb-6">Words You've Mastered</h3>
-              
-              {masteredWords.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {masteredWords.map((word) => (
-                    <motion.div 
-                      key={word.id}
-                      className="bg-white rounded-lg shadow p-3 text-center"
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <p className="font-medium">{word.text}</p>
-                      <p className={`text-xs mt-1 ${
-                        word.difficulty === 'easy' ? 'text-game-green' :
-                        word.difficulty === 'medium' ? 'text-game-yellow' :
-                        'text-game-red'
-                      }`}>
-                        {word.difficulty}
-                      </p>
-                    </motion.div>
-                  ))}
+            <div>
+              <motion.div 
+                className="glass-panel p-6 mb-12"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.4 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <BarChart size={20} className="text-game-blue" />
+                  <h3 className="text-xl font-medium">Overall Progress</h3>
                 </div>
-              ) : (
-                <div className="text-center py-10 text-gray-500">
-                  <p>You haven't mastered any words yet. Keep practicing!</p>
-                  <motion.button
-                    onClick={() => navigate('/game-mode')}
-                    className="primary-button mt-4"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                
+                <div className="w-full bg-gray-200 h-6 rounded-full mb-2">
+                  <motion.div 
+                    className="bg-game-blue h-full rounded-full flex items-center justify-end pr-2"
+                    style={{ width: `${masteredPercentage}%` }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${masteredPercentage}%` }}
+                    transition={{ duration: 1, delay: 0.6 }}
                   >
-                    Start Learning
-                  </motion.button>
+                    {masteredPercentage >= 10 && (
+                      <span className="text-xs font-medium text-white">{masteredPercentage}%</span>
+                    )}
+                  </motion.div>
                 </div>
-              )}
-            </motion.div>
+                
+                <div className="flex justify-between text-sm text-gray-500">
+                  <span>Beginner</span>
+                  <span>Intermediate</span>
+                  <span>Advanced</span>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="glass-panel p-6"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.6 }}
+              >
+                <h3 className="text-xl font-medium mb-6">Words You've Mastered</h3>
+                
+                {masteredWords.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {masteredWords.map((word) => (
+                      <motion.div 
+                        key={word.id}
+                        className="bg-white rounded-lg shadow p-3 text-center"
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <p className="font-medium">{word.text}</p>
+                        <p className={`text-xs mt-1 ${
+                          word.difficulty === 'easy' ? 'text-game-green' :
+                          word.difficulty === 'medium' ? 'text-game-yellow' :
+                          'text-game-red'
+                        }`}>
+                          {word.difficulty}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 text-gray-500">
+                    <p>You haven't mastered any words yet. Keep practicing!</p>
+                    <motion.button
+                      onClick={() => navigate('/game-mode')}
+                      className="primary-button mt-4"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Start Learning
+                    </motion.button>
+                  </div>
+                )}
+              </motion.div>
+            </div>
           )}
         </div>
       </div>

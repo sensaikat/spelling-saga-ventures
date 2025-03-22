@@ -11,6 +11,8 @@ import {
   useGameGuide,
   useGameCulture
 } from './spelling-game';
+import { useGameHandlers } from './spelling-game/useGameHandlers';
+import { useGameInitializer } from './spelling-game/useGameInitializer';
 
 export const useSpellingGame = (
   initialWords: Word[] = [], 
@@ -68,7 +70,7 @@ export const useSpellingGame = (
     hideGuide
   } = useGameGuide();
   
-  // Game culture hook (new!)
+  // Game culture hook
   const {
     getRandomPrompt,
     getEncouragement,
@@ -76,94 +78,46 @@ export const useSpellingGame = (
     getContextualHint
   } = useGameCulture(selectedLanguage);
   
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!currentWord || isCheckingAnswer) {
-      return;
-    }
-    
-    const result = await checkAnswer(currentWord, userInput);
-    
-    if (result) {
-      // Correct answer
-      recordCorrectAnswer(currentWord);
-      
-      // Show cultural encouragement
-      toast({
-        title: "Correct!",
-        description: getEncouragement(),
-        variant: "default",
-        duration: 1500,
-      });
-      
-      // Display cultural fun fact occasionally
-      if (Math.random() > 0.7) {
-        showGuideWithMessage(getFunFact());
-        setTimeout(hideGuide, 3000);
-      }
-      
-      // Move to next word or finish game
-      const hasNextWord = moveToNextWord();
-      if (!hasNextWord) {
-        handleGameComplete();
-      }
-    } else {
-      // Incorrect answer
-      if (remainingLives > 1) {
-        recordIncorrectAnswer(currentWord, userInput);
-        
-        // Show cultural hint
-        toast({
-          title: "Try again!",
-          description: getContextualHint(),
-          variant: "destructive",
-          duration: 2000,
-        });
-      } else {
-        handleGameComplete();
-      }
-    }
-    
-    clearInput();
+  // Game handlers
+  const {
+    handleSubmit: handleSubmitAction,
+    handleSkipClick,
+    handleGameComplete,
+    handleAdventureReturn
+  } = useGameHandlers({
+    currentWord,
+    isCheckingAnswer,
+    moveToNextWord,
+    recordCorrectAnswer,
+    recordIncorrectAnswer,
+    setGameFinished,
+    stopTimer,
+    getEncouragement,
+    getFunFact,
+    getContextualHint,
+    clearInput,
+    showGuideWithMessage,
+    hideGuide,
+    remainingLives,
+    isAdventure,
+    onAdventureComplete,
+    score
+  });
+  
+  // Wrap the handleSubmit to include the current userInput
+  const handleSubmit = (e: React.FormEvent) => {
+    handleSubmitAction(e, userInput, checkAnswer);
   };
   
-  // Handle skipping current word
-  const handleSkipClick = () => {
-    if (!currentWord) return;
-    
-    recordIncorrectAnswer(currentWord, "skipped");
-    
-    toast({
-      title: "Word skipped",
-      description: `The correct spelling was "${currentWord.text}"`,
-      variant: "default",
-      duration: 2000,
-    });
-    
-    const hasNextWord = moveToNextWord();
-    if (!hasNextWord) {
-      handleGameComplete();
-    }
-    
-    clearInput();
-  };
-  
-  // Handle game completion
-  const handleGameComplete = () => {
-    setGameFinished(true);
-    stopTimer();
-    
-    if (isAdventure && onAdventureComplete) {
-      onAdventureComplete(score);
-    }
-    
-    // Show cultural completion message
-    setTimeout(() => {
-      showGuideWithMessage(`Great job! You've learned ${correctWords.length} words in ${selectedLanguage?.name || 'this language'}!`);
-    }, 500);
-  };
+  // Game initializer
+  useGameInitializer({
+    startTimer,
+    stopTimer,
+    showGuideWithMessage,
+    hideGuide,
+    selectedLanguage,
+    currentWord
+  });
   
   // Handle playing again
   const handlePlayAgainClick = () => {
@@ -171,30 +125,6 @@ export const useSpellingGame = (
     resetTimer();
     clearInput();
   };
-  
-  // Handle adventure return
-  const handleAdventureReturn = () => {
-    if (onAdventureComplete) {
-      onAdventureComplete(score);
-    }
-  };
-  
-  useEffect(() => {
-    startTimer();
-    
-    // Introduce the cultural context
-    if (selectedLanguage && currentWord) {
-      setTimeout(() => {
-        showGuideWithMessage(`Welcome to learning ${selectedLanguage.name}! Let's explore words related to ${currentWord.difficulty === 'easy' ? 'everyday items' : 'cultural elements'}!`);
-      }, 1000);
-      
-      setTimeout(hideGuide, 4000);
-    }
-    
-    return () => {
-      stopTimer();
-    };
-  }, []);
   
   return {
     currentWord,
