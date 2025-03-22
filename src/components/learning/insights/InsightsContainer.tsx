@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { BarChart2, BookOpen } from 'lucide-react';
-import { LearningInsight } from '../../../services/analytics/learningAnalytics';
+import { LearningInsight } from '../../../services/analytics/types';
 import StrengthWeaknessCard from './StrengthWeaknessCard';
 import { 
   Card,

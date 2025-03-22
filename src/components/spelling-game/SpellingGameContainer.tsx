@@ -2,7 +2,7 @@
 import React from 'react';
 import { GameStage } from './GameStage';
 import { GameComplete } from './GameComplete';
-import { GuideSection } from './GuideSection';
+import GuideSection from './GuideSection';
 import { SpellingGameContainerProps } from './types';
 import { useSpellingGameContainer } from './hooks/useSpellingGameContainer';
 

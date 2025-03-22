@@ -1,12 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Brain, PieChart, Shield, Download, Trash2 } from 'lucide-react';
 import { useGameStore, wordLists, Word } from '../utils/game';
-import { 
-  learningAnalytics, 
-  LearningInsight 
-} from '../services/analytics/learningAnalytics';
+import { learningAnalytics } from '../services/analytics/learningAnalytics';
+import { LearningInsight } from '../services/analytics/types';
 import PrivacyConsentDialog from '../components/learning/PrivacyConsentDialog';
 import DashboardHeader from '../components/learning/DashboardHeader';
 import InsightsTab from '../components/learning/InsightsTab';
@@ -25,7 +22,6 @@ const LearningDashboard = () => {
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
-  // Show privacy dialog on first visit
   useEffect(() => {
     const hasSeenPrivacy = localStorage.getItem('has-seen-privacy-dialog');
     if (!hasSeenPrivacy) {
@@ -33,29 +29,23 @@ const LearningDashboard = () => {
       localStorage.setItem('has-seen-privacy-dialog', 'true');
     }
     
-    // Check for expired data
     learningAnalytics.checkAndPurgeExpiredData();
   }, []);
   
-  // Guard for direct access
   useEffect(() => {
     if (!selectedLanguage) {
       navigate('/');
     }
   }, [selectedLanguage, navigate]);
   
-  // Generate insights and recommendations
   useEffect(() => {
     if (selectedLanguage && progress) {
-      // Generate insights from analytics service
       const learningInsights = learningAnalytics.generateInsights(progress);
       setInsights(learningInsights);
       
-      // Get all words for the selected language
       const availableWordLists = wordLists[selectedLanguage.id] || [];
       const allWords: Word[] = availableWordLists.flatMap(list => list.words);
       
-      // Get recommended words
       const recommended = learningAnalytics.getRecommendedWords(
         allWords,
         progress.wordsMastered
@@ -66,17 +56,15 @@ const LearningDashboard = () => {
   
   const handleExportData = () => {
     try {
-      // Create a download of the user's data
       const userInsights = insights;
       const userProgress = progress;
       const userData = {
         progress: userProgress,
         insights: userInsights,
-        recommendedWords: recommendedWords.map(w => w.word),
+        recommendedWords: recommendedWords.map(w => w.text),
         exportDate: new Date().toISOString(),
       };
       
-      // Create a downloadable file
       const blob = new Blob([JSON.stringify(userData, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -85,7 +73,6 @@ const LearningDashboard = () => {
       document.body.appendChild(a);
       a.click();
       
-      // Clean up
       URL.revokeObjectURL(url);
       document.body.removeChild(a);
       
@@ -117,7 +104,6 @@ const LearningDashboard = () => {
           duration: 3000,
         });
         
-        // Refresh insights after deletion
         setInsights([{
           type: 'recommendation',
           description: 'Your data has been deleted. Complete more exercises to receive new insights.',

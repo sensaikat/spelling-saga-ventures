@@ -19,16 +19,20 @@ export interface GuideCharacterProps {
   proactiveMessage?: string;
   selectedLanguage?: string;
   navigateTo?: (path: string) => void;
+  onUseMagicItem?: () => void;
+  onChangeAvatar?: () => void;
 }
 
 export interface GuideAppearance {
-  id: string;
+  id?: string;
   name: string;
-  avatarSrc: string;
-  personality: string;
+  avatarSrc?: string;
+  personality?: string;
   terrainVariants?: Record<string, string>;
   animations?: Record<string, string>;
   greetings?: Record<string, Record<GreetingType, string>>;
+  emoji?: string;
+  color?: string;
 }
 
 export type GuideAppearances = Record<string, GuideAppearance>;

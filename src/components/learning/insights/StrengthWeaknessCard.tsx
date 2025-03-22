@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Lightbulb } from 'lucide-react';
-import { LearningInsight } from '../../../services/analytics/learningAnalytics';
+import { LearningInsight } from '../../../services/analytics/types';
 
 interface StrengthWeaknessCardProps {
   insight: LearningInsight;
