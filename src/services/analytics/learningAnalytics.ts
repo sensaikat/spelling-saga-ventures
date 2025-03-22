@@ -3,7 +3,8 @@ import { Word, UserProgress, Language } from '../../utils/game/types';
 import { 
   AnonymizedLearningData, 
   PrivacyPreferences, 
-  LearningInsight 
+  LearningInsight,
+  AdaptiveSettings
 } from './types';
 import { AnalyticsStorage } from './storage';
 import { InsightsGenerator } from './insights';
@@ -109,7 +110,7 @@ export class LearningAnalyticsService {
     this.isEnabled = enabled;
   }
   
-  // Record word attempt data
+  // Record word attempt data with enhanced analytics
   public recordWordAttempt(
     word: Word, 
     isCorrect: boolean, 
@@ -130,6 +131,9 @@ export class LearningAnalyticsService {
       attemptDuration: duration,
       hintsUsed,
       difficulty: word.difficulty,
+      // Enhanced analytics - we'd calculate these in a real app
+      attemptCount: 1, // Would track this across sessions
+      lettersCorrect: isCorrect ? word.text.length : Math.floor(word.text.length * 0.7) // Simplified
     };
     
     // Add demographic data only if user consented to share
@@ -167,9 +171,14 @@ export class LearningAnalyticsService {
     */
   }
   
+  // Get all analytics data (for generating insights)
+  public getLocalAnalyticsData(): AnonymizedLearningData[] {
+    return this.storage.getLocalAnalyticsData(this.privacyPreferences);
+  }
+  
   // Analyze user performance and generate insights
   public generateInsights(progress: UserProgress): LearningInsight[] {
-    const localData = this.storage.getLocalAnalyticsData(this.privacyPreferences);
+    const localData = this.getLocalAnalyticsData();
     return this.insights.generateInsights(
       localData, 
       this.privacyPreferences.allowPersonalization
@@ -181,10 +190,19 @@ export class LearningAnalyticsService {
     availableWords: Word[],
     masteredWords: string[]
   ): Word[] {
-    const localData = this.storage.getLocalAnalyticsData(this.privacyPreferences);
+    const localData = this.getLocalAnalyticsData();
     return this.insights.getRecommendedWords(
       availableWords,
       masteredWords,
+      localData,
+      this.privacyPreferences.allowPersonalization
+    );
+  }
+  
+  // Get adaptive settings for personalized gameplay
+  public getAdaptiveSettings(): AdaptiveSettings {
+    const localData = this.getLocalAnalyticsData();
+    return this.insights.getAdaptiveSettings(
       localData,
       this.privacyPreferences.allowPersonalization
     );

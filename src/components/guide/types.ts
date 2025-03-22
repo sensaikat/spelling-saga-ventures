@@ -20,3 +20,15 @@ export interface GuideCharacterProps {
   selectedLanguage?: string;
   navigateTo?: (path: string) => void;
 }
+
+export interface GuideAppearance {
+  id: string;
+  name: string;
+  avatarSrc: string;
+  personality: string;
+  terrainVariants?: Record<string, string>;
+  animations?: Record<string, string>;
+  greetings?: Record<string, Record<GreetingType, string>>;
+}
+
+export type GuideAppearances = Record<string, GuideAppearance>;

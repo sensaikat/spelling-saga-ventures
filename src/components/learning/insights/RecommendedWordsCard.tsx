@@ -26,9 +26,10 @@ const RecommendedWordsCard: React.FC<RecommendedWordsCardProps> = ({ words }) =>
           {words.map((word) => (
             <div key={word.id} className="flex items-start border rounded-lg p-3 hover:bg-blue-50 transition-colors">
               <div className="flex-grow">
-                <div className="font-medium text-lg">{word.word}</div>
+                <div className="font-medium text-lg">{word.text}</div>
+                {/* Use hint as translation if available */}
                 <div className="text-gray-600 text-sm">
-                  {word.translation}
+                  {word.hint || "Practice this word"}
                 </div>
                 <div className="mt-2 space-x-2">
                   <Badge variant={
@@ -37,11 +38,6 @@ const RecommendedWordsCard: React.FC<RecommendedWordsCardProps> = ({ words }) =>
                   }>
                     {word.difficulty}
                   </Badge>
-                  {word.tags && word.tags.map((tag, i) => (
-                    <Badge key={i} variant="outline" className="bg-blue-50">
-                      {tag}
-                    </Badge>
-                  ))}
                 </div>
               </div>
               <div className="flex items-center">
