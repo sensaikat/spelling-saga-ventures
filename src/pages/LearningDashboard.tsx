@@ -217,9 +217,9 @@ const LearningDashboard = () => {
                   <div className="h-[200px] flex items-center justify-center text-gray-500">
                     <p>Difficulty distribution chart would appear here</p>
                     {/* In a real implementation, use Recharts to create a visualization */}
-                  </CardContent>
-                </Card>
-              </motion.div>
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
           </TabsContent>
         </Tabs>
