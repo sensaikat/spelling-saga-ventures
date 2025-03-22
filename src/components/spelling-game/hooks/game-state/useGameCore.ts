@@ -1,99 +1,87 @@
-
-import { useEffect } from 'react';
-import { Word, useGameStore } from '../../../../utils/game';
+import { useState, useEffect, useRef } from 'react';
+import { Word } from '../../../../utils/game';
+import { Language } from '../../../../utils/game/types';
+import { useWordActions } from './useWordActions';
+import { useGameStatus } from './useGameStatus';
+import { useInputHandler } from './useInputHandler';
+import { useGameTimer } from './useGameTimer';
 import { useGameAnalytics } from './useGameAnalytics';
-import { useGameProgress } from './useGameProgress';
-import { useGameDifficulty } from './useGameDifficulty';
-import { useGameSession } from './useGameSession';
-import { useGameState } from './useGameState';
-import { useWordSubmission } from './useWordSubmission';
-import { useGameTimer } from '../useGameTimer';
-import { useLocalStorage } from '@/hooks/use-localStorage';
-import { toast } from '@/hooks/use-toast';
 
-export const useGameCore = (
-  isAdventure: boolean,
-  onAdventureComplete?: (score: number) => void,
-  initialWords: Word[] = []
-) => {
-  const { selectedLanguage } = useGameStore();
+interface UseGameCoreProps {
+  words: Word[];
+  selectedLanguage: Language | null | string;
+  onGameComplete: (score: number) => void;
+  isAdventure?: boolean;
+  addPlayerPoints: (points: number) => void;
+  updateProgress: (wordId: string, isCorrect: boolean) => void;
+}
+
+interface GameCore {
+  currentWord: Word | null;
+  userInput: string;
+  setUserInput: (input: string) => void;
+  score: number;
+  wordCount: number;
+  currentIndex: number;
+  isCorrect: boolean | null;
+  showResult: boolean;
+  remainingLives: number;
+  showHint: boolean;
+  isCheckingAnswer: boolean;
+  gameCompleted: boolean;
+  isTimerRunning: boolean;
+  timeRemaining: number;
+  startTimer: () => void;
+  pauseTimer: () => void;
+  resetTimer: () => void;
+  handleSubmit: (e: React.FormEvent) => void;
+  handleSkipClick: () => void;
+  handleShowHint: () => void;
+  handlePlayAgainClick: () => void;
+}
+
+export const useGameCore = (props: UseGameCoreProps): GameCore => {
+  const { words, selectedLanguage, onGameComplete, isAdventure, addPlayerPoints, updateProgress } = props;
+  const [currentWord, setCurrentWord] = useState<Word | null>(null);
+  const [userInput, setUserInput] = useState('');
+  const [score, setScore] = useState(0);
+  const [wordCount, setWordCount] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [showResult, setShowResult] = useState(false);
+  const [remainingLives, setRemainingLives] = useState(3);
+  const [showHint, setShowHint] = useState(false);
+  const [isCheckingAnswer, setIsCheckingAnswer] = useState(false);
+  const [gameCompleted, setGameCompleted] = useState(false);
+  const filteredWords = words.filter(word => word.text.length > 0);
   
-  // Get timer settings from local storage
-  const [timerSettings] = useLocalStorage('spelling-game-timer-settings', {
-    enabled: true,
-    defaultSeconds: 30,
-    showWarnings: true,
-    autoSkip: false
-  });
-  
-  // Import functionality from other hooks
   const { recordWordAttempt } = useGameAnalytics();
-  const { updateProgress, addPlayerPoints } = useGameProgress();
-  const { filteredWords, setFilteredWords, difficultyLevel, handleDifficultyChange } = useGameDifficulty(
-    initialWords,
-    selectedLanguage,
-    useGameStore.getState().currentWordList
-  );
   
-  const { initializeSession, checkGameLimits, navigate } = useGameSession(isAdventure);
+  useEffect(() => {
+    if (filteredWords.length > 0) {
+      setCurrentWord(filteredWords[0]);
+    }
+  }, [filteredWords]);
   
-  const {
-    currentWordIndex,
-    setCurrentWordIndex,
-    userInput,
-    setUserInput,
-    isCorrect,
-    setIsCorrect,
-    showResult,
-    setShowResult,
-    gameCompleted,
-    setGameCompleted,
-    score,
-    setScore,
-    remainingLives,
-    setRemainingLives,
-    showHint,
-    setShowHint,
-    resetGameState,
-    handlePlayAgain
-  } = useGameState();
-  
-  // Initialize timer with settings
+  const handleTimeout = () => {
+    handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+  };
+
   const { 
+    isTimerRunning, 
     timeRemaining, 
-    isRunning, 
     startTimer, 
     pauseTimer, 
     resetTimer 
   } = useGameTimer({
-    defaultTime: timerSettings.defaultSeconds,
-    isEnabled: timerSettings.enabled,
-    onTimeUp: () => {
-      if (timerSettings.autoSkip) {
-        // Auto-skip to next word
-        toast({
-          title: "Time's up!",
-          description: "Moving to the next word...",
-        });
-        handleSkip();
-      } else {
-        // Just notify the user
-        toast({
-          title: "Time's up!",
-          description: "Please submit your answer or skip this word.",
-          variant: "destructive",
-        });
-      }
-    }
+    onTimeUp: handleTimeout,
   });
   
-  const currentWord = filteredWords[currentWordIndex];
-  
-  const { handleSubmit, handleSkip } = useWordSubmission({
+  const { handleSubmit, handleSkip } = useWordActions({
     currentWord,
     filteredWords,
-    currentWordIndex,
-    setCurrentWordIndex,
+    currentWordIndex: currentIndex,
+    setCurrentWordIndex: setCurrentIndex,
     setUserInput,
     setIsCorrect,
     setShowResult,
@@ -109,74 +97,43 @@ export const useGameCore = (
     selectedLanguage
   });
   
-  // Initial setup
-  useEffect(() => {
-    initializeSession();
-  }, [
-    selectedLanguage,
-    navigate,
-    isAdventure
-  ]);
-  
-  // Reset timer when moving to a new word
-  useEffect(() => {
-    if (currentWord && !showResult && !gameCompleted) {
-      resetTimer(timerSettings.defaultSeconds);
-      if (timerSettings.enabled) {
-        startTimer();
-      }
-    } else if (showResult || gameCompleted) {
-      pauseTimer();
-    }
-  }, [currentWord, currentWordIndex, showResult, gameCompleted, timerSettings.enabled]);
+  const { handlePlayAgainClick } = useGameStatus({
+    setCurrentWord,
+    setCurrentIndex,
+    setScore,
+    setWordCount,
+    setRemainingLives,
+    setGameCompleted,
+    setUserInput,
+    setIsCorrect,
+    filteredWords
+  });
   
   const handleShowHint = () => {
     setShowHint(true);
-  };
-  
-  const handleAdventureReturn = () => {
-    if (onAdventureComplete) {
-      onAdventureComplete(score);
-    }
-  };
-  
-  // Wrapped handleSkip to also reset timer
-  const handleSkipWithTimer = () => {
-    handleSkip();
-    resetTimer(timerSettings.defaultSeconds);
-    if (timerSettings.enabled) {
-      startTimer();
-    }
-  };
-  
-  // Wrapped handleSubmit to also handle timer
-  const handleSubmitWithTimer = (e: React.FormEvent, input: string) => {
-    handleSubmit(e, input);
-    pauseTimer(); // Pause timer when checking answer
   };
   
   return {
     currentWord,
     userInput,
     setUserInput,
+    score,
+    wordCount,
+    currentIndex,
     isCorrect,
     showResult,
-    gameCompleted,
-    score,
     remainingLives,
     showHint,
-    difficultyLevel,
-    currentWordIndex,
-    filteredWords,
-    // Timer states
+    isCheckingAnswer,
+    gameCompleted,
+    isTimerRunning,
     timeRemaining,
-    isTimerRunning: isRunning,
-    // Handlers with timer integration
-    handlePlayAgain: () => handlePlayAgain(checkGameLimits),
-    handleSubmit: (e: React.FormEvent) => handleSubmitWithTimer(e, userInput),
-    handleDifficultyChange,
-    handleSkip: handleSkipWithTimer,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+    handleSubmit,
+    handleSkipClick: handleSkip,
     handleShowHint,
-    handleAdventureReturn
+    handlePlayAgainClick
   };
 };
