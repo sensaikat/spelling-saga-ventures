@@ -1,15 +1,9 @@
 
-import { useCallback } from 'react';
+import { useState } from 'react';
 import { Word, Language } from '../../../../utils/game';
-import { useGameInitialization } from './useGameInitialization';
-import { useGameStateManagement } from './useGameStateManagement';
-import { useGameSubmissionHandler } from './useGameSubmissionHandler';
-import { useGameTimeHandling } from './useGameTimeHandling';
-import { useWordTracking } from './useWordTracking';
-import { useGameAnalytics } from '../game-state/useGameAnalytics';
-import { useGameEvents } from './useGameEvents';
-import { useGameReset } from './useGameReset';
-import { useGameSettings } from './useGameSettings';
+import { useGameComponents } from './integration/useGameComponents';
+import { useGameActions } from './integration/useGameActions';
+import { useWordSync } from './integration/useWordSync';
 
 /**
  * Props for the useGameCore hook
@@ -49,164 +43,68 @@ export const useGameCore = ({
   updateProgress = () => {},
   gameSettings = {}
 }: GameCoreProps) => {
-  // Get centralized game settings
-  const { settings } = useGameSettings({ overrides: gameSettings });
+  // Game state initialization
+  const [gameCompleted, setGameCompleted] = useState(false);
   
-  // Initialize game state
-  const {
-    currentWord,
-    setCurrentWord,
-    wordCount,
-    filteredWords
-  } = useGameInitialization({ words });
-  
-  // Game state management
-  const {
-    userInput,
-    setUserInput,
-    isCorrect,
-    setIsCorrect,
-    showResult,
-    setShowResult,
-    showHint,
-    setShowHint,
+  // Initialize game components
+  const gameComponents = useGameComponents({
+    words,
     gameCompleted,
-    setGameCompleted,
-    score,
-    setScore,
-    remainingLives,
-    setRemainingLives,
-    isCheckingAnswer,
-    setIsCheckingAnswer,
-    resetGameState
-  } = useGameStateManagement({ 
-    initialLives: settings.initialLives 
-  });
-
-  // Track correct and incorrect words
-  const {
-    correctWords,
-    incorrectWords,
-    trackWord,
-    resetWordTracking
-  } = useWordTracking();
-  
-  // Current word index to track progress
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  
-  // Game analytics
-  const { recordWordAttempt, incrementHintCounter } = useGameAnalytics();
-  
-  // Time handling
-  const {
-    timeRemaining,
-    isTimerRunning,
-    startTimer,
-    pauseTimer,
-    resetTimer
-  } = useGameTimeHandling({
-    initialTime: settings.initialTime,
-    isGameCompleted: gameCompleted,
+    customSettings: gameSettings,
     onTimeout: () => setGameCompleted(true)
   });
   
-  // Game submission handler
+  // Initialize game actions
   const {
-    handleSubmit: wordSubmitHandler,
-    handleSkip: wordSkipHandler
-  } = useGameSubmissionHandler({
-    currentWord,
-    filteredWords,
     currentWordIndex,
-    setCurrentWordIndex,
-    setUserInput,
-    setIsCorrect,
-    setShowResult,
-    setShowHint,
-    setGameCompleted,
-    score,
-    setScore,
-    remainingLives,
-    setRemainingLives,
-    recordWordAttempt,
-    updateProgress,
-    addPlayerPoints,
+    handleSubmit,
+    handleSkip,
+    handleShowHint,
+    handlePlayAgainClick,
+    handleAdventureReturn
+  } = useGameActions({
+    gameComponents,
     selectedLanguage,
-    trackWord,
-    isCheckingAnswer,
-    setIsCheckingAnswer,
-    resultDelay: settings.resultDisplayDuration
-  });
-  
-  // Game events
-  const { handleAdventureReturn } = useGameEvents({
     onGameComplete,
-    score,
-    setGameCompleted,
     isAdventure,
-    addPlayerPoints
+    addPlayerPoints,
+    updateProgress
   });
   
-  // Game reset
-  const { handlePlayAgainClick } = useGameReset({
-    resetGameState,
-    resetWordTracking,
-    setCurrentWordIndex,
-    resetTimer,
-    initialTime: settings.initialTime
+  // Synchronize word index with current word
+  useWordSync({
+    filteredWords: gameComponents.filteredWords,
+    currentWordIndex,
+    setCurrentWord: gameComponents.setCurrentWord
   });
   
-  /**
-   * Shows a hint for the current word and records analytics
-   */
-  const handleShowHint = useCallback(() => {
-    incrementHintCounter();
-    setShowHint(true);
-  }, [incrementHintCounter, setShowHint]);
-  
-  /**
-   * Handles form submission with analytics tracking
-   */
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    wordSubmitHandler(e);
-  }, [wordSubmitHandler]);
-  
-  // Set current word based on index
-  useEffect(() => {
-    if (filteredWords.length > 0 && currentWordIndex < filteredWords.length) {
-      setCurrentWord(filteredWords[currentWordIndex]);
-    }
-  }, [currentWordIndex, filteredWords, setCurrentWord]);
-  
+  // Combine all components into a unified interface
   return {
     // Game state
-    currentWord,
-    userInput,
-    setUserInput,
-    isCorrect,
-    showResult,
-    showHint,
-    gameCompleted,
-    score,
-    wordCount,
+    currentWord: gameComponents.currentWord,
+    userInput: gameComponents.userInput,
+    setUserInput: gameComponents.setUserInput,
+    isCorrect: gameComponents.isCorrect,
+    showResult: gameComponents.showResult,
+    showHint: gameComponents.showHint,
+    gameCompleted: gameComponents.gameCompleted,
+    score: gameComponents.score,
+    wordCount: gameComponents.wordCount,
     currentWordIndex,
-    remainingLives,
-    correctWords,
-    incorrectWords,
-    timeRemaining,
-    isTimerRunning,
+    remainingLives: gameComponents.remainingLives,
+    correctWords: gameComponents.correctWords,
+    incorrectWords: gameComponents.incorrectWords,
+    timeRemaining: gameComponents.timeRemaining,
+    isTimerRunning: gameComponents.isTimerRunning,
     
     // Game actions
     handleSubmit,
-    handleSkip: wordSkipHandler,
+    handleSkip,
     handleShowHint,
     handlePlayAgainClick,
     handleAdventureReturn,
-    startTimer,
-    pauseTimer,
-    resetTimer
+    startTimer: gameComponents.startTimer,
+    pauseTimer: gameComponents.pauseTimer,
+    resetTimer: gameComponents.resetTimer
   };
 };
-
-// Add missing imports
-import { useState, useEffect } from 'react';
