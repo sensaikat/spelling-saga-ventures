@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -40,6 +40,13 @@ export const GameForm: React.FC<GameFormProps> = ({
   setCursorPosition,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Set focus to the input field when it becomes available
+  useEffect(() => {
+    if (inputRef.current && !showResult) {
+      inputRef.current.focus();
+    }
+  }, [currentWord, showResult]);
 
   // Early return if currentWord is undefined
   if (!currentWord) {
@@ -95,6 +102,7 @@ export const GameForm: React.FC<GameFormProps> = ({
               type="button" 
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-game-blue"
               onClick={() => speakWord(currentWord)}
+              title="Listen to pronunciation"
             >
               <Volume size={20} />
             </button>

@@ -1,17 +1,23 @@
-
 import { useState, useEffect } from 'react';
 import { useGameStore } from '../../../utils/game';
 import { toast } from '@/components/ui/use-toast';
 
 export const useAlphabetHelper = () => {
-  const [showAlphabetHelper, setShowAlphabetHelper] = useState(true);
+  const [showAlphabetHelper, setShowAlphabetHelper] = useState(false);
   const [cursorPosition, setCursorPosition] = useState(0);
   const { selectedLanguage } = useGameStore();
   
   useEffect(() => {
-    const nonLatinScripts = ['hi', 'bn', 'or', 'ta', 'te', 'ar', 'zh'];
-    if (selectedLanguage && nonLatinScripts.includes(selectedLanguage.id)) {
+    if (!selectedLanguage) return;
+    
+    // Languages that typically need the alphabet helper enabled by default
+    const nonLatinScripts = ['hi', 'bn', 'or', 'ta', 'te', 'ar', 'zh', 'ur', 'doi', 'as', 'si', 'gu', 'ps'];
+    
+    if (nonLatinScripts.includes(selectedLanguage.id)) {
       setShowAlphabetHelper(true);
+    } else {
+      // For Latin-based scripts, keep it hidden by default
+      setShowAlphabetHelper(false);
     }
   }, [selectedLanguage]);
   
@@ -31,6 +37,7 @@ export const useAlphabetHelper = () => {
       userInput.substring(cursorPosition);
     
     setUserInput(newInput);
+    // Update cursor position to be after the newly inserted character
     setCursorPosition(cursorPosition + char.length);
   };
   
@@ -47,7 +54,6 @@ export const useAlphabetHelper = () => {
   return {
     showAlphabetHelper,
     cursorPosition,
-    setCursorPosition,
     handleAlphabetHelperToggle,
     handleCharacterClick,
     handleInputSelect,
