@@ -1,5 +1,5 @@
 
-import { useGameCore } from './game-state';
+import { useGameCore } from './game-core';
 import { Word } from '../../../utils/game';
 
 export const useGameState = (words: Word[] = []) => {
