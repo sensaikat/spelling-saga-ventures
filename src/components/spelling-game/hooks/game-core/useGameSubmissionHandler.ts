@@ -2,9 +2,14 @@
 import { useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
 import { useGameSettings } from './useGameSettings';
-import { useWordValidator } from './word-submission/useWordValidator';
-import { useWordProgression } from './word-submission/useWordProgression';
-import { useGameScoring } from './word-submission/useGameScoring';
+import { 
+  useWordValidator, 
+  useWordProgression, 
+  useGameScoring,
+  useSubmissionState,
+  useSubmissionEffects,
+  useFormExtractor
+} from './word-submission';
 
 /**
  * Props for the useGameSubmissionHandler hook
@@ -70,6 +75,15 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
   // Get game settings
   const { settings } = useGameSettings();
   
+  // Submission state management
+  const { 
+    localIsCorrect, 
+    setLocalIsCorrect 
+  } = useSubmissionState();
+  
+  // Form data extraction
+  const { extractUserInput } = useFormExtractor();
+  
   // Hook for validating word submissions
   const { validateSubmission } = useWordValidator({
     recordWordAttempt,
@@ -87,9 +101,6 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
     updateProgress
   });
   
-  // Local state for tracking current answer correctness for word progression
-  const [localIsCorrect, setLocalIsCorrect] = useState<boolean>(false);
-  
   // Hook for managing word progression
   const { progressToNextWord } = useWordProgression({
     filteredWords,
@@ -100,6 +111,16 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
     setGameCompleted,
     remainingLives,
     isCorrect: localIsCorrect
+  });
+  
+  // Hook for managing submission timing and effects
+  const { scheduleResultsAndProgression } = useSubmissionEffects({
+    resultDelay,
+    setShowResult,
+    setShowHint,
+    setIsCheckingAnswer,
+    progressToNextWord,
+    defaultDelay: settings.resultDisplayDuration
   });
   
   /**
@@ -113,10 +134,8 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
     
     setIsCheckingAnswer(true);
     
-    // Get the form data
-    const formElement = e.target as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const userInput = formData.get('wordInput')?.toString() || '';
+    // Get user input from form
+    const userInput = extractUserInput(e);
     
     // Validate the submission
     const isCorrect = validateSubmission(userInput, currentWord);
@@ -133,28 +152,20 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
       handleIncorrectAnswer(currentWord.id);
     }
     
-    // Move to next word after delay
-    setTimeout(() => {
-      setShowResult(false);
-      setShowHint(false);
-      setIsCheckingAnswer(false);
-      
-      progressToNextWord();
-    }, resultDelay || settings.resultDisplayDuration);
+    // Schedule progression to next word
+    scheduleResultsAndProgression();
   }, [
     currentWord,
     isCheckingAnswer,
     setIsCheckingAnswer,
+    extractUserInput,
     validateSubmission,
     setIsCorrect,
     setShowResult,
     setLocalIsCorrect,
     handleCorrectAnswer,
     handleIncorrectAnswer,
-    resultDelay,
-    settings.resultDisplayDuration,
-    setShowHint,
-    progressToNextWord
+    scheduleResultsAndProgression
   ]);
   
   /**
@@ -208,6 +219,3 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
     handleSkip
   };
 };
-
-// Add missing imports
-import { useState } from 'react';

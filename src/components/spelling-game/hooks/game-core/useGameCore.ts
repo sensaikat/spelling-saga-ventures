@@ -46,7 +46,7 @@ export const useGameCore = ({
   // Game state initialization
   const [gameCompleted, setGameCompleted] = useState(false);
   
-  // Initialize game components
+  // Initialize game components with properly typed options
   const gameComponents = useGameComponents({
     words,
     gameCompleted,

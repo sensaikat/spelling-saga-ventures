@@ -8,12 +8,24 @@ import { useGameAnalytics } from '../../game-state/useGameAnalytics';
 import { useGameSettings } from '../useGameSettings';
 
 /**
+ * Options for the useGameComponents hook
+ * @interface UseGameComponentsOptions
+ */
+interface UseGameComponentsOptions {
+  words?: any[];
+  initialTime?: number;
+  gameCompleted?: boolean;
+  onTimeout?: () => void;
+  customSettings?: Record<string, any>;
+}
+
+/**
  * Hook for integrating all game component hooks
  * 
  * This hook centralizes the initialization of all specialized game hooks
  * to provide a unified interface for the game core.
  * 
- * @param {Object} options - Configuration options
+ * @param {UseGameComponentsOptions} options - Configuration options
  * @returns Object containing all initialized game component hooks
  */
 export const useGameComponents = ({
@@ -22,7 +34,7 @@ export const useGameComponents = ({
   gameCompleted,
   onTimeout = () => {},
   customSettings = {}
-}) => {
+}: UseGameComponentsOptions) => {
   // Initialize game settings
   const { settings } = useGameSettings({ 
     overrides: {
