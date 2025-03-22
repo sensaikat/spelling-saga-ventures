@@ -1,21 +1,27 @@
 
-import { categoryLabels, scriptGroups } from './alphabetData';
+import { alphabetData, scriptCategoryLabels, scriptGroups } from './alphabetData';
 
-/**
- * Get category labels for a specific language
- * @param languageId The language ID (e.g., 'en', 'hi', 'zh')
- * @returns A record of category names to display labels
- */
-export const getCategoryLabels = (languageId: string) => {
-  if (languageId === 'bn') return categoryLabels.devanagari;
-  if (languageId === 'or') return categoryLabels.devanagari;
-  if (languageId === 'pa') return categoryLabels.gurmukhi;
-  if (['ta', 'te', 'kn', 'ml'].includes(languageId)) return categoryLabels.dravidian;
-  
-  for (const [script, languages] of Object.entries(scriptGroups)) {
-    if (languages.includes(languageId)) {
-      return categoryLabels[script];
-    }
+export const getLanguageAlphabet = (languageId: string) => {
+  // Map language codes to script groups
+  const scriptForLanguage = Object.entries(scriptGroups).find(
+    ([, languages]) => languages.includes(languageId)
+  )?.[0];
+
+  if (!scriptForLanguage) return null;
+
+  // Return the alphabet data for the script
+  return alphabetData[scriptForLanguage];
+};
+
+export const getCategoryLabel = (languageId: string, category: string): string => {
+  // Map language codes to script groups
+  const scriptForLanguage = Object.entries(scriptGroups).find(
+    ([, languages]) => languages.includes(languageId)
+  )?.[0];
+
+  if (!scriptForLanguage || !scriptCategoryLabels[scriptForLanguage]) {
+    return category;
   }
-  return categoryLabels.latin; // Default to latin
+
+  return scriptCategoryLabels[scriptForLanguage][category] || category;
 };

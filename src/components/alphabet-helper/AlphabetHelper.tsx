@@ -1,53 +1,56 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { alphabets } from './alphabetData';
-import { getCategoryLabels } from './utils';
-import CharacterGrid from './CharacterGrid';
+import React, { useState, useEffect } from 'react';
 import { AlphabetHelperProps } from './types';
+import { getLanguageAlphabet } from './utils';
+import CharacterGrid from './CharacterGrid';
 
 const AlphabetHelper: React.FC<AlphabetHelperProps> = ({ 
   languageId, 
   onCharacterClick 
 }) => {
-  const [activeCategory, setActiveCategory] = useState<string>('letters');
-  
-  // Default to English if the language isn't supported
-  const langAlphabet = alphabets[languageId] || alphabets.en;
-  const categories = Object.keys(langAlphabet);
-  const labels = getCategoryLabels(languageId);
-  
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [alphabet, setAlphabet] = useState<Record<string, string[]>>({});
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    const languageAlphabet = getLanguageAlphabet(languageId);
+    if (languageAlphabet) {
+      setAlphabet(languageAlphabet);
+      const cats = Object.keys(languageAlphabet);
+      setCategories(cats);
+      setSelectedCategory(cats[0]);
+    }
+  }, [languageId]);
+
+  if (!alphabet || Object.keys(alphabet).length === 0) {
+    return null;
+  }
+
   return (
-    <motion.div
-      className="w-full max-w-2xl mx-auto mb-4 p-2 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Tabs defaultValue={categories[0]} onValueChange={setActiveCategory} className="w-full">
-        <TabsList className="grid w-full mb-2" style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
-          {categories.map(category => (
-            <TabsTrigger key={category} value={category} className="text-xs sm:text-sm">
-              {labels[category] || category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        
+    <div className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-md">
+      <div className="mb-3 flex flex-wrap gap-1">
         {categories.map(category => (
-          <TabsContent key={category} value={category} className="mt-0">
-            <CharacterGrid 
-              characters={langAlphabet[category]} 
-              onCharacterClick={onCharacterClick} 
-            />
-          </TabsContent>
+          <button
+            key={category}
+            className={`px-3 py-1 text-sm rounded-full transition-colors ${
+              selectedCategory === category
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </button>
         ))}
-      </Tabs>
-      
-      <div className="mt-2 text-center text-xs text-gray-500">
-        Click on any character to add it to your input
       </div>
-    </motion.div>
+
+      {selectedCategory && (
+        <CharacterGrid 
+          characters={alphabet[selectedCategory] || []} 
+          onCharacterClick={onCharacterClick} 
+        />
+      )}
+    </div>
   );
 };
 
