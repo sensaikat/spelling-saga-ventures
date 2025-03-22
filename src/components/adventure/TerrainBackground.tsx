@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { TerrainType } from '../../contexts/adventure/types';
+import { useResolutionContext } from '../../contexts/resolution/ResolutionContext';
 
 // Define accessible background styles for different terrains
 // Using high-contrast gradients that work well for color blindness
@@ -40,6 +40,33 @@ interface TerrainBackgroundProps {
 }
 
 const TerrainBackground: React.FC<TerrainBackgroundProps> = ({ terrain, children }) => {
+  const { resolutionTier, isMobile } = useResolutionContext();
+  
+  const getLayerCount = () => {
+    if (isMobile) return 2; // Mobile gets simplified backgrounds
+    
+    switch (resolutionTier) {
+      case 'low': return 2;
+      case 'medium': return 3;
+      case 'high': 
+      case 'ultra': return 4;
+      default: return 3;
+    }
+  };
+  
+  const getAnimationIntensity = () => {
+    switch (resolutionTier) {
+      case 'low': return 'minimal';
+      case 'medium': return 'moderate';
+      case 'high': return 'standard';
+      case 'ultra': return 'full';
+      default: return 'moderate';
+    }
+  };
+  
+  const layerCount = getLayerCount();
+  const animationIntensity = getAnimationIntensity();
+  
   return (
     <div className={`min-h-screen ${terrainBackgrounds[terrain]} pt-6 pb-12 px-4 relative overflow-hidden`}>
       {/* 3D Parallax background elements */}

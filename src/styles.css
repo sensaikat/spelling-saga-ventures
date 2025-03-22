@@ -122,3 +122,62 @@
 *:focus-visible {
   @apply outline-none ring-2 ring-blue-500 dark:ring-blue-400;
 }
+
+/* Responsive resolution classes */
+.resolution-optimized-container {
+  @apply transition-all;
+}
+
+/* Low resolution - simplified UI */
+.resolution-low .ui-element {
+  @apply transition-none; /* Disable transitions to save performance */
+}
+
+.resolution-low .animation-container {
+  @apply hidden; /* Hide complex animations */
+}
+
+.resolution-low .background-effect {
+  @apply opacity-50; /* Reduce opacity of effects */
+}
+
+/* Medium resolution */
+.resolution-medium .animation-container {
+  @apply opacity-80; /* Slightly reduced animations */
+}
+
+/* High resolution - full experience */
+.resolution-high .animation-container,
+.resolution-ultra .animation-container {
+  @apply opacity-100; /* Full animations */
+}
+
+/* Device-specific adjustments */
+@media (max-width: 640px) {
+  .device-mobile .game-element {
+    @apply scale-75; /* Scale down game elements on mobile */
+  }
+  
+  .device-mobile .text-container {
+    @apply text-sm; /* Smaller text on mobile */
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .device-tablet .ui-layout {
+    @apply p-2; /* Adjusted padding for tablets */
+  }
+}
+
+@media (min-width: 1025px) {
+  .device-desktop .ui-layout {
+    @apply p-4; /* More padding for desktop */
+  }
+}
+
+/* Higher pixel density screens */
+@media (min-resolution: 2dppx) {
+  .high-dpi-optimized {
+    image-rendering: high-quality;
+  }
+}

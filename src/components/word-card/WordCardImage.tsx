@@ -5,6 +5,7 @@ import { useGameStore } from '../../utils/game';
 import { useSeasonalContent } from '../../hooks/useSeasonalContent';
 import { Sparkles } from 'lucide-react';
 import { useThemeToggle } from '../../contexts/theme/ThemeContext';
+import { useResolutionContext } from '../../contexts/resolution/ResolutionContext';
 
 interface WordCardImageProps {
   text: string;
@@ -14,6 +15,7 @@ interface WordCardImageProps {
 export const WordCardImage: React.FC<WordCardImageProps> = ({ text, imageUrl }) => {
   const { selectedLanguage } = useGameStore();
   const { isDarkMode } = useThemeToggle();
+  const { resolutionTier, isMobile } = useResolutionContext();
   const [isSeasonal, setIsSeasonal] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const { getSeasonalImage, isSeasonalWord } = useSeasonalContent(
@@ -24,6 +26,40 @@ export const WordCardImage: React.FC<WordCardImageProps> = ({ text, imageUrl }) 
   const seasonalImageUrl = getSeasonalImage(text);
   const finalImageUrl = seasonalImageUrl || imageUrl;
   
+  // Modify image URL to load appropriate resolution based on device
+  const getOptimizedImageUrl = (url: string) => {
+    // Only process if it's a URL we can append parameters to
+    if (!url || !url.includes('unsplash.com')) return url;
+    
+    // Determine appropriate dimensions based on resolution tier
+    let quality = 80; // Default quality
+    let width = 600;  // Default width
+    
+    switch (resolutionTier) {
+      case 'low':
+        quality = 60;
+        width = isMobile ? 300 : 400;
+        break;
+      case 'medium':
+        quality = 70;
+        width = isMobile ? 400 : 500;
+        break;
+      case 'high':
+        quality = 80;
+        width = isMobile ? 500 : 600;
+        break;
+      case 'ultra':
+        quality = 90;
+        width = isMobile ? 600 : 800;
+        break;
+    }
+    
+    // Append quality and size parameters
+    return `${url}?q=${quality}&w=${width}`;
+  };
+  
+  const optimizedImageUrl = getOptimizedImageUrl(finalImageUrl);
+  
   // Check if this is a seasonal word
   useEffect(() => {
     setIsSeasonal(isSeasonalWord(text));
@@ -32,7 +68,38 @@ export const WordCardImage: React.FC<WordCardImageProps> = ({ text, imageUrl }) 
   // Reset isLoaded when the image source changes
   useEffect(() => {
     setIsLoaded(false);
-  }, [finalImageUrl]);
+  }, [optimizedImageUrl]);
+  
+  // Determine animation complexity based on resolution tier
+  const getAnimationSettings = () => {
+    // Simpler animations for lower resolutions
+    if (resolutionTier === 'low' || isMobile) {
+      return {
+        hover: { scale: 1.05 },
+        transition: { type: "spring", stiffness: 300 }
+      };
+    }
+    
+    // More complex animations for higher resolutions
+    const isSeasonal3DEffect = isSeasonal && ['high', 'ultra'].includes(resolutionTier);
+    
+    return {
+      hover: isSeasonal3DEffect ? { 
+        scale: 1.2,
+        rotateY: 10,
+        rotateX: -10,
+        z: 20
+      } : { 
+        scale: 1.05,
+        rotateY: 5,
+        rotateX: -5,
+        z: 10
+      },
+      transition: { type: "spring", stiffness: 400 }
+    };
+  };
+  
+  const animationSettings = getAnimationSettings();
   
   return (
     <div className="relative mb-3 w-24 h-24 overflow-hidden rounded-lg shadow-md transition-all duration-300">
@@ -51,24 +118,14 @@ export const WordCardImage: React.FC<WordCardImageProps> = ({ text, imageUrl }) 
         </motion.div>
       )}
       
-      {/* Actual image with enhanced 3D hover effect */}
+      {/* Actual image with enhanced 3D hover effect scaled to resolution */}
       <motion.div
         className="w-full h-full"
-        whileHover={isSeasonal ? { 
-          scale: 1.2,
-          rotateY: 10,
-          rotateX: -10,
-          z: 20
-        } : { 
-          scale: 1.05,
-          rotateY: 5,
-          rotateX: -5,
-          z: 10
-        }}
-        transition={{ type: "spring", stiffness: 400 }}
+        whileHover={animationSettings.hover}
+        transition={animationSettings.transition}
       >
         <motion.img 
-          src={finalImageUrl} 
+          src={optimizedImageUrl} 
           alt={text} 
           className={`w-full h-full object-cover ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300 ${
             isDarkMode ? 'brightness-90 contrast-125' : ''
