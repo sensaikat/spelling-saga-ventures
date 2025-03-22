@@ -1,7 +1,6 @@
 
 import { useRef } from 'react';
-import { Word } from '../../../../utils/game';
-import { Language } from '../../../../utils/game/types';
+import { Word, Language } from '../../../../utils/game';
 import { learningAnalytics } from '../../../../services/analytics/learningAnalytics';
 
 export const useGameAnalytics = () => {
@@ -11,12 +10,18 @@ export const useGameAnalytics = () => {
   const recordWordAttempt = (word: Word, correct: boolean, selectedLanguage: Language | string) => {
     const attemptDuration = Date.now() - wordStartTimeRef.current;
     
+    // If selectedLanguage is a string, we need to handle it differently
+    // The analytics service expects a Language object
+    const languageForAnalytics = typeof selectedLanguage === 'string' 
+      ? { id: selectedLanguage, name: selectedLanguage, nativeName: selectedLanguage, flag: '🏳️' } 
+      : selectedLanguage;
+    
     learningAnalytics.recordWordAttempt(
       word,
       correct,
       attemptDuration,
       wordHintsUsedRef.current,
-      selectedLanguage
+      languageForAnalytics
     );
     
     // Reset analytics data for next word

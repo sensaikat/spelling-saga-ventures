@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -6,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Book, MapIcon, UserCog, Settings, Globe, Gamepad, BookOpen } from 'lucide-react';
 import LanguageSelector from '../components/LanguageSelector';
-import { useGameStore } from '../utils/game';
+import { useGameStore, languages } from '../utils/game';
 import GuideCharacter from '../components/guide';
 import FreemiumFeatureGate from '../components/subscription/FreemiumFeatureGate';
 import LanguageFeatureGate from '../components/subscription/LanguageFeatureGate';
 import { useSubscriptionStore } from '../utils/subscription';
 import AvatarCustomizer from '../components/AvatarCustomizer';
 
-// Define AvatarOptions type
 interface AvatarOptions {
   avatarType: string;
   languageCode: string;
