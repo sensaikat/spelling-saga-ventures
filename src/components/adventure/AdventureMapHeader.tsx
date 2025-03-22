@@ -14,6 +14,32 @@ const AdventureMapHeader: React.FC<AdventureMapHeaderProps> = ({
   selectedLanguage, 
   character 
 }) => {
+  // Return a simplified header if character is undefined
+  if (!character) {
+    return (
+      <motion.div 
+        className="glass-panel p-6 mb-6 rounded-2xl"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-display font-bold text-gray-800 mb-2">
+              Language Adventure
+            </h2>
+            {selectedLanguage && (
+              <p className="text-sm text-gray-600 flex items-center">
+                {selectedLanguage.flag} 
+                <span className="ml-2">Exploring in {selectedLanguage.name}</span>
+              </p>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+  
   return (
     <motion.div 
       className="glass-panel p-6 mb-6 rounded-2xl"

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -29,6 +30,19 @@ const AdventureMapPage = () => {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
   };
+
+  // If character isn't loaded yet, show a loading state
+  if (!character) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 flex items-center justify-center">
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-xl shadow-lg">
+          <h2 className="text-2xl font-bold mb-4">Loading adventure...</h2>
+          <div className="animate-pulse h-4 bg-blue-200 rounded w-3/4 mb-3"></div>
+          <div className="animate-pulse h-4 bg-blue-200 rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 relative overflow-hidden">

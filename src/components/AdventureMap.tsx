@@ -15,6 +15,19 @@ const AdventureMap: React.FC<AdventureMapProps> = ({ onLocationSelect }) => {
   const navigate = useNavigate();
   const { selectedLanguage } = useGameStore();
   
+  // Add a safety check for character
+  if (!character) {
+    return (
+      <div className="p-4 text-center">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-32 bg-gray-200 rounded w-full"></div>
+          <div className="h-10 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
+  
   const handleLocationClick = (locationId: string) => {
     const location = locations.find(loc => loc.id === locationId);
     if (!location || location.isLocked) return;

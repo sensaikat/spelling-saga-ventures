@@ -15,21 +15,35 @@ import {
 } from './adventureActions';
 import { saveAdventureState, loadAdventureState } from './adventurePersistence';
 
-export const AdventureContext = createContext<AdventureContextType>({} as AdventureContextType);
+export const AdventureContext = createContext<AdventureContextType>({
+  // Provide default values to prevent undefined errors
+  locations: defaultLocations,
+  currentLocationId: 'bedroom',
+  character: defaultCharacter,
+  unlockLocation: () => {},
+  completeLocation: () => {},
+  setCurrentLocation: () => {},
+  addCredits: () => {},
+  addStar: () => {},
+  getCurrentLocation: () => undefined,
+  getNextLocation: () => undefined,
+  setStoryPhase: () => {},
+  getStoryline: () => undefined
+});
 
 export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [locations, setLocations] = useState<Location[]>(defaultLocations);
   const [currentLocationId, setCurrentLocationId] = useState<string>('bedroom');
-  const [character, setCharacter] = useState(defaultCharacter);
+  const [character, setCharacter] = useState<Character>(defaultCharacter);
   const { addPoints } = useGameStore();
 
   // Load saved adventure state
   useEffect(() => {
     const savedState = loadAdventureState();
     if (savedState) {
-      setLocations(savedState.locations);
-      setCharacter(savedState.character);
-      setCurrentLocationId(savedState.currentLocationId);
+      setLocations(savedState.locations || defaultLocations);
+      setCharacter(savedState.character || defaultCharacter);
+      setCurrentLocationId(savedState.currentLocationId || 'bedroom');
     }
   }, []);
 
@@ -62,7 +76,9 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const setCurrentLocation = (locationId: string) => {
     setCurrentLocationId(locationId);
     setCharacter(prev => {
-      const updatedCharacter = setCurrentLocationAction(prev, locationId);
+      // Ensure we have a valid character object
+      const validCharacter = prev || {...defaultCharacter};
+      const updatedCharacter = setCurrentLocationAction(validCharacter, locationId);
       return {
         ...updatedCharacter,
         currentStoryPhase: 'introduction'
@@ -71,11 +87,19 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const addCredits = (amount: number) => {
-    setCharacter(prev => addCreditsAction(prev, amount));
+    setCharacter(prev => {
+      // Ensure we have a valid character object
+      const validCharacter = prev || {...defaultCharacter};
+      return addCreditsAction(validCharacter, amount);
+    });
   };
 
   const addStar = () => {
-    setCharacter(prev => addStarAction(prev));
+    setCharacter(prev => {
+      // Ensure we have a valid character object
+      const validCharacter = prev || {...defaultCharacter};
+      return addStarAction(validCharacter);
+    });
   };
 
   const getCurrentLocation = () => {
@@ -87,10 +111,14 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
   
   const setStoryPhase = (phase: StoryPhase) => {
-    setCharacter(prev => ({
-      ...prev,
-      currentStoryPhase: phase
-    }));
+    setCharacter(prev => {
+      // Ensure we have a valid character object
+      const validCharacter = prev || {...defaultCharacter};
+      return {
+        ...validCharacter,
+        currentStoryPhase: phase
+      };
+    });
   };
   
   const getStoryline = (phase: StoryPhase) => {
