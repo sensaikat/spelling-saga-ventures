@@ -8,6 +8,16 @@ import { useGameTimeHandling } from './useGameTimeHandling';
 import { useWordTracking } from './useWordTracking';
 import { useGameAnalytics } from '../game-state/useGameAnalytics';
 
+/**
+ * Props for the useGameCore hook
+ * @interface GameCoreProps
+ * @property {Word[]} words - Array of words for the game
+ * @property {Language | string | null} selectedLanguage - Selected language
+ * @property {Function} onGameComplete - Callback for game completion
+ * @property {boolean} isAdventure - Whether in adventure mode
+ * @property {Function} addPlayerPoints - Function to add player points
+ * @property {Function} updateProgress - Function to update progress
+ */
 interface GameCoreProps {
   words: Word[];
   selectedLanguage?: Language | string | null;
@@ -17,6 +27,23 @@ interface GameCoreProps {
   updateProgress?: (wordId: string, isCorrect: boolean) => void;
 }
 
+/**
+ * Core hook for the spelling game
+ * 
+ * This hook integrates all the game functionality:
+ * - Word initialization and management
+ * - Game state management (score, lives, etc.)
+ * - Game time handling (countdown timer)
+ * - Word submission and validation
+ * - Word tracking for statistics
+ * - Game analytics
+ * 
+ * It serves as the central coordinator for the spelling game,
+ * delegating specific functionality to specialized hooks.
+ * 
+ * @param {GameCoreProps} props - Game configuration
+ * @returns Complete game state and control functions
+ */
 export const useGameCore = ({
   words = [],
   selectedLanguage = null,
@@ -108,12 +135,17 @@ export const useGameCore = ({
     onTimeout: () => setGameCompleted(true)
   });
   
-  // Additional handlers
+  /**
+   * Shows a hint for the current word and records analytics
+   */
   const handleShowHint = useCallback(() => {
     incrementHintCounter();
     setShowHint(true);
   }, [incrementHintCounter, setShowHint]);
   
+  /**
+   * Resets the game to start over
+   */
   const handlePlayAgainClick = useCallback(() => {
     resetGameState();
     setCurrentWordIndex(0);
@@ -121,6 +153,9 @@ export const useGameCore = ({
     resetTimer(60);
   }, [resetGameState, setCurrentWordIndex, resetWordTracking, resetTimer]);
   
+  /**
+   * Handles returning from adventure mode
+   */
   const handleAdventureReturn = useCallback(() => {
     setGameCompleted(false);
     if (onGameComplete) {
@@ -128,7 +163,9 @@ export const useGameCore = ({
     }
   }, [onGameComplete, score, setGameCompleted]);
   
-  // Wrap word actions to include analytics
+  /**
+   * Handles form submission with analytics tracking
+   */
   const handleSubmit = useCallback((e: React.FormEvent) => {
     wordSubmitHandler(e);
   }, [wordSubmitHandler]);

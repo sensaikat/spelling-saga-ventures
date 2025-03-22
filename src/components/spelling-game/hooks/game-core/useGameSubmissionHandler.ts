@@ -2,6 +2,31 @@
 import { useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
 
+/**
+ * Props for the useGameSubmissionHandler hook
+ * @interface UseGameSubmissionHandlerProps
+ * @property {Word | null} currentWord - Current word being played
+ * @property {Word[]} filteredWords - Array of filtered valid words
+ * @property {number} currentWordIndex - Current word index in the array
+ * @property {Function} setCurrentWordIndex - Function to update current word index
+ * @property {Function} setUserInput - Function to update user input
+ * @property {Function} setIsCorrect - Function to update correctness state
+ * @property {Function} setShowResult - Function to update result visibility
+ * @property {Function} setShowHint - Function to update hint visibility
+ * @property {Function} setGameCompleted - Function to update game completion state
+ * @property {number} score - Current game score
+ * @property {Function} setScore - Function to update score
+ * @property {number} remainingLives - Remaining player lives
+ * @property {Function} setRemainingLives - Function to update remaining lives
+ * @property {Function} recordWordAttempt - Optional function to record word attempt analytics
+ * @property {Function} updateProgress - Optional function to update progress
+ * @property {Function} addPlayerPoints - Optional function to add player points
+ * @property {Language | string | null} selectedLanguage - Current selected language
+ * @property {Function} trackWord - Optional function to track word history
+ * @property {boolean} isCheckingAnswer - Whether an answer is currently being checked
+ * @property {Function} setIsCheckingAnswer - Function to update answer checking state
+ * @property {number} resultDelay - Delay in ms before moving to the next word (default: 1500)
+ */
 interface UseGameSubmissionHandlerProps {
   currentWord: Word | null;
   filteredWords: Word[];
@@ -26,6 +51,21 @@ interface UseGameSubmissionHandlerProps {
   resultDelay?: number;
 }
 
+/**
+ * Hook for handling word submissions and skips
+ * 
+ * This hook centralizes the game logic for:
+ * - Submitting answers and checking correctness
+ * - Updating score based on correct/incorrect answers
+ * - Managing player lives
+ * - Tracking progress through words
+ * - Transitioning between words
+ * - Determining when the game is completed
+ * - Recording analytics and progress updates
+ * 
+ * @param {UseGameSubmissionHandlerProps} props - Configuration and state setters
+ * @returns Functions for handling submissions and skips
+ */
 export const useGameSubmissionHandler = ({
   currentWord,
   filteredWords,
@@ -50,6 +90,12 @@ export const useGameSubmissionHandler = ({
   resultDelay = 1500
 }: UseGameSubmissionHandlerProps) => {
   
+  /**
+   * Handles the submission of a word answer
+   * Checks if the answer is correct and updates game state accordingly
+   * 
+   * @param {React.FormEvent} e - Form submission event
+   */
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
@@ -131,6 +177,10 @@ export const useGameSubmissionHandler = ({
     setUserInput
   ]);
   
+  /**
+   * Handles skipping the current word
+   * Reduces lives and moves to the next word
+   */
   const handleSkip = useCallback(() => {
     if (!currentWord || isCheckingAnswer) return;
     

@@ -1,6 +1,14 @@
 
 import { useState, useCallback, useEffect } from 'react';
 
+/**
+ * Props for the useGameTimeHandling hook
+ * @interface UseGameTimeHandlingProps
+ * @property {number} initialTime - Initial time in seconds (default: 60)
+ * @property {boolean} isGameCompleted - Whether the game is completed
+ * @property {Function} onTimeout - Callback function to execute when timer reaches zero
+ * @property {boolean} enabled - Whether the timer is enabled (default: true)
+ */
 interface UseGameTimeHandlingProps {
   initialTime?: number;
   isGameCompleted?: boolean;
@@ -8,6 +16,19 @@ interface UseGameTimeHandlingProps {
   enabled?: boolean;
 }
 
+/**
+ * Hook for handling game timing functionality
+ * 
+ * This hook provides timer functionality for the spelling game:
+ * - Countdown timer that decrements every second
+ * - Start/pause/reset controls
+ * - Auto-pauses when game is completed
+ * - Executes callback when timer reaches zero
+ * - Can be disabled entirely with the enabled prop
+ * 
+ * @param {UseGameTimeHandlingProps} props - Timer configuration
+ * @returns Timer state and control functions
+ */
 export const useGameTimeHandling = ({
   initialTime = 60,
   isGameCompleted = false,
@@ -17,16 +38,26 @@ export const useGameTimeHandling = ({
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
   const [isRunning, setIsRunning] = useState(false);
   
+  /**
+   * Starts the timer if enabled
+   */
   const startTimer = useCallback(() => {
     if (enabled) {
       setIsRunning(true);
     }
   }, [enabled]);
   
+  /**
+   * Pauses the timer
+   */
   const pauseTimer = useCallback(() => {
     setIsRunning(false);
   }, []);
   
+  /**
+   * Resets the timer to a new time value or the initial time
+   * @param {number} newTime - New time in seconds (default: initialTime)
+   */
   const resetTimer = useCallback((newTime: number = initialTime) => {
     setTimeRemaining(newTime);
     setIsRunning(false);
