@@ -42,11 +42,40 @@ const WordCard: React.FC<WordCardProps> = ({
     if (onHintClick) onHintClick();
   };
 
+  // Default image if none is provided
+  const defaultImages: Record<string, string> = {
+    'apple': 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9',
+    'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e',
+    'cat': 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
+    'dog': 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8',
+    'elephant': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46',
+    'flower': 'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d',
+    'giraffe': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50',
+    'house': 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83',
+    'manzana': 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9',
+    'plátano': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e',
+    'gato': 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
+    'perro': 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8',
+    'elefante': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46',
+    'flor': 'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d',
+    'jirafa': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50',
+    'casa': 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83',
+    'सेब': 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9',
+    'केला': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e',
+    'बिल्ली': 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
+    'कुत्ता': 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8',
+    'हाथी': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46',
+    'फूल': 'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d',
+  };
+
   // Determine difficulty color
   const difficultyColor = 
     word.difficulty === 'easy' ? 'bg-game-green' : 
     word.difficulty === 'medium' ? 'bg-game-yellow' : 
     'bg-game-red';
+
+  // Use provided image or get from default mapping or use placeholder
+  const imageUrl = word.image || defaultImages[word.text.toLowerCase()] || 'https://images.unsplash.com/photo-1472396961693-142e6e269027';
 
   return (
     <motion.div
@@ -85,14 +114,18 @@ const WordCard: React.FC<WordCardProps> = ({
         </div>
       </div>
       
-      <div className="flex flex-col items-center justify-center h-32">
-        {word.image && (
+      <div className="flex flex-col items-center justify-center h-40">
+        <div className="mb-3 w-20 h-20 overflow-hidden rounded-md flex items-center justify-center bg-gray-50">
           <img 
-            src={word.image} 
+            src={imageUrl} 
             alt={word.text} 
-            className="w-16 h-16 object-contain mb-4" 
+            className="w-full h-full object-cover" 
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://images.unsplash.com/photo-1472396961693-142e6e269027';
+            }}
           />
-        )}
+        </div>
         
         <h3 className="text-2xl font-medium text-center">
           {revealed ? word.text : '????????'}
