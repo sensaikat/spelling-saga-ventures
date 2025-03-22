@@ -28,7 +28,6 @@ export const GuideBubble: React.FC<GuideBubbleProps> = ({
   navigateTo
 }) => {
   const navigate = useNavigate();
-  const { translatedTip } = TranslationHelper({ currentTip });
 
   const handleNavigate = (path: string) => {
     if (navigateTo) {
@@ -48,7 +47,6 @@ export const GuideBubble: React.FC<GuideBubbleProps> = ({
         guide={guide}
         currentTip={currentTip}
         onClose={onClose}
-        translatedTip={translatedTip}
       />
       
       <QuickNavigation handleNavigate={handleNavigate} />
@@ -57,6 +55,8 @@ export const GuideBubble: React.FC<GuideBubbleProps> = ({
         isAdventure={isAdventure}
         onUseMagicItem={onUseMagicItem}
       />
+      
+      <TranslationHelper currentTip={currentTip} />
     </GuideBubbleWrapper>
   );
 };

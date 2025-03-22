@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Word } from '../../../../utils/game';
+import { Word } from '../../../utils/game';
 import { useGameAnalytics } from './game-state/useGameAnalytics';
 import { useWordActions } from './game-state/useWordActions';
 import { useGameTimer } from './game-state/useGameTimer';
 import { useWordSubmission } from './game-state/useWordSubmission';
-import { Language } from '../../../../utils/game/types';
+import { Language } from '../../../utils/game/types';
 import { usePlayer } from '../../../../contexts/player/PlayerContext';
 
 interface UseSpellingGameProps {
@@ -38,7 +38,6 @@ export const useSpellingGame = ({
   const { recordWordAttempt } = useGameAnalytics();
   const { updateProgress } = useWordActions();
   
-  // Initialize the game timer
   const { 
     isTimerRunning, 
     timeRemaining, 
@@ -47,12 +46,10 @@ export const useSpellingGame = ({
     resetTimer 
   } = useGameTimer({
     onTimeUp: () => {
-      // Handle time up event
       if (currentWord) {
         handleSubmit({ preventDefault: () => {} } as React.FormEvent, userInput);
       }
     },
-    // Remove defaultTime property if it's not in the interface
   });
   
   const { handleSubmit, handleSkip } = useWordSubmission({
