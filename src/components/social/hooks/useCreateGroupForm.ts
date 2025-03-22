@@ -1,51 +1,52 @@
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { useSocialGroups } from '../../../contexts/SocialGroupsContext';
-import { groupFormSchema, GroupFormValues } from '../forms/group-form-schema';
-import { SocialGroup } from '../../../contexts/SocialGroupsContext';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { groupFormSchema } from '../forms/group-form-schema';
+import { useStore as useSocialGroupsStore } from '../../../contexts/social/store';
+import { Group } from '../../../contexts/social/types';
 
-// Define this type to match exactly what createGroup expects
-type CreateGroupInput = Omit<SocialGroup, 'id' | 'createdAt' | 'updatedAt' | 'members' | 'pendingInvitations'>;
+export type GroupFormValues = z.infer<typeof groupFormSchema>;
 
-export const useCreateGroupForm = () => {
-  const { createGroup } = useSocialGroups();
-  const navigate = useNavigate();
+export const useCreateGroupForm = (onSuccess: () => void) => {
+  const addGroup = useSocialGroupsStore(state => state.addGroup);
   
   const form = useForm<GroupFormValues>({
     resolver: zodResolver(groupFormSchema),
     defaultValues: {
       name: '',
       description: '',
-      type: 'friends',
-      isPublic: false,
+      type: 'study',
       location: '',
+      isPublic: true,
     },
   });
-  
+
   const onSubmit = (values: GroupFormValues) => {
-    // Cast the form values to the expected type
-    const groupData: CreateGroupInput = {
+    const newGroup: Group = {
+      id: Date.now().toString(),
       name: values.name,
       description: values.description,
       type: values.type,
+      location: values.location,
       isPublic: values.isPublic,
-      location: values.location || '',
+      members: [
+        {
+          id: '1',
+          name: 'You',
+          role: 'admin',
+          avatar: '/assets/avatars/avatar-1.png',
+        },
+      ],
+      createdAt: new Date().toISOString(),
     };
-    
-    createGroup(groupData);
-    navigate('/social');
+
+    addGroup(newGroup);
+    onSuccess();
   };
-  
-  const goBack = () => {
-    navigate('/social');
-  };
-  
+
   return {
     form,
     onSubmit,
-    goBack,
-    watchType: form.watch('type')
   };
 };

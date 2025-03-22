@@ -1,28 +1,18 @@
 
 import React from 'react';
-import { useGameStore } from '../../utils/game';
-import { useGameState, useAudioControls, useAlphabetHelper } from './hooks';
-import { useSpellingGame } from './hooks/useSpellingGame';
 import { GameStage } from './GameStage';
 import { GameComplete } from './GameComplete';
 import { GuideSection } from './GuideSection';
 import { SpellingGameContainerProps } from './types';
-import { TerrainType } from '../../contexts/adventure/types';
+import { useSpellingGameContainer } from './hooks/useSpellingGameContainer';
 
 const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({ 
   isAdventure = false,
   onAdventureComplete,
-  terrain = 'forest' as TerrainType
+  terrain = 'forest'
 }) => {
-  const { 
-    selectedLanguage, 
-    currentWordList,
-  } = useGameStore();
-  
-  const { words = [] } = currentWordList || { words: [] };
-  
-  // Core game logic hooks
   const {
+    // Game state
     currentWord,
     userInput,
     score,
@@ -37,47 +27,28 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     remainingLives,
     showGuide,
     
+    // Game controls
+    audioEnabled,
+    isSpeaking,
+    showAlphabetHelper,
+    cursorPosition,
+    
+    // Game actions
     setUserInput,
     handleSubmit,
     handlePlayAgainClick,
     handleSkipClick,
     handleShowHint,
     handleAdventureReturn,
-    showGuideWithMessage
-  } = useSpellingGame(words, isAdventure, onAdventureComplete);
-  
-  // Audio controls hook
-  const {
-    audioEnabled,
-    isSpeaking,
     toggleAudio,
-    speakWord
-  } = useAudioControls();
-  
-  // Alphabet helper hook
-  const {
-    showAlphabetHelper,
-    cursorPosition,
-    hasComplexScript,
+    speakWord,
     handleAlphabetHelperToggle,
     handleCharacterClick,
     handleInputSelect,
-    handleInputChange,
-    handlePronounce
-  } = useAlphabetHelper();
+    handleInputChange
+  } = useSpellingGameContainer(isAdventure, onAdventureComplete, terrain);
   
-  // Handle character click with required parameters
-  const handleCharacterClickWrapper = (char: string) => {
-    handleCharacterClick(char, userInput, setUserInput);
-  };
-  
-  // Handle pronunciation with animation
-  const handlePronounceWrapper = (text: string) => {
-    showGuideWithMessage(text);
-    handlePronounce(text);
-  };
-  
-  if (!currentWord && words.length > 0) {
+  if (!currentWord && wordCount > 0) {
     return <div>Loading game...</div>;
   }
   
@@ -108,8 +79,8 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
           speakWord={speakWord}
           handleAlphabetHelperToggle={handleAlphabetHelperToggle}
           handleInputSelect={handleInputSelect}
-          handleInputChange={(e) => handleInputChange(e, setUserInput)}
-          handleCharacterClick={handleCharacterClickWrapper}
+          handleInputChange={handleInputChange}
+          handleCharacterClick={handleCharacterClick}
           cursorPosition={cursorPosition}
         />
       ) : (

@@ -1,32 +1,24 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LanguageSelector from '../components/LanguageSelector';
-import MultiLanguageSelector from '../components/MultiLanguageSelector';
-import { languages, useGameStore } from '../utils/game';
-import { Settings, Book, Map, UserCog, Gamepad, Globe, BookOpen } from 'lucide-react';
-import GuideCharacter from '../components/GuideCharacter';
-import AvatarCustomizer, { AvatarOptions } from '../components/AvatarCustomizer';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '../components/ui/tabs';
-import { Button } from '../components/ui/button';
+import { useGameStore } from '../utils/game';
+import GuideCharacter from '../components/guide';
+import FreemiumFeatureGate from '../components/subscription/FreemiumFeatureGate';
+import LanguageFeatureGate from '../components/subscription/LanguageFeatureGate';
+import { useSubscriptionStore } from '../utils/subscription';
 
 const Index = () => {
   const navigate = useNavigate();
   const { selectLanguage, checkAndUpdateStreak } = useGameStore();
   const [showAvatarCustomizer, setShowAvatarCustomizer] = useState(false);
   const [avatarOptions, setAvatarOptions] = useState<AvatarOptions>(() => {
-    // Try to load saved avatar options from localStorage
     const savedOptions = localStorage.getItem('spelling-saga-avatar-options');
     return savedOptions ? JSON.parse(savedOptions) : { avatarType: 'wizard', languageCode: 'en' };
   });
   
-  // Check and update streak when app loads
   useEffect(() => {
     checkAndUpdateStreak();
   }, [checkAndUpdateStreak]);
@@ -243,7 +235,6 @@ const Index = () => {
         </motion.div>
       </div>
       
-      {/* Add the GuideCharacter component */}
       <GuideCharacter 
         selectedAvatar={avatarOptions.avatarType}
         selectedLanguage={avatarOptions.languageCode}
@@ -251,7 +242,6 @@ const Index = () => {
         isAdventure={false}
       />
       
-      {/* Avatar Customizer Dialog */}
       <AvatarCustomizer
         open={showAvatarCustomizer}
         onOpenChange={setShowAvatarCustomizer}
