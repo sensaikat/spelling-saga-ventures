@@ -1,10 +1,8 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LanguageAlphabets, ScriptCategoryLabels, ScriptGroups } from './types';
 
 // Language-specific alphabet mappings with expanded character sets
-const alphabets: Record<string, Record<string, string[]>> = {
+export const alphabets: LanguageAlphabets = {
   en: {
     letters: "abcdefghijklmnopqrstuvwxyz".split(''),
     uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(''),
@@ -43,7 +41,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "० १ २ ३ ४ ५ ६ ७ ८ ९".split(' '),
     punctuation: "। ॥ , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
   bn: {
     letters: "অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ চ ছ জ ঝ ঞ ট ঠ ড ঢ ণ ত থ দ ধ ন প ফ ব ভ ম য র ল শ ষ স হ ড় ঢ় য় ৎ".split(' '),
     vowelSigns: "া ি ী ু ূ ৃ ৄ ে ৈ ো ৌ ং ঃ ঁ".split(' '),
@@ -52,7 +49,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
   or: {
     letters: "ଅ ଆ ଇ ଈ ଉ ଊ ଋ ଌ ଏ ଐ ଓ ଔ କ ଖ ଗ ଘ ଙ ଚ ଛ ଜ ଝ ଞ ଟ ଠ ଡ ଢ ଣ ତ ଥ ଦ ଧ ନ ପ ଫ ବ ଭ ମ ଯ ର ଲ ଳ ଵ ଶ ଷ ସ ହ କ୍ଷ ଜ୍ଞ".split(' '),
     vowelSigns: "ା ି ୀ ୁ ୂ ୃ ୄ େ ୈ ୋ ୌ ୍ ଂ ଃ ଁ".split(' '),
@@ -61,7 +57,7 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "୦ ୧ ୨ ୩ ୪ ୫ ୬ ୭ ୮ ୯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
+  // ... rest of language alphabets
   ta: {
     letters: "அ ஆ இ ஈ உ ஊ எ ஏ ஐ ஒ ஓ ஔ க ங ச ஞ ட ண த ந ப ம ய ர ல வ ழ ள ற ன ஜ ஷ ஸ ஹ க்ஷ ஸ்ரீ".split(' '),
     vowelSigns: "ா ி ீ ு ூ ெ ே ை ொ ோ ௌ ஂ ஃ".split(' '),
@@ -70,7 +66,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "௦ ௧ ௨ ௩ ௪ ௫ ௬ ௭ ௮ ௯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
   te: {
     letters: "అ ఆ ఇ ఈ ఉ ఊ ఋ ఌ ఎ ఏ ఐ ఒ ఓ ఔ క ఖ గ ఘ ఙ చ ఛ జ ఝ ఞ ట ఠ డ ఢ ణ త థ ద ధ న ప ఫ బ భ మ య ర ల వ శ ష స హ ళ క్ష ఱ".split(' '),
     vowelSigns: "ా ి ీ ు ూ ృ ౄ ె ే ై ొ ో ౌ ం ః ఁ".split(' '),
@@ -79,7 +74,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "౦ ౧ ౨ ౩ ౪ ౫ ౬ ౭ ౮ ౯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
   pa: {
     letters: "ਅ ਆ ਇ ਈ ਉ ਊ ਏ ਐ ਓ ਔ ੳ ਕ ਖ ਗ ਘ ਙ ਚ ਛ ਜ ਝ ਞ ਟ ਠ ਡ ਢ ਣ ਤ ਥ ਦ ਧ ਨ ਪ ਫ ਬ ਭ ਮ ਯ ਰ ਲ ਵ ੜ ਸ਼ ਖ਼ ਗ਼ ਜ਼ ਫ਼ ਲ਼ ਸ ਹ".split(' '),
     vowelSigns: "ਾ ਿ ੀ ੁ ੂ ੇ ੈ ੋ ੌ ੰ ਂ ੱ".split(' '),
@@ -88,7 +82,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "੦ ੧ ੨ ੩ ੪ ੫ ੬ ੭ ੮ ੯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
   kn: {
     letters: "ಅ ಆ ಇ ಈ ಉ ಊ ಋ ಌ ಎ ಏ ಐ ಒ ಓ ಔ ಕ ಖ ಗ ಘ ಙ ಚ ಛ ಜ ಝ ಞ ಟ ಠ ಡ ಢ ಣ ತ ಥ ದ ಧ ನ ಪ ಫ ಬ ಭ ಮ ಯ ರ ಲ ವ ಶ ಷ ಸ ಹ ಳ ಱ".split(' '),
     vowelSigns: "ಾ ಿ ೀ ು ೂ ೃ ೄ ೆ ೇ ೈ ೊ ೋ ೌ ಂ ಃ ಁ".split(' '),
@@ -97,7 +90,6 @@ const alphabets: Record<string, Record<string, string[]>> = {
     numbers: "೦ ೧ ೨ ೩ ೪ ೫ ೬ ೭ ೮ ೯".split(' '),
     punctuation: "। , . ? ! : ; ' \" ( ) - _ @ # $ % & * + = / \\ < > [ ] { } | ~ ^ `".split(' ')
   },
-  
   ml: {
     letters: "അ ആ ഇ ഈ ഉ ഊ ഋ ഌ എ ഏ ഐ ഒ ഓ ഔ ക ഖ ഗ ഘ ങ ച ഛ ജ ഝ ഞ ട ഠ ഡ ഢ ണ ത ഥ ദ ധ ന പ ഫ ബ ഭ മ യ ര ല വ ശ ഷ സ ഹ ള ഴ റ".split(' '),
     vowelSigns: "ാ ി ീ ു ൂ ൃ ൄ െ േ ൈ ൊ ോ ൌ ൗ ം ഃ".split(' '),
@@ -132,7 +124,7 @@ const alphabets: Record<string, Record<string, string[]>> = {
 };
 
 // Map of categories by language group
-const categoryLabels: Record<string, Record<string, string>> = {
+export const categoryLabels: ScriptCategoryLabels = {
   // Latin script languages
   latin: {
     letters: "Lowercase",
@@ -184,7 +176,7 @@ const categoryLabels: Record<string, Record<string, string>> = {
 };
 
 // Group languages by script type
-const scriptGroups: Record<string, string[]> = {
+export const scriptGroups: ScriptGroups = {
   latin: ['en', 'es', 'fr', 'pl', 'ro', 'ru', 'de', 'cs'],
   devanagari: ['hi'], 
   bengali: ['bn'],
@@ -194,75 +186,3 @@ const scriptGroups: Record<string, string[]> = {
   arabic: ['ar', 'ur'],
   chinese: ['zh']
 };
-
-// Get category labels for a language
-const getCategoryLabels = (languageId: string): Record<string, string> => {
-  if (languageId === 'bn') return categoryLabels.devanagari;
-  if (languageId === 'or') return categoryLabels.devanagari;
-  if (languageId === 'pa') return categoryLabels.gurmukhi;
-  if (['ta', 'te', 'kn', 'ml'].includes(languageId)) return categoryLabels.dravidian;
-  
-  for (const [script, languages] of Object.entries(scriptGroups)) {
-    if (languages.includes(languageId)) {
-      return categoryLabels[script];
-    }
-  }
-  return categoryLabels.latin; // Default to latin
-};
-
-interface AlphabetHelperProps {
-  languageId: string;
-  onCharacterClick: (char: string) => void;
-}
-
-const AlphabetHelper: React.FC<AlphabetHelperProps> = ({ languageId, onCharacterClick }) => {
-  const [activeCategory, setActiveCategory] = useState<string>('letters');
-  
-  // Default to English if the language isn't supported
-  const langAlphabet = alphabets[languageId] || alphabets.en;
-  const categories = Object.keys(langAlphabet);
-  const labels = getCategoryLabels(languageId);
-  
-  return (
-    <motion.div
-      className="w-full max-w-2xl mx-auto mb-4 p-2 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-gray-100"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <Tabs defaultValue={categories[0]} onValueChange={setActiveCategory} className="w-full">
-        <TabsList className="grid w-full mb-2" style={{ gridTemplateColumns: `repeat(${categories.length}, 1fr)` }}>
-          {categories.map(category => (
-            <TabsTrigger key={category} value={category} className="text-xs sm:text-sm">
-              {labels[category] || category}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        
-        {categories.map(category => (
-          <TabsContent key={category} value={category} className="mt-0">
-            <div className="flex flex-wrap justify-center gap-1">
-              {langAlphabet[category].map((char, index) => (
-                <motion.button
-                  key={index}
-                  onClick={() => onCharacterClick(char)}
-                  className="min-w-8 h-8 flex items-center justify-center px-2 bg-white rounded border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-game-blue transition-colors"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {char}
-                </motion.button>
-              ))}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
-      
-      <div className="mt-2 text-center text-xs text-gray-500">
-        Click on any character to add it to your input
-      </div>
-    </motion.div>
-  );
-};
-
-export default AlphabetHelper;
