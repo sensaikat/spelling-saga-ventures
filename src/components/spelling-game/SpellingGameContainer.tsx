@@ -1,14 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
-import { useGameStore, WordList } from '../../utils/game';
-import GameHeader from './GameHeader';
-import GameContent from './GameContent';
-import GameResult from './GameResult';
+import { useGameStore } from '../../utils/game';
+import { GameHeader } from './GameHeader';
+import { GameContent } from './GameContent';
+import { GameResult } from './GameResult';
 import { useGameState, useAudioControls, useAlphabetHelper } from './hooks';
 import { useAdventure } from '../../contexts/adventure/useAdventure';
-import GameForm from './GameForm';
+import { GameForm } from './GameForm';
 import AlphabetHelper from '../alphabet-helper/AlphabetHelper';
-import GameControlsContainer from '../game-controls/GameControlsContainer';
-import { GuideCharacter } from '../GuideCharacter';
+import { GameControlsContainer } from '../game-controls/GameControlsContainer';
+import GuideCharacter from '../GuideCharacter';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface SpellingGameContainerProps {
@@ -20,8 +21,14 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   isAdventure = false,
   onAdventureComplete
 }) => {
-  const { wordList, selectedLanguage, gameMode, setGameMode } = useGameStore();
-  const { words } = wordList || { words: [] };
+  const { 
+    selectedLanguage, 
+    selectedGameMode, 
+    currentWordList,
+    setSelectedGameMode 
+  } = useGameStore();
+  
+  const { words } = currentWordList || { words: [] };
   const [currentWord, setCurrentWord] = useState<any>(null);
   const [userInput, setUserInput] = useState('');
   const [score, setScore] = useState(0);
@@ -36,15 +43,9 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   const [hint, setHint] = useState('');
   const [showHintButton, setShowHintButton] = useState(true);
   
-  const { nextWord, remainingWords } = useGameState({
-    words,
-    currentIndex,
-    setCurrentIndex,
-    setCurrentWord,
-    setGameFinished,
-    setHint,
-    setShowHintButton
-  });
+  // Pass isAdventure as the first parameter to useGameState
+  const gameState = useGameState(isAdventure, onAdventureComplete, words);
+  const { remainingWords } = gameState;
   
   const {
     audioEnabled,
@@ -128,7 +129,13 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     setTimeout(() => {
       setIsCheckingAnswer(false);
       setInputStatus(null);
-      nextWord();
+      // Use the gameState.nextWord function instead
+      if (gameState && currentIndex < words.length - 1) {
+        setCurrentIndex(prevIndex => prevIndex + 1);
+        setCurrentWord(words[currentIndex + 1]);
+      } else {
+        setGameFinished(true);
+      }
     }, 1500);
   };
   
@@ -147,8 +154,14 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   };
   
   const handleSkipClick = () => {
-    nextWord();
-    setUserInput('');
+    // Use local skip implementation instead of gameState.handleSkip
+    if (currentIndex < words.length - 1) {
+      setCurrentIndex(prevIndex => prevIndex + 1);
+      setCurrentWord(words[currentIndex + 1]);
+      setUserInput('');
+    } else {
+      setGameFinished(true);
+    }
   };
   
   const handleShowHint = () => {
@@ -168,7 +181,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
           currentWord={currentWord} 
           wordCount={wordCount}
           currentIndex={currentIndex}
-          remainingWords={remainingWords}
+          remainingWords={remainingWords || words.length - currentIndex - 1}
           elapsedTime={elapsedTime}
           isAdventure={isAdventure}
         >
