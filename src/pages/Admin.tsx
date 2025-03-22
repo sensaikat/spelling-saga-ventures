@@ -11,11 +11,11 @@ import ChatbotManager from '../components/admin/ChatbotManager';
 import { useSubscriptionStore } from '../utils/subscription';
 
 const Admin = () => {
-  // Only allow admin access for premium users
-  const { hasActiveSubscription } = useSubscriptionStore();
+  // Only allow admin access for premium users - fixed property access
+  const { isPremium } = useSubscriptionStore();
   
   // Redirect non-premium users
-  if (!hasActiveSubscription()) {
+  if (!isPremium()) {
     return <Navigate to="/subscription" replace />;
   }
 
