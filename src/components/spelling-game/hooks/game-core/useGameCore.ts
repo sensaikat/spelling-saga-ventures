@@ -9,6 +9,7 @@ import { useWordTracking } from './useWordTracking';
 import { useGameAnalytics } from '../game-state/useGameAnalytics';
 import { useGameEvents } from './useGameEvents';
 import { useGameReset } from './useGameReset';
+import { useGameSettings } from './useGameSettings';
 
 /**
  * Props for the useGameCore hook
@@ -19,6 +20,7 @@ import { useGameReset } from './useGameReset';
  * @property {boolean} isAdventure - Whether in adventure mode
  * @property {Function} addPlayerPoints - Function to add player points
  * @property {Function} updateProgress - Function to update progress
+ * @property {Partial<GameSettings>} gameSettings - Optional custom game settings
  */
 interface GameCoreProps {
   words: Word[];
@@ -27,6 +29,7 @@ interface GameCoreProps {
   isAdventure?: boolean;
   addPlayerPoints?: (points: number) => void;
   updateProgress?: (wordId: string, isCorrect: boolean) => void;
+  gameSettings?: Partial<import('./useGameSettings').GameSettings>;
 }
 
 /**
@@ -43,8 +46,12 @@ export const useGameCore = ({
   onGameComplete = () => {},
   isAdventure = false,
   addPlayerPoints = () => {},
-  updateProgress = () => {}
+  updateProgress = () => {},
+  gameSettings = {}
 }: GameCoreProps) => {
+  // Get centralized game settings
+  const { settings } = useGameSettings({ overrides: gameSettings });
+  
   // Initialize game state
   const {
     currentWord,
@@ -72,7 +79,9 @@ export const useGameCore = ({
     isCheckingAnswer,
     setIsCheckingAnswer,
     resetGameState
-  } = useGameStateManagement();
+  } = useGameStateManagement({ 
+    initialLives: settings.initialLives 
+  });
 
   // Track correct and incorrect words
   const {
@@ -96,7 +105,7 @@ export const useGameCore = ({
     pauseTimer,
     resetTimer
   } = useGameTimeHandling({
-    initialTime: 60,
+    initialTime: settings.initialTime,
     isGameCompleted: gameCompleted,
     onTimeout: () => setGameCompleted(true)
   });
@@ -125,7 +134,8 @@ export const useGameCore = ({
     selectedLanguage,
     trackWord,
     isCheckingAnswer,
-    setIsCheckingAnswer
+    setIsCheckingAnswer,
+    resultDelay: settings.resultDisplayDuration
   });
   
   // Game events
@@ -143,7 +153,7 @@ export const useGameCore = ({
     resetWordTracking,
     setCurrentWordIndex,
     resetTimer,
-    initialTime: 60
+    initialTime: settings.initialTime
   });
   
   /**

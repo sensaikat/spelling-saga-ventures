@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
 import { validateWordSubmission } from './utils/wordValidator';
 import { shouldEndGame, shouldMoveToNextWord } from './utils/gameProgressManager';
+import { useGameSettings } from './useGameSettings';
 
 /**
  * Props for the useGameSubmissionHandler hook
@@ -27,7 +28,7 @@ import { shouldEndGame, shouldMoveToNextWord } from './utils/gameProgressManager
  * @property {Function} trackWord - Optional function to track word history
  * @property {boolean} isCheckingAnswer - Whether an answer is currently being checked
  * @property {Function} setIsCheckingAnswer - Function to update answer checking state
- * @property {number} resultDelay - Delay in ms before moving to the next word (default: 1500)
+ * @property {number} resultDelay - Delay in ms before moving to the next word
  */
 interface UseGameSubmissionHandlerProps {
   currentWord: Word | null;
@@ -89,8 +90,12 @@ export const useGameSubmissionHandler = ({
   trackWord,
   isCheckingAnswer,
   setIsCheckingAnswer,
-  resultDelay = 1500
+  resultDelay
 }: UseGameSubmissionHandlerProps) => {
+  // Get game settings
+  const { settings } = useGameSettings({
+    overrides: resultDelay ? { resultDisplayDuration: resultDelay } : undefined
+  });
   
   /**
    * Handles the submission of a word answer
@@ -132,9 +137,9 @@ export const useGameSubmissionHandler = ({
     
     // Update score
     if (isCorrectAnswer) {
-      setScore(score + 10);
+      setScore(score + settings.correctAnswerPoints);
       if (addPlayerPoints) {
-        addPlayerPoints(2);
+        addPlayerPoints(settings.playerPointsIncrement);
       }
     } else {
       setRemainingLives(remainingLives - 1);
@@ -159,7 +164,7 @@ export const useGameSubmissionHandler = ({
         setCurrentWordIndex(currentWordIndex + 1);
         setUserInput('');
       }
-    }, resultDelay);
+    }, settings.resultDisplayDuration);
   }, [
     currentWord, 
     isCheckingAnswer, 
@@ -168,7 +173,7 @@ export const useGameSubmissionHandler = ({
     remainingLives, 
     score, 
     selectedLanguage,
-    resultDelay,
+    settings,
     setIsCheckingAnswer,
     setIsCorrect,
     setShowResult,

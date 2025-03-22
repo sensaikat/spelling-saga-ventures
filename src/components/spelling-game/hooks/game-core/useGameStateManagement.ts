@@ -1,10 +1,11 @@
 
 import { useState } from 'react';
+import { useGameSettings } from './useGameSettings';
 
 /**
  * Props for the useGameStateManagement hook
  * @interface UseGameStateManagementProps
- * @property {number} initialLives - Optional number of lives to start with (default: 3)
+ * @property {number} initialLives - Optional number of lives to start with
  */
 interface UseGameStateManagementProps {
   initialLives?: number;
@@ -26,12 +27,17 @@ interface UseGameStateManagementProps {
  * @param {UseGameStateManagementProps} props - Object containing initial lives
  * @returns Game state variables and setters
  */
-export const useGameStateManagement = ({ initialLives = 3 }: UseGameStateManagementProps = {}) => {
+export const useGameStateManagement = ({ initialLives }: UseGameStateManagementProps = {}) => {
+  // Get game settings
+  const { settings } = useGameSettings({ 
+    overrides: initialLives ? { initialLives } : undefined 
+  });
+  
   const [userInput, setUserInput] = useState('');
   const [score, setScore] = useState(0);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [showResult, setShowResult] = useState(false);
-  const [remainingLives, setRemainingLives] = useState(initialLives);
+  const [remainingLives, setRemainingLives] = useState(settings.initialLives);
   const [showHint, setShowHint] = useState(false);
   const [isCheckingAnswer, setIsCheckingAnswer] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
@@ -44,7 +50,7 @@ export const useGameStateManagement = ({ initialLives = 3 }: UseGameStateManagem
     setScore(0);
     setIsCorrect(null);
     setShowResult(false);
-    setRemainingLives(initialLives);
+    setRemainingLives(settings.initialLives);
     setShowHint(false);
     setIsCheckingAnswer(false);
     setGameCompleted(false);

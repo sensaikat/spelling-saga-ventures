@@ -1,10 +1,11 @@
 
 import { useState, useCallback, useEffect } from 'react';
+import { useGameSettings } from './useGameSettings';
 
 /**
  * Props for the useGameTimeHandling hook
  * @interface UseGameTimeHandlingProps
- * @property {number} initialTime - Initial time in seconds (default: 60)
+ * @property {number} initialTime - Initial time in seconds (default from settings)
  * @property {boolean} isGameCompleted - Whether the game is completed
  * @property {Function} onTimeout - Callback function to execute when timer reaches zero
  * @property {boolean} enabled - Whether the timer is enabled (default: true)
@@ -30,12 +31,17 @@ interface UseGameTimeHandlingProps {
  * @returns Timer state and control functions
  */
 export const useGameTimeHandling = ({
-  initialTime = 60,
+  initialTime,
   isGameCompleted = false,
   onTimeout = () => {},
   enabled = true
 }: UseGameTimeHandlingProps) => {
-  const [timeRemaining, setTimeRemaining] = useState(initialTime);
+  // Get game settings
+  const { settings } = useGameSettings({ 
+    overrides: initialTime ? { initialTime } : undefined 
+  });
+  
+  const [timeRemaining, setTimeRemaining] = useState(settings.initialTime);
   const [isRunning, setIsRunning] = useState(false);
   
   /**
@@ -58,10 +64,10 @@ export const useGameTimeHandling = ({
    * Resets the timer to a new time value or the initial time
    * @param {number} newTime - New time in seconds (default: initialTime)
    */
-  const resetTimer = useCallback((newTime: number = initialTime) => {
+  const resetTimer = useCallback((newTime: number = settings.initialTime) => {
     setTimeRemaining(newTime);
     setIsRunning(false);
-  }, [initialTime]);
+  }, [settings.initialTime]);
   
   // Timer effect that counts down when running
   useEffect(() => {

@@ -1,5 +1,6 @@
 
 import { useCallback } from 'react';
+import { useGameSettings } from './useGameSettings';
 
 /**
  * Props for the useGameReset hook
@@ -35,8 +36,12 @@ export const useGameReset = ({
   resetWordTracking,
   setCurrentWordIndex,
   resetTimer,
-  initialTime = 60
+  initialTime
 }: UseGameResetProps) => {
+  // Get game settings
+  const { settings } = useGameSettings({
+    overrides: initialTime ? { initialTime } : undefined
+  });
   
   /**
    * Resets the game to start over
@@ -45,8 +50,8 @@ export const useGameReset = ({
     resetGameState();
     setCurrentWordIndex(0);
     resetWordTracking();
-    resetTimer(initialTime);
-  }, [resetGameState, setCurrentWordIndex, resetWordTracking, resetTimer, initialTime]);
+    resetTimer(settings.initialTime);
+  }, [resetGameState, setCurrentWordIndex, resetWordTracking, resetTimer, settings.initialTime]);
   
   return {
     handlePlayAgainClick
