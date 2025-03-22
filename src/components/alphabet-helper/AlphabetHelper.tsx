@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { AlphabetHelperProps } from './types';
-import { getLanguageAlphabet, getCategoryLabel } from './utils';
+import { getLanguageAlphabet, getCategoryLabel, getEnglishCategoryLabel } from './utils';
 import CharacterGrid from './CharacterGrid';
+import { Volume2 } from 'lucide-react';
 
 const AlphabetHelper: React.FC<AlphabetHelperProps> = ({ 
   languageId, 
-  onCharacterClick 
+  onCharacterClick,
+  onPronounce 
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [alphabet, setAlphabet] = useState<Record<string, string[]>>({});
@@ -31,6 +33,12 @@ const AlphabetHelper: React.FC<AlphabetHelperProps> = ({
     }
   }, [languageId]);
 
+  const handlePronounceCategory = (category: string) => {
+    if (onPronounce) {
+      onPronounce(getCategoryLabel(languageId, category));
+    }
+  };
+
   if (!alphabet || Object.keys(alphabet).length === 0) {
     return null;
   }
@@ -47,21 +55,48 @@ const AlphabetHelper: React.FC<AlphabetHelperProps> = ({
                 : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }`}
             onClick={() => setSelectedCategory(category)}
-            title={getCategoryLabel(languageId, category)}
+            title={`${getEnglishCategoryLabel(category)} - ${getCategoryLabel(languageId, category)}`}
           >
-            {getCategoryLabel(languageId, category)}
+            <span className="flex items-center">
+              {getEnglishCategoryLabel(category)}
+              {' '}
+              <span className="text-xs ml-1 opacity-75">
+                ({getCategoryLabel(languageId, category)})
+              </span>
+              <button 
+                className="ml-1 p-1 rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePronounceCategory(category);
+                }}
+                aria-label={`Pronounce ${getCategoryLabel(languageId, category)}`}
+              >
+                <Volume2 size={12} />
+              </button>
+            </span>
           </button>
         ))}
       </div>
 
       {selectedCategory && (
         <>
-          <h3 className="text-sm text-gray-500 mb-2 font-medium">
-            {getCategoryLabel(languageId, selectedCategory)}
+          <h3 className="text-sm text-gray-500 mb-2 font-medium flex items-center">
+            <span>{getEnglishCategoryLabel(selectedCategory)}</span>
+            <span className="mx-2">-</span>
+            <span>{getCategoryLabel(languageId, selectedCategory)}</span>
+            <button 
+              className="ml-2 p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              onClick={() => handlePronounceCategory(selectedCategory)}
+              aria-label={`Pronounce ${getCategoryLabel(languageId, selectedCategory)}`}
+            >
+              <Volume2 size={14} />
+            </button>
           </h3>
           <CharacterGrid 
             characters={alphabet[selectedCategory] || []} 
-            onCharacterClick={onCharacterClick} 
+            onCharacterClick={onCharacterClick}
+            onPronounce={onPronounce}
+            languageId={languageId}
           />
         </>
       )}

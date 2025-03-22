@@ -82,6 +82,47 @@ export const useAlphabetHelper = () => {
     setCursorPosition(e.target.selectionStart || 0);
   };
   
+  const handlePronounce = (text: string) => {
+    if (!selectedLanguage) return;
+    
+    if ('speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = selectedLanguage.id;
+      
+      // Get available voices and try to find a matching one for the language
+      const voices = window.speechSynthesis.getVoices();
+      const matchingVoice = voices.find(voice => 
+        voice.lang.startsWith(selectedLanguage.id) || 
+        selectedLanguage.id.startsWith(voice.lang.split('-')[0])
+      );
+      
+      if (matchingVoice) {
+        utterance.voice = matchingVoice;
+      }
+      
+      utterance.onend = () => {
+        // Animation can end here if needed
+      };
+      
+      utterance.onerror = () => {
+        console.error('Speech synthesis error');
+        toast({
+          title: "Pronunciation Error",
+          description: `Couldn't pronounce "${text}" in ${selectedLanguage.name}`,
+          variant: "destructive",
+          duration: 3000,
+        });
+      };
+      
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.log('Speech synthesis not supported in this browser');
+    }
+  };
+  
   // Check if the current language has complex script requirements
   const hasComplexScript = !!selectedLanguage && getLanguageAlphabet(selectedLanguage.id) !== null;
   
@@ -92,6 +133,7 @@ export const useAlphabetHelper = () => {
     handleAlphabetHelperToggle,
     handleCharacterClick,
     handleInputSelect,
-    handleInputChange
+    handleInputChange,
+    handlePronounce
   };
 };
