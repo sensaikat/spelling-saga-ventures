@@ -35,6 +35,16 @@ export const useGameCulture = (language: Language | null) => {
             encouragement: "You're becoming a word explorer! Keep discovering new terms!",
             funFact: "Shakespeare invented over 1,700 words we still use today!",
             contextualHint: "Try sounding out each syllable separately!"
+          },
+          {
+            encouragement: "Amazing progress! You're learning about English-speaking cultures!",
+            funFact: "The shortest complete sentence in English is 'I am.'",
+            contextualHint: "Think about the cultural context of this word in English traditions!"
+          },
+          {
+            encouragement: "Brilliant work! Your English vocabulary is growing!",
+            funFact: "The most common letter in English is 'e'!",
+            contextualHint: "This word appears frequently in English literature and daily life!"
           }
         ];
         break;
@@ -55,6 +65,16 @@ export const useGameCulture = (language: Language | null) => {
             encouragement: "बहुत बढ़िया! आप एक भाषा विशेषज्ञ बन रहे हैं!",
             funFact: "हिंदी में 11 स्वर और 33 व्यंजन होते हैं!",
             contextualHint: "इस शब्द के हर अक्षर को अलग-अलग उच्चारित करके देखें!"
+          },
+          {
+            encouragement: "उत्तम! आप भारतीय संस्कृति के बारे में सीख रहे हैं!",
+            funFact: "हिंदी भारत की आधिकारिक भाषा है और 10 से अधिक देशों में बोली जाती है!",
+            contextualHint: "यह शब्द भारतीय इतिहास और परंपरा से जुड़ा हुआ है!"
+          },
+          {
+            encouragement: "अद्भुत! आप हिंदी भाषा में निपुण हो रहे हैं!",
+            funFact: "विश्व हिंदी दिवस हर साल 10 जनवरी को मनाया जाता है!",
+            contextualHint: "इस शब्द का उपयोग भारतीय दैनिक जीवन में बहुत होता है!"
           }
         ];
         break;
@@ -75,6 +95,16 @@ export const useGameCulture = (language: Language | null) => {
             encouragement: "¡Fantástico! Estás conectando con la cultura hispana.",
             funFact: "El español es el idioma oficial en 21 países diferentes.",
             contextualHint: "Intenta dividir la palabra en sílabas para deletrearla."
+          },
+          {
+            encouragement: "¡Magnífico! Estás aprendiendo sobre las tradiciones hispanas.",
+            funFact: "La letra 'ñ' es única del alfabeto español y algunas lenguas relacionadas.",
+            contextualHint: "Esta palabra tiene un significado cultural especial en América Latina."
+          },
+          {
+            encouragement: "¡Increíble! Tu vocabulario español está creciendo rápidamente.",
+            funFact: "Don Quijote de la Mancha es considerada la primera novela moderna.",
+            contextualHint: "Esta palabra aparece frecuentemente en la vida diaria de países hispanohablantes."
           }
         ];
         break;
@@ -95,6 +125,16 @@ export const useGameCulture = (language: Language | null) => {
             encouragement: "Excellent progress on your language journey!",
             funFact: "Language connects us to different cultures and traditions!",
             contextualHint: "Practice saying the word out loud as you spell it!"
+          },
+          {
+            encouragement: "Wonderful work learning about world cultures!",
+            funFact: "There are over 7,000 languages spoken in the world today!",
+            contextualHint: "This word has cultural significance in many regions!"
+          },
+          {
+            encouragement: "Fantastic effort! Keep exploring languages!",
+            funFact: "Many languages share common roots and word origins!",
+            contextualHint: "Visualize what this word represents in its culture!"
           }
         ];
     }
