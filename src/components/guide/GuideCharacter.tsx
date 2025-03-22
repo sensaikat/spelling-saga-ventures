@@ -25,12 +25,14 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
     magicItemUsed,
     avatarKey,
     handleUseMagicItem: handleUseMagicItemInternal,
-    handleGuideClick
+    handleGuideClick,
+    navigateTo
   } = useGuideCharacter({
     selectedAvatar,
     terrain,
     selectedLanguage,
-    proactiveMessage
+    proactiveMessage,
+    isAdventure
   });
   
   const guide = guideAppearances[avatarKey as keyof typeof guideAppearances] || guideAppearances.default;
@@ -94,6 +96,7 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
         isAdventure={isAdventure}
         onClose={() => setShowMessage(false)}
         onUseMagicItem={handleMagicItemClick}
+        navigateTo={navigateTo}
       />
     </>
   );
