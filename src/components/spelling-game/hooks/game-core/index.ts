@@ -11,6 +11,9 @@
  * - useGameStateManagement: Centralizes game state variables
  * - useGameSubmissionHandler: Processes word submissions and validation
  * - useWordTracking: Tracks word history for statistics
+ * 
+ * The utils folder contains supporting functionality for text normalization,
+ * language detection, word validation, and game progress management.
  */
 
 export * from './useGameCore';
@@ -19,3 +22,4 @@ export * from './useGameTimeHandling';
 export * from './useGameStateManagement';
 export * from './useGameSubmissionHandler';
 export * from './useWordTracking';
+export * from './utils';

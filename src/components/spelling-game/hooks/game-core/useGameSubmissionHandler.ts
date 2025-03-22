@@ -1,5 +1,8 @@
+
 import { useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
+import { validateWordSubmission } from './utils/wordValidator';
+import { shouldEndGame, shouldMoveToNextWord } from './utils/gameProgressManager';
 
 /**
  * Props for the useGameSubmissionHandler hook
@@ -49,31 +52,6 @@ interface UseGameSubmissionHandlerProps {
   setIsCheckingAnswer: (isChecking: boolean) => void;
   resultDelay?: number;
 }
-
-/**
- * Normalizes text for comparison across different languages
- * Handles issues with diacritics, special characters, and other language-specific nuances
- */
-const normalizeTextForComparison = (text: string, languageId?: string): string => {
-  // Start with basic lowercase and trim
-  let normalized = text.toLowerCase().trim();
-  
-  // For languages that don't differentiate certain characters in normal usage
-  if (languageId === 'hi' || languageId === 'bn') {
-    // In some Indic languages, remove nuqta dots and normalize similar looking characters
-    normalized = normalized.replace(/\u093c/g, '');
-  }
-  
-  // Remove spaces for languages where spaces might be optional or inconsistently used
-  if (['zh', 'ja', 'th'].includes(languageId || '')) {
-    normalized = normalized.replace(/\s+/g, '');
-  }
-  
-  // Normalize special spacing for languages with complex combining marks
-  normalized = normalized.normalize('NFC');
-  
-  return normalized;
-};
 
 /**
  * Hook for handling word submissions and skips
@@ -132,18 +110,12 @@ export const useGameSubmissionHandler = ({
     const formData = new FormData(formElement);
     const userInputValue = formData.get('wordInput')?.toString() || '';
     
-    // Get language ID from current word or selected language
-    const languageId = currentWord.language || 
-                     (typeof selectedLanguage === 'object' && selectedLanguage ? 
-                      selectedLanguage.id : 
-                      typeof selectedLanguage === 'string' ? 
-                      selectedLanguage : 'en');
-    
-    // Normalize both the expected answer and user input for proper comparison
-    const normalizedAnswer = normalizeTextForComparison(currentWord.text, languageId);
-    const normalizedInput = normalizeTextForComparison(userInputValue, languageId);
-    
-    const isCorrectAnswer = normalizedInput === normalizedAnswer;
+    // Validate the submission
+    const isCorrectAnswer = validateWordSubmission(
+      userInputValue,
+      currentWord,
+      selectedLanguage
+    );
     
     setIsCorrect(isCorrectAnswer);
     setShowResult(true);
@@ -179,10 +151,10 @@ export const useGameSubmissionHandler = ({
       setShowHint(false);
       setIsCheckingAnswer(false);
       
-      if (currentWordIndex >= filteredWords.length - 1 || remainingLives <= 1 && !isCorrectAnswer) {
-        // Game over
+      // Check if the game should end
+      if (shouldEndGame(currentWordIndex, filteredWords.length, remainingLives, isCorrectAnswer)) {
         setGameCompleted(true);
-      } else if (isCorrectAnswer || remainingLives > 1) {
+      } else if (shouldMoveToNextWord(isCorrectAnswer, remainingLives)) {
         // Move to next word
         setCurrentWordIndex(currentWordIndex + 1);
         setUserInput('');
