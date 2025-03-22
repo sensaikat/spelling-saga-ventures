@@ -2,8 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LanguageSelector } from '../components/LanguageSelector';
-import { MultiLanguageSelector } from '../components/MultiLanguageSelector';
+import LanguageSelector from '../components/LanguageSelector';
+import MultiLanguageSelector from '../components/MultiLanguageSelector';
 import { languages, useGameStore } from '../utils/game';
 import { Settings, Book, Map } from 'lucide-react';
 
