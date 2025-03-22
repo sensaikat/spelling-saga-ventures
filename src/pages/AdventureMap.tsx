@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Map, Compass } from 'lucide-react';
 import AdventureMap from '../components/AdventureMap';
 import { useAdventure } from '../contexts/adventure/useAdventure';
-import GuideCharacter from '../components/GuideCharacter';
+import GuideCharacter from '../components/guide';
 
 const AdventureMapPage = () => {
   const navigate = useNavigate();
@@ -16,7 +15,6 @@ const AdventureMapPage = () => {
     navigate(`/adventure/${locationId}`);
   };
   
-  // Staggered animation for child elements
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -34,7 +32,6 @@ const AdventureMapPage = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 relative overflow-hidden">
-      {/* Background elements to add adventure feel */}
       <div className="absolute top-10 left-10 text-6xl opacity-10 rotate-12">
         🧭
       </div>
@@ -48,7 +45,6 @@ const AdventureMapPage = () => {
         🌊
       </div>
       
-      {/* Add animated floating clouds */}
       <motion.div 
         className="absolute top-20 left-1/4 text-7xl opacity-10"
         animate={{ 
@@ -127,7 +123,6 @@ const AdventureMapPage = () => {
         </motion.div>
       </div>
       
-      {/* Add our guide character */}
       <GuideCharacter />
     </div>
   );

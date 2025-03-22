@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AdventureScene from '../components/AdventureScene';
 import SpellingGame from './SpellingGame';
 import { useAdventure } from '../contexts/adventure/useAdventure';
-import GuideCharacter from '../components/GuideCharacter';
+import GuideCharacter from '../components/guide';
 import { MagicItemType } from '../components/MagicItems';
 import { toast } from '@/components/ui/use-toast';
 import { Language, useGameStore } from '../utils/game';

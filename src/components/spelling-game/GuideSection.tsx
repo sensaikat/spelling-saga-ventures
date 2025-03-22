@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import GuideCharacter from '../GuideCharacter';
+import GuideCharacter from '../guide';
 import { TerrainType } from '../../contexts/adventure/types';
 
 interface GuideSectionProps {
