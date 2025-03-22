@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Sparkles } from 'lucide-react';
-import { Location } from '../../contexts/AdventureContext';
+import { Location } from '../../contexts/adventure/types';
 import { terrainIcons, terrainCompanions } from './TerrainBackground';
 
 interface AdventureContentProps {

@@ -1,0 +1,81 @@
+
+import { Character, Location } from './types';
+
+export const defaultCharacter: Character = {
+  name: 'Explorer',
+  avatar: '👦',
+  currentLocation: 'bedroom',
+  inventory: [],
+  credits: 0,
+  stars: 0,
+};
+
+// Initialize with some default locations
+export const defaultLocations: Location[] = [
+  {
+    id: 'bedroom',
+    name: 'Bedroom',
+    room: 'bedroom',
+    terrain: 'forest',
+    description: 'Your cozy bedroom has transformed into an enchanted forest with tall, magical trees!',
+    challengeDescription: 'Learn the names of forest animals in your chosen language to navigate through.',
+    isLocked: false,
+    isCompleted: false,
+    requiredPoints: 0,
+  },
+  {
+    id: 'kitchen',
+    name: 'Kitchen',
+    room: 'kitchen',
+    terrain: 'desert',
+    description: 'The kitchen has become a vast desert with sand dunes and an oasis in the distance!',
+    challengeDescription: 'Collect the names of food items to find water in the desert.',
+    isLocked: true,
+    isCompleted: false,
+    requiredPoints: 50,
+  },
+  {
+    id: 'livingRoom',
+    name: 'Living Room',
+    room: 'livingRoom',
+    terrain: 'river',
+    description: 'The living room is now a rushing river with waterfalls and whirlpools!',
+    challengeDescription: 'Learn water-related words to safely navigate the river currents.',
+    isLocked: true,
+    isCompleted: false,
+    requiredPoints: 100,
+  },
+  {
+    id: 'garden',
+    name: 'Garden',
+    room: 'garden',
+    terrain: 'mountain',
+    description: 'Your garden has transformed into towering mountains with snow-capped peaks!',
+    challengeDescription: 'Master nature vocabulary to climb to the mountain summit.',
+    isLocked: true,
+    isCompleted: false,
+    requiredPoints: 150,
+  },
+  {
+    id: 'school',
+    name: 'School',
+    room: 'school',
+    terrain: 'castle',
+    description: 'Your school is now a magnificent castle with towers and a moat!',
+    challengeDescription: 'Learn academic words to solve the castle\'s ancient riddles.',
+    isLocked: true,
+    isCompleted: false,
+    requiredPoints: 200,
+  },
+  {
+    id: 'market',
+    name: 'Market',
+    room: 'market',
+    terrain: 'space',
+    description: 'The market has become an interstellar trading post in outer space!',
+    challengeDescription: 'Master shopping and trading vocabulary to barter with alien merchants.',
+    isLocked: true,
+    isCompleted: false,
+    requiredPoints: 250,
+  },
+];

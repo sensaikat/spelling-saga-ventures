@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Lock, Check, ChevronRight, Star, Trophy, Rocket } from 'lucide-react';
-import { Location, useAdventure } from '../contexts/AdventureContext';
+import { Location, useAdventure } from '../contexts/adventure';
 import { useGameStore } from '../utils/gameData';
 
 const terrainColors = {

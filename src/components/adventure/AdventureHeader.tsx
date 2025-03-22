@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Volume2, MapPin } from 'lucide-react';
-import { Location } from '../../contexts/AdventureContext';
+import { Location } from '../../contexts/adventure/types';
 import { terrainIcons } from './TerrainBackground';
 
 interface AdventureHeaderProps {

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useAdventure } from '../contexts/AdventureContext';
+import { useAdventure } from '../contexts/adventure/useAdventure';
 import { useGameStore } from '../utils/gameData';
 import { toast } from '@/components/ui/use-toast';
 

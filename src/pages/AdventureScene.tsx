@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdventureScene from '../components/AdventureScene';
 import SpellingGame from './SpellingGame';
-import { useAdventure } from '../contexts/AdventureContext';
+import { useAdventure } from '../contexts/adventure/useAdventure';
 import GuideCharacter from '../components/GuideCharacter';
 import MagicItems, { MagicItemType } from '../components/MagicItems';
 import { motion } from 'framer-motion';

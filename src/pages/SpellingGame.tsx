@@ -8,7 +8,7 @@ import GameControls from '../components/GameControls';
 import AlphabetHelper from '../components/AlphabetHelper';
 import { toast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
-import { useAdventure } from '../contexts/AdventureContext';
+import { useAdventure } from '../contexts/adventure/useAdventure';
 
 interface SpellingGameProps {
   isAdventure?: boolean;
@@ -83,7 +83,6 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
   }, [selectedLanguage, currentWordList, difficultyLevel]);
   
   useEffect(() => {
-    // Auto-show alphabet helper for non-Latin script languages
     const nonLatinScripts = ['hi', 'bn', 'or', 'ta', 'te', 'ar', 'zh'];
     if (selectedLanguage && nonLatinScripts.includes(selectedLanguage.id)) {
       setShowAlphabetHelper(true);
@@ -178,11 +177,9 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
     setUserInput(newInput);
     setCursorPosition(cursorPosition + char.length);
     
-    // Focus back on the input with cursor at the right position
     if (inputRef.current) {
       inputRef.current.focus();
       
-      // Set selection range after a tiny delay to ensure it works across browsers
       setTimeout(() => {
         if (inputRef.current) {
           const newPosition = cursorPosition + char.length;

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ChevronRight, Flag, Trophy, Star } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Location } from '../../contexts/AdventureContext';
+import { Location } from '../../contexts/adventure/types';
 import { terrainIcons } from './TerrainBackground';
 
 interface AdventureDialogProps {

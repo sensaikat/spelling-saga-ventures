@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Map, Compass } from 'lucide-react';
 import AdventureMap from '../components/AdventureMap';
-import { useAdventure } from '../contexts/AdventureContext';
+import { useAdventure } from '../contexts/adventure/useAdventure';
 import GuideCharacter from '../components/GuideCharacter';
 
 const AdventureMapPage = () => {
