@@ -8,18 +8,18 @@ import CustomerQueriesPanel from '../components/admin/CustomerQueriesPanel';
 import MaintenanceScheduler from '../components/admin/MaintenanceScheduler';
 import SystemMonitoring from '../components/admin/SystemMonitoring';
 import ChatbotManager from '../components/admin/ChatbotManager';
-import { useSubscriptionStore } from '../utils/subscription';
+import { useSubscriptionStore, isPlanActive } from '../utils/subscription';
 
 const Admin = () => {
   // Get the subscription state
   const { subscription } = useSubscriptionStore();
   
   // Check if user has premium access
-  const isPremium = subscription.isSubscribed || 
+  const hasPremiumAccess = subscription.isSubscribed || 
     (subscription.trialEndsAt && new Date(subscription.trialEndsAt) > new Date());
   
   // Redirect non-premium users
-  if (!isPremium) {
+  if (!hasPremiumAccess) {
     return <Navigate to="/subscription" replace />;
   }
 
