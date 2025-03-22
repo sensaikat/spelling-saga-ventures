@@ -1,7 +1,19 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useGameStore } from '../../utils/game';
-import { AdventureContextType, Location } from './types';
+import { AdventureContextType, Location, Character } from './types';
 import { defaultCharacter, defaultLocations } from './defaultData';
+import { 
+  unlockLocationAction, 
+  completeLocationAction, 
+  getNextLocationId,
+  addCreditsAction,
+  addStarAction,
+  setCurrentLocationAction,
+  getCurrentLocation as getLocationById,
+  getNextLocation as getNextLocationByCurrentId
+} from './adventureActions';
+import { saveAdventureState, loadAdventureState } from './adventurePersistence';
 
 export const AdventureContext = createContext<AdventureContextType>({} as AdventureContextType);
 
@@ -11,82 +23,58 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [character, setCharacter] = useState(defaultCharacter);
   const { addPoints } = useGameStore();
 
+  // Load saved adventure state
   useEffect(() => {
-    const savedAdventure = localStorage.getItem('languageAdventure');
-    if (savedAdventure) {
-      try {
-        const { locations: savedLocations, character: savedCharacter, currentLocationId: savedLocationId } = JSON.parse(savedAdventure);
-        setLocations(savedLocations);
-        setCharacter(savedCharacter);
-        setCurrentLocationId(savedLocationId);
-      } catch (e) {
-        console.error("Error loading saved adventure:", e);
-      }
+    const savedState = loadAdventureState();
+    if (savedState) {
+      setLocations(savedState.locations);
+      setCharacter(savedState.character);
+      setCurrentLocationId(savedState.currentLocationId);
     }
   }, []);
 
+  // Save adventure state when it changes
   useEffect(() => {
-    localStorage.setItem('languageAdventure', JSON.stringify({
-      locations,
-      character,
-      currentLocationId
-    }));
+    saveAdventureState(locations, character, currentLocationId);
   }, [locations, character, currentLocationId]);
 
   const unlockLocation = (locationId: string) => {
-    setLocations(prev => prev.map(loc => 
-      loc.id === locationId ? { ...loc, isLocked: false } : loc
-    ));
+    setLocations(prev => unlockLocationAction(prev, locationId));
   };
 
   const completeLocation = (locationId: string) => {
-    setLocations(prev => prev.map(loc => 
-      loc.id === locationId ? { ...loc, isCompleted: true } : loc
-    ));
+    setLocations(prev => completeLocationAction(prev, locationId));
 
-    const currentIndex = locations.findIndex(loc => loc.id === locationId);
-    if (currentIndex >= 0 && currentIndex < locations.length - 1) {
-      const nextLocation = locations[currentIndex + 1];
-      unlockLocation(nextLocation.id);
+    // Unlock next location if it exists
+    const nextLocationId = getNextLocationId(locations, locationId);
+    if (nextLocationId) {
+      unlockLocation(nextLocationId);
     }
 
+    // Add credits and points
     addCredits(50);
-    
     addPoints(50);
   };
 
   const setCurrentLocation = (locationId: string) => {
     setCurrentLocationId(locationId);
-    setCharacter(prev => ({
-      ...prev,
-      currentLocation: locationId
-    }));
+    setCharacter(prev => setCurrentLocationAction(prev, locationId));
   };
 
   const addCredits = (amount: number) => {
-    setCharacter(prev => ({
-      ...prev,
-      credits: prev.credits + amount
-    }));
+    setCharacter(prev => addCreditsAction(prev, amount));
   };
 
   const addStar = () => {
-    setCharacter(prev => ({
-      ...prev,
-      stars: prev.stars + 1
-    }));
+    setCharacter(prev => addStarAction(prev));
   };
 
   const getCurrentLocation = () => {
-    return locations.find(loc => loc.id === currentLocationId);
+    return getLocationById(locations, currentLocationId);
   };
 
   const getNextLocation = () => {
-    const currentIndex = locations.findIndex(loc => loc.id === currentLocationId);
-    if (currentIndex >= 0 && currentIndex < locations.length - 1) {
-      return locations[currentIndex + 1];
-    }
-    return undefined;
+    return getNextLocationByCurrentId(locations, currentLocationId);
   };
 
   return (
