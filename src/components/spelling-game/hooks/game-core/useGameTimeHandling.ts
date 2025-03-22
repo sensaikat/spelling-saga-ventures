@@ -3,36 +3,40 @@ import { useState, useCallback, useEffect } from 'react';
 
 interface UseGameTimeHandlingProps {
   initialTime?: number;
-  isGameCompleted: boolean;
-  onTimeout: () => void;
+  isGameCompleted?: boolean;
+  onTimeout?: () => void;
+  enabled?: boolean;
 }
 
 export const useGameTimeHandling = ({
   initialTime = 60,
-  isGameCompleted,
-  onTimeout
+  isGameCompleted = false,
+  onTimeout = () => {},
+  enabled = true
 }: UseGameTimeHandlingProps) => {
   const [timeRemaining, setTimeRemaining] = useState(initialTime);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
   
   const startTimer = useCallback(() => {
-    setIsTimerRunning(true);
-  }, []);
+    if (enabled) {
+      setIsRunning(true);
+    }
+  }, [enabled]);
   
   const pauseTimer = useCallback(() => {
-    setIsTimerRunning(false);
+    setIsRunning(false);
   }, []);
   
   const resetTimer = useCallback((newTime: number = initialTime) => {
     setTimeRemaining(newTime);
-    setIsTimerRunning(false);
+    setIsRunning(false);
   }, [initialTime]);
   
   // Timer effect that counts down when running
   useEffect(() => {
     let timerInterval: number | undefined;
     
-    if (isTimerRunning && !isGameCompleted && timeRemaining > 0) {
+    if (isRunning && !isGameCompleted && timeRemaining > 0 && enabled) {
       timerInterval = window.setInterval(() => {
         setTimeRemaining((prev) => {
           const newTime = prev - 1;
@@ -51,11 +55,11 @@ export const useGameTimeHandling = ({
         clearInterval(timerInterval);
       }
     };
-  }, [isTimerRunning, isGameCompleted, timeRemaining, pauseTimer, onTimeout]);
+  }, [isRunning, isGameCompleted, timeRemaining, pauseTimer, onTimeout, enabled]);
   
   return {
     timeRemaining,
-    isTimerRunning,
+    isTimerRunning: isRunning,
     startTimer,
     pauseTimer,
     resetTimer

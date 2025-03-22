@@ -10,7 +10,7 @@ import { useGameAnalytics } from '../game-state/useGameAnalytics';
 
 interface GameCoreProps {
   words: Word[];
-  selectedLanguage: Language | string | null;
+  selectedLanguage?: Language | string | null;
   onGameComplete?: (score: number) => void;
   isAdventure?: boolean;
   addPlayerPoints?: (points: number) => void;
@@ -30,9 +30,8 @@ export const useGameCore = ({
     currentWord,
     setCurrentWord,
     wordCount,
-    setWordCount,
     filteredWords
-  } = useGameInitialization(words);
+  } = useGameInitialization({ words });
   
   // Game state management
   const {
@@ -51,7 +50,8 @@ export const useGameCore = ({
     remainingLives,
     setRemainingLives,
     isCheckingAnswer,
-    setIsCheckingAnswer
+    setIsCheckingAnswer,
+    resetGameState
   } = useGameStateManagement();
 
   // Track correct and incorrect words
@@ -115,28 +115,11 @@ export const useGameCore = ({
   }, [incrementHintCounter, setShowHint]);
   
   const handlePlayAgainClick = useCallback(() => {
-    setGameCompleted(false);
+    resetGameState();
     setCurrentWordIndex(0);
-    setUserInput('');
-    setIsCorrect(null);
-    setShowResult(false);
-    setShowHint(false);
-    setScore(0);
-    setRemainingLives(3);
     resetWordTracking();
     resetTimer(60);
-  }, [
-    setGameCompleted,
-    setCurrentWordIndex,
-    setUserInput,
-    setIsCorrect,
-    setShowResult,
-    setShowHint,
-    setScore,
-    setRemainingLives,
-    resetWordTracking,
-    resetTimer
-  ]);
+  }, [resetGameState, setCurrentWordIndex, resetWordTracking, resetTimer]);
   
   const handleAdventureReturn = useCallback(() => {
     setGameCompleted(false);

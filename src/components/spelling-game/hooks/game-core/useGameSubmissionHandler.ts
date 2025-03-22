@@ -23,6 +23,7 @@ interface UseGameSubmissionHandlerProps {
   trackWord?: (word: Word, isCorrect: boolean) => void;
   isCheckingAnswer: boolean;
   setIsCheckingAnswer: (isChecking: boolean) => void;
+  resultDelay?: number;
 }
 
 export const useGameSubmissionHandler = ({
@@ -45,7 +46,8 @@ export const useGameSubmissionHandler = ({
   selectedLanguage,
   trackWord,
   isCheckingAnswer,
-  setIsCheckingAnswer
+  setIsCheckingAnswer,
+  resultDelay = 1500
 }: UseGameSubmissionHandlerProps) => {
   
   const handleSubmit = useCallback((e: React.FormEvent) => {
@@ -104,7 +106,7 @@ export const useGameSubmissionHandler = ({
         setCurrentWordIndex(currentWordIndex + 1);
         setUserInput('');
       }
-    }, 1500);
+    }, resultDelay);
   }, [
     currentWord, 
     isCheckingAnswer, 
@@ -113,6 +115,7 @@ export const useGameSubmissionHandler = ({
     remainingLives, 
     score, 
     selectedLanguage,
+    resultDelay,
     setIsCheckingAnswer,
     setIsCorrect,
     setShowResult,
