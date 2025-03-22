@@ -1,13 +1,15 @@
+
 import { LearningAnalyticsService } from './core';
-import { LearningInsightType, Word } from './types';
+import { Word } from './types';
 
 // Export singleton instance
 export const learningAnalytics = LearningAnalyticsService.getInstance();
 
-// Re-export the types for easier access
-export type { LearningInsight, AdaptiveSettings, PrivacyPreferences } from './types';
+// Re-export types
+export { LearningInsightType } from './types';
+export type { Word } from './types';
 
-// Re-export LearningInsight type
+// Export LearningInsight type
 export interface LearningInsight {
   type: LearningInsightType;
   title: string;

@@ -22,6 +22,8 @@ export const GameStage: React.FC<GameStageProps> = ({
   audioEnabled,
   isSpeaking,
   showAlphabetHelper,
+  timeRemaining,
+  isTimerRunning,
   handleSubmit,
   handleSkipClick,
   handleShowHint,
@@ -45,7 +47,8 @@ export const GameStage: React.FC<GameStageProps> = ({
         remainingLives={remainingLives}
         isAdventure={isAdventure}
         handleAdventureReturn={handleAdventureReturn}
-        navigate={navigate}
+        timeRemaining={timeRemaining}
+        isTimerRunning={isTimerRunning}
       />
       
       <GameContent 
@@ -64,6 +67,8 @@ export const GameStage: React.FC<GameStageProps> = ({
         isAdventure={isAdventure}
         audioEnabled={audioEnabled}
         showAlphabetHelper={showAlphabetHelper}
+        timeRemaining={timeRemaining}
+        isTimerRunning={isTimerRunning}
         handleSubmit={handleSubmit}
         handleSkip={handleSkipClick}
         handleShowHint={handleShowHint}

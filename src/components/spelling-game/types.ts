@@ -10,7 +10,7 @@ export interface SpellingGameContainerProps {
 export interface GameStageProps {
   currentWord: Word;
   userInput: string;
-  setUserInput: (input: string) => void;
+  setUserInput: (value: string) => void;
   score: number;
   wordCount: number;
   currentIndex: number;
@@ -18,10 +18,12 @@ export interface GameStageProps {
   remainingLives: number;
   showHint: boolean;
   isCheckingAnswer: boolean;
-  inputStatus: 'correct' | 'incorrect' | null;
+  inputStatus: InputStatus;
   audioEnabled: boolean;
   isSpeaking: boolean;
   showAlphabetHelper: boolean;
+  timeRemaining?: number;
+  isTimerRunning?: boolean;
   handleSubmit: (e: React.FormEvent) => void;
   handleSkipClick: () => void;
   handleShowHint: () => void;
@@ -31,7 +33,7 @@ export interface GameStageProps {
   speakWord: (word: Word) => void;
   handleAlphabetHelperToggle: () => void;
   handleInputSelect: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>, setUserInput: (value: string) => void) => void;
   handleCharacterClick: (char: string) => void;
   cursorPosition: number;
 }

@@ -34,6 +34,8 @@ export const useSpellingGameContainer = (
     showHint,
     remainingLives,
     showGuide,
+    timeRemaining,
+    isTimerRunning,
     
     setUserInput,
     handleSubmit,
@@ -91,6 +93,10 @@ export const useSpellingGameContainer = (
     remainingLives,
     showGuide,
     terrain,
+    
+    // Timer state
+    timeRemaining,
+    isTimerRunning,
     
     // Game controls
     audioEnabled,

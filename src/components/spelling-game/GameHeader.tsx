@@ -4,17 +4,24 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Home, MapIcon, Settings, Book } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import QuickNav from '../navigation/QuickNav';
+import { GameTimer } from './GameTimer';
 
 interface GameHeaderProps {
   remainingLives: number;
   isAdventure: boolean;
   handleAdventureReturn: () => void;
+  timeRemaining?: number;
+  isTimerRunning?: boolean;
+  isTimerPaused?: boolean;
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({
   remainingLives,
   isAdventure,
   handleAdventureReturn,
+  timeRemaining,
+  isTimerRunning = false,
+  isTimerPaused = false
 }) => {
   const navigate = useNavigate();
   
@@ -33,20 +40,31 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
         <span>{isAdventure ? 'Back to Adventure' : 'Exit Game'}</span>
       </button>
       
-      <div className="flex items-center space-x-2">
-        {/* Use the standardized QuickNav component */}
-        <QuickNav />
+      <div className="flex items-center space-x-4">
+        {/* Timer Display */}
+        {timeRemaining !== undefined && (
+          <GameTimer 
+            timeRemaining={timeRemaining}
+            isRunning={isTimerRunning}
+            isPaused={isTimerPaused}
+          />
+        )}
         
-        <div className="ml-2 flex items-center space-x-2">
-          {Array.from({ length: remainingLives }).map((_, i) => (
-            <motion.div 
-              key={i} 
-              className="w-5 h-5 rounded-full bg-game-red"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: i * 0.2, type: "spring" }}
-            />
-          ))}
+        <div className="flex items-center space-x-2">
+          {/* Use the standardized QuickNav component */}
+          <QuickNav />
+          
+          <div className="ml-2 flex items-center space-x-2">
+            {Array.from({ length: remainingLives }).map((_, i) => (
+              <motion.div 
+                key={i} 
+                className="w-5 h-5 rounded-full bg-game-red"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.2, type: "spring" }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>

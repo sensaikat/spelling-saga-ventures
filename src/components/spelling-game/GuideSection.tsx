@@ -1,33 +1,55 @@
 
-import React from 'react';
-import { TerrainType } from '../../contexts/adventure/types';
+import React, { useEffect, useState } from 'react';
 import { GuideCharacter } from '../guide';
+import { TerrainType } from '../../contexts/adventure/types';
+import { toast } from '@/hooks/use-toast';
 
-export interface GuideSectionProps {
+interface GuideSectionProps {
+  showGuide: boolean;
   isAdventure: boolean;
-  terrain: TerrainType;
-  showGuide?: boolean;
+  terrain?: TerrainType;
+  timeRemaining?: number;
 }
 
 const GuideSection: React.FC<GuideSectionProps> = ({ 
-  isAdventure, 
-  terrain,
-  showGuide = true
+  showGuide,
+  isAdventure,
+  terrain = 'forest',
+  timeRemaining
 }) => {
-  if (!showGuide) {
-    return null;
-  }
-
+  const [nudged, setNudged] = useState(false);
+  
+  // Provide time-based nudges
+  useEffect(() => {
+    if (timeRemaining !== undefined && timeRemaining <= 15 && !nudged) {
+      const guideMessages = [
+        "Hurry! Time is running out!",
+        "Can you solve this before time runs out?",
+        "Quick, try to answer before the timer ends!",
+        "Just a few seconds left! What's your answer?",
+        "Time's almost up! Make your best guess!"
+      ];
+      
+      const randomMessage = guideMessages[Math.floor(Math.random() * guideMessages.length)];
+      toast({
+        title: "Guide says:",
+        description: randomMessage,
+      });
+      
+      setNudged(true);
+    }
+    
+    if (timeRemaining !== undefined && timeRemaining > 20) {
+      setNudged(false);
+    }
+  }, [timeRemaining, nudged]);
+  
   return (
-    <div className="mb-4">
+    <div className="fixed bottom-4 right-4 z-50">
       <GuideCharacter
-        terrain={terrain}
-        isAdventure={isAdventure}
-        proactiveMessage={
-          isAdventure
-            ? "Type the word correctly to continue your adventure!"
-            : "Ready to practice some spelling? I'm here to help!"
-        }
+        selectedAvatar={isAdventure ? terrain : 'default'}
+        showGuide={showGuide}
+        proactiveMessage={nudged ? null : undefined}
       />
     </div>
   );

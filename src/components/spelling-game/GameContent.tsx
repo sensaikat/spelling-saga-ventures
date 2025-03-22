@@ -28,6 +28,8 @@ interface GameContentProps {
   isAdventure: boolean;
   audioEnabled: boolean;
   showAlphabetHelper: boolean;
+  timeRemaining?: number;
+  isTimerRunning?: boolean;
   handleSubmit: (e: React.FormEvent) => void;
   handleSkip: () => void;
   handleShowHint: () => void;
@@ -59,6 +61,8 @@ export const GameContent: React.FC<GameContentProps> = ({
   isAdventure,
   audioEnabled,
   showAlphabetHelper,
+  timeRemaining,
+  isTimerRunning,
   handleSubmit,
   handleSkip,
   handleShowHint,
@@ -86,7 +90,8 @@ export const GameContent: React.FC<GameContentProps> = ({
         remainingLives={remainingLives}
         isAdventure={isAdventure}
         handleAdventureReturn={handleAdventureReturn}
-        navigate={navigate}
+        timeRemaining={timeRemaining}
+        isTimerRunning={isTimerRunning}
       />
       
       <ProgressBar progressPercentage={progressPercentage} />

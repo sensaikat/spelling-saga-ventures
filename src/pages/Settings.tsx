@@ -1,25 +1,33 @@
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/button';
+import { motion } from 'framer-motion';
+import SettingsHeader from '../components/settings/SettingsHeader';
+import AppSettings from '../components/settings/AppSettings';
+import LanguageSettings from '../components/settings/LanguageSettings';
+import ParentalControlsSettings from '../components/settings/ParentalControlsSettings';
+import TimerSettings from '../components/settings/TimerSettings';
 import ResolutionSettings from '../components/settings/ResolutionSettings';
+import AboutSection from '../components/settings/AboutSection';
 
-const Settings: React.FC = () => {
-  const navigate = useNavigate();
-
+const Settings = () => {
   return (
-    <div className="h-screen p-6 bg-gradient-to-b from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
-      
-      <div className="max-w-2xl mx-auto space-y-6">
-        <ResolutionSettings />
+    <div className="min-h-screen py-6 px-4 sm:px-6 md:px-8 bg-gradient-to-b from-purple-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-4xl mx-auto">
+        <SettingsHeader />
         
-        {/* Other settings could go here */}
-        
-        <div className="mt-8">
-          <Button variant="default" onClick={() => navigate('/')}>
-            Back to Home
-          </Button>
-        </div>
+        <motion.div 
+          className="space-y-6 mt-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <AppSettings />
+          <LanguageSettings />
+          <TimerSettings />
+          <ParentalControlsSettings />
+          <ResolutionSettings />
+          <AboutSection />
+        </motion.div>
       </div>
     </div>
   );
