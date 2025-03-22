@@ -5,6 +5,7 @@ import SettingsHeader from '../components/settings/SettingsHeader';
 import LanguageSettings from '../components/settings/LanguageSettings';
 import AppSettings from '../components/settings/AppSettings';
 import AboutSection from '../components/settings/AboutSection';
+import ParentalControlsSettings from '../components/settings/ParentalControlsSettings';
 
 const Settings = () => {
   return (
@@ -13,6 +14,7 @@ const Settings = () => {
         <SettingsHeader />
         
         <div className="max-w-2xl mx-auto">
+          <ParentalControlsSettings />
           <LanguageSettings />
           <AppSettings />
           <AboutSection />
