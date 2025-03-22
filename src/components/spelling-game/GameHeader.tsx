@@ -3,12 +3,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Home, MapIcon, Settings, Book } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import QuickNav from '../navigation/QuickNav';
 
 interface GameHeaderProps {
   remainingLives: number;
   isAdventure: boolean;
   handleAdventureReturn: () => void;
-  navigate: (path: string) => void;
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({
@@ -26,7 +26,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
       transition={{ duration: 0.5 }}
     >
       <button 
-        onClick={() => isAdventure ? handleAdventureReturn() : navigate('/game-mode')} 
+        onClick={() => isAdventure ? handleAdventureReturn() : navigate('/game')} 
         className="text-gray-600 hover:text-gray-900 transition-colors flex items-center"
       >
         <ArrowLeft size={20} className="mr-2" />
@@ -34,46 +34,8 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
       </button>
       
       <div className="flex items-center space-x-2">
-        {/* Quick Navigation Menu */}
-        <motion.button
-          className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/')}
-          aria-label="Home"
-        >
-          <Home size={18} />
-        </motion.button>
-        
-        <motion.button
-          className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/adventure')}
-          aria-label="Adventure Map"
-        >
-          <MapIcon size={18} />
-        </motion.button>
-        
-        <motion.button
-          className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/progress')}
-          aria-label="Progress"
-        >
-          <Book size={18} />
-        </motion.button>
-        
-        <motion.button
-          className="p-2 rounded-full bg-white/70 backdrop-blur-sm shadow-md text-gray-700 hover:bg-white transition-colors"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/settings')}
-          aria-label="Settings"
-        >
-          <Settings size={18} />
-        </motion.button>
+        {/* Use the standardized QuickNav component */}
+        <QuickNav />
         
         <div className="ml-2 flex items-center space-x-2">
           {Array.from({ length: remainingLives }).map((_, i) => (

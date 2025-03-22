@@ -6,14 +6,16 @@ import { useSubscriptionStore } from './utils/subscription';
 import { ThemeAudioProvider } from './contexts/theme/ThemeContext';
 import { ResolutionProvider } from './contexts/resolution/ResolutionContext';
 
-// Import your pages (these need to be created)
+// Import your pages
 import Home from './pages/Home';
 import Adventure from './pages/Adventure';
+import AdventureMapPage from './pages/AdventureMap';
 import AdventureScenePage from './pages/AdventureScene';
 import Settings from './pages/Settings';
 import Game from './pages/Game';
 import Subscription from './pages/Subscription';
 import NotFound from './pages/NotFound';
+import LearningDashboard from './pages/LearningDashboard';
 
 function App() {
   const queryClient = new QueryClient();
@@ -32,11 +34,12 @@ function App() {
             <Router>
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/adventure" element={<Adventure />} />
+                <Route path="/adventure" element={<AdventureMapPage />} />
                 <Route path="/adventure/:locationId" element={<AdventureScenePage />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/game" element={<Game />} />
                 <Route path="/subscription" element={<Subscription />} />
+                <Route path="/progress" element={<LearningDashboard />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Router>
