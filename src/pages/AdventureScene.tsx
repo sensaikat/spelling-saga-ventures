@@ -8,6 +8,8 @@ import GuideCharacter from '../components/GuideCharacter';
 import MagicItems, { MagicItemType } from '../components/MagicItems';
 import { motion } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
+import { languages, Language, useGameStore } from '../utils/game';
+import LanguageSelector from '../components/LanguageSelector';
 
 const AdventureScenePage = () => {
   const navigate = useNavigate();
@@ -15,6 +17,9 @@ const AdventureScenePage = () => {
   const { setCurrentLocation, getCurrentLocation } = useAdventure();
   const [showGame, setShowGame] = useState(false);
   const [activeMagicItem, setActiveMagicItem] = useState<MagicItemType | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(true);
+  const { selectLanguage } = useGameStore();
   
   const currentLocation = getCurrentLocation();
   
@@ -26,6 +31,14 @@ const AdventureScenePage = () => {
   }, [locationId, setCurrentLocation]);
   
   const handleStartChallenge = () => {
+    if (!selectedLanguage) {
+      toast({
+        title: "Language Required",
+        description: "Please select a language first to start the challenge.",
+        variant: "destructive"
+      });
+      return;
+    }
     setShowGame(true);
   };
   
@@ -76,12 +89,24 @@ const AdventureScenePage = () => {
     handleUseMagicItem(randomItem);
   };
   
+  const handleLanguageSelect = (language: Language) => {
+    setSelectedLanguage(language);
+    selectLanguage(language);
+    setShowLanguageSelector(false);
+    
+    toast({
+      title: `${language.name} Selected`,
+      description: `You will play the adventure in ${language.name} (${language.nativeName}).`,
+      duration: 3000,
+    });
+  };
+  
   // Fix for infinite update loop - add a dependency array
   useEffect(() => {
     if (locationId) {
       setCurrentLocation(locationId);
     }
-  }, [locationId]); // Only run when locationId changes
+  }, [locationId, setCurrentLocation]); 
   
   return (
     <div className="min-h-screen">
@@ -99,39 +124,91 @@ const AdventureScenePage = () => {
         </>
       ) : (
         <>
-          <AdventureScene 
-            onStartChallenge={handleStartChallenge}
-            onReturnToMap={handleReturnToMap}
-          />
-          <GuideCharacter 
-            terrain={currentLocation?.terrain}
-            isAdventure={true}
-            onUseMagicItem={handleGuideUseMagicItem}
-          />
-          
-          {/* Magic items toolbar */}
-          <motion.div 
-            className="fixed bottom-6 left-6 z-40 flex flex-col gap-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1, duration: 0.5 }}
-          >
-            <MagicItems 
-              type="lens" 
-              onUse={() => handleUseMagicItem('lens')}
-              isActive={activeMagicItem === 'lens'}
-            />
-            <MagicItems 
-              type="specs" 
-              onUse={() => handleUseMagicItem('specs')}
-              isActive={activeMagicItem === 'specs'}
-            />
-            <MagicItems 
-              type="wand" 
-              onUse={() => handleUseMagicItem('wand')}
-              isActive={activeMagicItem === 'wand'}
-            />
-          </motion.div>
+          {showLanguageSelector ? (
+            <div className="container mx-auto px-4 py-8">
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="max-w-4xl mx-auto text-center mb-8"
+              >
+                <h1 className="text-3xl font-bold mb-2">Choose Your Adventure Language</h1>
+                <p className="text-gray-600">
+                  Select the language you want to practice during your adventure in {currentLocation?.name}.
+                </p>
+              </motion.div>
+              
+              <LanguageSelector onSelect={handleLanguageSelect} />
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="text-center mt-8"
+              >
+                <button 
+                  className="text-blue-500 underline" 
+                  onClick={() => setShowLanguageSelector(false)}
+                >
+                  Skip language selection
+                </button>
+              </motion.div>
+            </div>
+          ) : (
+            <>
+              <AdventureScene 
+                onStartChallenge={handleStartChallenge}
+                onReturnToMap={handleReturnToMap}
+              />
+              <GuideCharacter 
+                terrain={currentLocation?.terrain}
+                isAdventure={true}
+                onUseMagicItem={handleGuideUseMagicItem}
+              />
+              
+              {/* Magic items toolbar */}
+              <motion.div 
+                className="fixed bottom-6 left-6 z-40 flex flex-col gap-4"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1, duration: 0.5 }}
+              >
+                <MagicItems 
+                  type="lens" 
+                  onUse={() => handleUseMagicItem('lens')}
+                  isActive={activeMagicItem === 'lens'}
+                />
+                <MagicItems 
+                  type="specs" 
+                  onUse={() => handleUseMagicItem('specs')}
+                  isActive={activeMagicItem === 'specs'}
+                />
+                <MagicItems 
+                  type="wand" 
+                  onUse={() => handleUseMagicItem('wand')}
+                  isActive={activeMagicItem === 'wand'}
+                />
+              </motion.div>
+              
+              {/* Selected language indicator */}
+              {selectedLanguage && (
+                <motion.div 
+                  className="fixed top-20 right-6 z-40 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md flex items-center gap-2"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <span className="text-xl">{selectedLanguage.flag}</span>
+                  <span className="font-medium">{selectedLanguage.name}</span>
+                  <button 
+                    className="ml-2 text-sm text-blue-500 hover:underline"
+                    onClick={() => setShowLanguageSelector(true)}
+                  >
+                    Change
+                  </button>
+                </motion.div>
+              )}
+            </>
+          )}
         </>
       )}
     </div>
