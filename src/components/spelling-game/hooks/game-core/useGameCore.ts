@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
 import { useGameInitialization } from './useGameInitialization';
 import { useGameStateManagement } from './useGameStateManagement';
@@ -207,3 +207,6 @@ export const useGameCore = ({
     resetTimer
   };
 };
+
+// Add missing imports
+import { useState, useEffect } from 'react';
