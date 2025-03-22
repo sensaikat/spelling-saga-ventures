@@ -48,7 +48,15 @@ const CreateGroupForm: React.FC = () => {
   });
   
   const onSubmit = (values: FormValues) => {
-    createGroup(values);
+    // Fix: Explicitly cast the values to the required type to satisfy TypeScript
+    // Since we're using Zod validation, we know these values will be present
+    createGroup({
+      name: values.name,
+      description: values.description,
+      type: values.type,
+      isPublic: values.isPublic,
+      location: values.location,
+    });
     navigate('/social');
   };
   
