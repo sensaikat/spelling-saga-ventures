@@ -1,50 +1,49 @@
 
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AdventureProvider } from './contexts/adventure';
-import './App.css';
-
-// Pages
+import { Toaster } from './components/ui/toaster';
 import Index from './pages/Index';
 import GameMode from './pages/GameMode';
 import SpellingGame from './pages/SpellingGame';
-import Settings from './pages/Settings';
-import Progress from './pages/Progress';
 import NotFound from './pages/NotFound';
+import MultiLanguageGamePage from './pages/MultiLanguageGamePage';
+import Progress from './pages/Progress';
+import Settings from './pages/Settings';
+import LearningDashboard from './pages/LearningDashboard';
 import AdventureMap from './pages/AdventureMap';
 import AdventureScene from './pages/AdventureScene';
-import LearningDashboard from './pages/LearningDashboard';
-import MultiLanguageGamePage from './pages/MultiLanguageGamePage';
-import { MultiLanguageGame } from './components/multi-language';
+import Subscription from './pages/Subscription';
+import { AdventureProvider } from './contexts/adventure';
+import './App.css';
 
-// Create a client
-const queryClient = new QueryClient();
+// Check and reset daily game count if it's a new day
+const lastPlayedDate = localStorage.getItem('last-played-date');
+const today = new Date().toISOString().split('T')[0];
+
+if (lastPlayedDate !== today) {
+  localStorage.setItem('last-played-date', today);
+  // Reset daily game count will happen in the subscription store
+}
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
+    <Router>
       <AdventureProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/game-mode" element={<GameMode />} />
-            <Route path="/game/:gameId" element={<SpellingGame />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/progress" element={<Progress />} />
-            <Route path="/adventure" element={<AdventureMap />} />
-            <Route path="/adventure/:locationId" element={<AdventureScene />} />
-            <Route path="/learning" element={<LearningDashboard />} />
-            
-            {/* New Multi-Language Routes */}
-            <Route path="/multi-language" element={<MultiLanguageGame />} />
-            <Route path="/multi-language-game" element={<MultiLanguageGamePage />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/game-mode" element={<GameMode />} />
+          <Route path="/game" element={<SpellingGame />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/multi-language" element={<MultiLanguageGamePage />} />
+          <Route path="/learning-dashboard" element={<LearningDashboard />} />
+          <Route path="/adventure" element={<AdventureMap />} />
+          <Route path="/adventure/:locationId" element={<AdventureScene />} />
+          <Route path="/subscription" element={<Subscription />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <Toaster />
       </AdventureProvider>
-    </QueryClientProvider>
+    </Router>
   );
 }
 

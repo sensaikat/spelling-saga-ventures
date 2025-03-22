@@ -5,6 +5,8 @@ import { Word, useGameStore } from '../../../../utils/game';
 import { useGameAnalytics } from './useGameAnalytics';
 import { useGameProgress } from './useGameProgress';
 import { useGameDifficulty } from './useGameDifficulty';
+import { useSubscriptionStore } from '../../../../utils/subscription';
+import { useToast } from '../../../../hooks/use-toast';
 
 export const useGameCore = (
   isAdventure: boolean,
@@ -12,12 +14,20 @@ export const useGameCore = (
   initialWords: Word[] = []
 ) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { 
     selectedLanguage, 
     selectedGameMode, 
     currentWordList,
     checkAndUpdateStreak
   } = useGameStore();
+  
+  const { 
+    remainingDailyGames,
+    decrementDailyGames,
+    checkAccess,
+    limits
+  } = useSubscriptionStore();
   
   // Game state
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -44,11 +54,51 @@ export const useGameCore = (
   useEffect(() => {
     if (!isAdventure && (!selectedLanguage || !selectedGameMode || !currentWordList)) {
       navigate('/');
+      return;
+    }
+    
+    // Check if adventure mode is accessible
+    if (isAdventure && !checkAccess('adventureMode')) {
+      toast({
+        title: "Premium Feature",
+        description: "Adventure mode is only available for premium subscribers",
+        variant: "destructive",
+      });
+      navigate('/');
+      return;
     }
     
     // Update streak when starting a game
     checkAndUpdateStreak();
-  }, [selectedLanguage, selectedGameMode, currentWordList, navigate, isAdventure, checkAndUpdateStreak]);
+    
+    // Check daily game limits
+    if (!limits.gamePlay.unlimited && remainingDailyGames <= 0) {
+      toast({
+        title: "Daily limit reached",
+        description: "You've used all your free games for today. Upgrade to play more!",
+        variant: "destructive",
+      });
+      navigate('/subscription');
+      return;
+    }
+    
+    // Decrement daily game count
+    if (!limits.gamePlay.unlimited) {
+      decrementDailyGames();
+    }
+  }, [
+    selectedLanguage, 
+    selectedGameMode, 
+    currentWordList, 
+    navigate, 
+    isAdventure, 
+    checkAndUpdateStreak, 
+    limits.gamePlay.unlimited,
+    remainingDailyGames,
+    decrementDailyGames,
+    checkAccess,
+    toast
+  ]);
   
   const resetGameState = () => {
     setUserInput('');
@@ -61,6 +111,22 @@ export const useGameCore = (
   };
   
   const handlePlayAgain = () => {
+    // Check daily game limits before restarting
+    if (!limits.gamePlay.unlimited && remainingDailyGames <= 0) {
+      toast({
+        title: "Daily limit reached",
+        description: "You've used all your free games for today. Upgrade to play more!",
+        variant: "destructive",
+      });
+      navigate('/subscription');
+      return;
+    }
+    
+    // Decrement daily game count if not unlimited
+    if (!limits.gamePlay.unlimited) {
+      decrementDailyGames();
+    }
+    
     setCurrentWordIndex(0);
     resetGameState();
   };

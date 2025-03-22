@@ -1,11 +1,16 @@
 
 import React from 'react';
-import { Globe, Wifi, WifiOff, Download, Trash } from 'lucide-react';
+import { Globe, Wifi, WifiOff, Download, Trash, CreditCard } from 'lucide-react';
 import { useGameStore } from '../../utils/game';
 import { motion } from 'framer-motion';
+import { useSubscriptionStore } from '../../utils/subscription';
+import { useNavigate } from 'react-router-dom';
+import { FreemiumFeatureGate } from '../subscription';
 
 const AppSettings = () => {
+  const navigate = useNavigate();
   const { isOfflineMode, toggleOfflineMode } = useGameStore();
+  const { subscription } = useSubscriptionStore();
   
   const handleClearProgress = () => {
     if (window.confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
@@ -28,42 +33,71 @@ const AppSettings = () => {
       </div>
       
       <div className="mb-4">
-        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+        <FreemiumFeatureGate feature="offlineMode">
+          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+            <div className="flex items-center gap-3">
+              {isOfflineMode ? <WifiOff size={20} /> : <Wifi size={20} />}
+              <div>
+                <p className="font-medium">Offline Mode</p>
+                <p className="text-xs text-gray-500">
+                  {isOfflineMode 
+                    ? "You can use the app without internet connection" 
+                    : "App requires internet connection"}
+                </p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={toggleOfflineMode}
+              className={`w-12 h-6 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${
+                isOfflineMode ? 'bg-game-green justify-end' : 'bg-gray-300 justify-start'
+              }`}
+            >
+              <span className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+                isOfflineMode ? 'translate-x-0' : '-translate-x-1'
+              }`} />
+            </button>
+          </div>
+        </FreemiumFeatureGate>
+      </div>
+      
+      <div className="p-3 border border-gray-200 rounded-lg mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {isOfflineMode ? <WifiOff size={20} /> : <Wifi size={20} />}
+            <CreditCard size={20} className="text-game-purple" />
             <div>
-              <p className="font-medium">Offline Mode</p>
+              <p className="font-medium">Subscription</p>
               <p className="text-xs text-gray-500">
-                {isOfflineMode 
-                  ? "You can use the app without internet connection" 
-                  : "App requires internet connection"}
+                {subscription.isSubscribed 
+                  ? `Currently on ${subscription.currentPlan?.name} plan` 
+                  : "Upgrade to access premium features"}
               </p>
             </div>
           </div>
           
-          <button 
-            onClick={toggleOfflineMode}
-            className={`w-12 h-6 rounded-full flex items-center transition-colors duration-300 focus:outline-none ${
-              isOfflineMode ? 'bg-game-green justify-end' : 'bg-gray-300 justify-start'
-            }`}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate('/subscription')}
+            className="text-purple-600 flex items-center gap-2 px-3 py-1 rounded-lg border border-purple-200 hover:bg-purple-50 transition-colors"
           >
-            <span className={`w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
-              isOfflineMode ? 'translate-x-0' : '-translate-x-1'
-            }`} />
-          </button>
+            <span>{subscription.isSubscribed ? "Manage" : "Upgrade"}</span>
+          </motion.button>
         </div>
       </div>
       
       <div className="mb-4 mt-6">
         <div className="flex justify-between">
-          <motion.button 
-            className="text-gray-700 flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Download size={18} />
-            <span>Download Data for Offline</span>
-          </motion.button>
+          <FreemiumFeatureGate feature="offlineMode">
+            <motion.button 
+              className="text-gray-700 flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Download size={18} />
+              <span>Download Data for Offline</span>
+            </motion.button>
+          </FreemiumFeatureGate>
           
           <motion.button 
             className="text-red-600 flex items-center gap-2 px-4 py-2 rounded-lg border border-red-200 hover:bg-red-50 transition-colors"
