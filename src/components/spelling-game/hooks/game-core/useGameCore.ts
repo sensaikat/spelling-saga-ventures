@@ -7,6 +7,8 @@ import { useGameSubmissionHandler } from './useGameSubmissionHandler';
 import { useGameTimeHandling } from './useGameTimeHandling';
 import { useWordTracking } from './useWordTracking';
 import { useGameAnalytics } from '../game-state/useGameAnalytics';
+import { useGameEvents } from './useGameEvents';
+import { useGameReset } from './useGameReset';
 
 /**
  * Props for the useGameCore hook
@@ -30,16 +32,7 @@ interface GameCoreProps {
 /**
  * Core hook for the spelling game
  * 
- * This hook integrates all the game functionality:
- * - Word initialization and management
- * - Game state management (score, lives, etc.)
- * - Game time handling (countdown timer)
- * - Word submission and validation
- * - Word tracking for statistics
- * - Game analytics
- * 
- * It serves as the central coordinator for the spelling game,
- * delegating specific functionality to specialized hooks.
+ * This hook integrates all the game functionality by composing specialized hooks
  * 
  * @param {GameCoreProps} props - Game configuration
  * @returns Complete game state and control functions
@@ -95,6 +88,19 @@ export const useGameCore = ({
   // Game analytics
   const { recordWordAttempt, incrementHintCounter } = useGameAnalytics();
   
+  // Time handling
+  const {
+    timeRemaining,
+    isTimerRunning,
+    startTimer,
+    pauseTimer,
+    resetTimer
+  } = useGameTimeHandling({
+    initialTime: 60,
+    isGameCompleted: gameCompleted,
+    onTimeout: () => setGameCompleted(true)
+  });
+  
   // Game submission handler
   const {
     handleSubmit: wordSubmitHandler,
@@ -122,17 +128,22 @@ export const useGameCore = ({
     setIsCheckingAnswer
   });
   
-  // Time handling
-  const {
-    timeRemaining,
-    isTimerRunning,
-    startTimer,
-    pauseTimer,
-    resetTimer
-  } = useGameTimeHandling({
-    initialTime: 60,
-    isGameCompleted: gameCompleted,
-    onTimeout: () => setGameCompleted(true)
+  // Game events
+  const { handleAdventureReturn } = useGameEvents({
+    onGameComplete,
+    score,
+    setGameCompleted,
+    isAdventure,
+    addPlayerPoints
+  });
+  
+  // Game reset
+  const { handlePlayAgainClick } = useGameReset({
+    resetGameState,
+    resetWordTracking,
+    setCurrentWordIndex,
+    resetTimer,
+    initialTime: 60
   });
   
   /**
@@ -142,26 +153,6 @@ export const useGameCore = ({
     incrementHintCounter();
     setShowHint(true);
   }, [incrementHintCounter, setShowHint]);
-  
-  /**
-   * Resets the game to start over
-   */
-  const handlePlayAgainClick = useCallback(() => {
-    resetGameState();
-    setCurrentWordIndex(0);
-    resetWordTracking();
-    resetTimer(60);
-  }, [resetGameState, setCurrentWordIndex, resetWordTracking, resetTimer]);
-  
-  /**
-   * Handles returning from adventure mode
-   */
-  const handleAdventureReturn = useCallback(() => {
-    setGameCompleted(false);
-    if (onGameComplete) {
-      onGameComplete(score);
-    }
-  }, [onGameComplete, score, setGameCompleted]);
   
   /**
    * Handles form submission with analytics tracking
