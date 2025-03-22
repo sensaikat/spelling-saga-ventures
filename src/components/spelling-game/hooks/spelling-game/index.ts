@@ -7,3 +7,6 @@ export * from './useGameGuide';
 export * from './useGameCulture';
 export * from './useGameHandlers';
 export * from './useGameInitializer';
+export * from './useGuideState';
+export * from './useGuideTimers';
+export * from './useGuideMessages';
