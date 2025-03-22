@@ -14,34 +14,47 @@ interface OptionButtonProps {
 const OptionButton: React.FC<OptionButtonProps> = ({ option, languageId, onSelect }) => {
   const { speakWord, isSpeaking } = useSpeech();
   
-  // Default image mapping
+  // Improved image mapping with clearer, more accurate images
   const defaultImages: Record<string, string> = {
-    'apple': 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9',
-    'banana': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e',
-    'cat': 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
-    'dog': 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8',
-    'elephant': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46',
-    'flower': 'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d',
-    'giraffe': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50',
-    'house': 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83',
-    'manzana': 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9',
-    'plátano': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e',
-    'gato': 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
-    'perro': 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8',
-    'elefante': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46',
-    'flor': 'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d',
-    'jirafa': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50',
-    'casa': 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83',
-    'सेब': 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9',
-    'केला': 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e',
-    'बिल्ली': 'https://images.unsplash.com/photo-1582562124811-c09040d0a901',
-    'कुत्ता': 'https://images.unsplash.com/photo-1587402092301-725e37c70fd8',
-    'हाथी': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46',
-    'फूल': 'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d',
+    // English
+    'apple': 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=600',
+    'banana': 'https://images.unsplash.com/photo-1543218024-57a70143c369?q=80&w=600',
+    'cat': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600',
+    'dog': 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=600',
+    'elephant': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=600',
+    'flower': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=600',
+    'giraffe': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50?q=80&w=600',
+    'house': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=600',
+    'tiger': 'https://images.unsplash.com/photo-1549480017-d76466a4b7e8?q=80&w=600',
+    'penguin': 'https://images.unsplash.com/photo-1598439210625-5067c578f3f6?q=80&w=600',
+    'zebra': 'https://images.unsplash.com/photo-1526095179574-86e545346ae6?q=80&w=600',
+    'kangaroo': 'https://images.unsplash.com/photo-1590668158521-3501fab07eaf?q=80&w=600',
+    'dolphin': 'https://images.unsplash.com/photo-1607153333879-c174d265f1d2?q=80&w=600',
+    'octopus': 'https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?q=80&w=600',
+    
+    // Spanish
+    'manzana': 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=600',
+    'plátano': 'https://images.unsplash.com/photo-1543218024-57a70143c369?q=80&w=600',
+    'gato': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600',
+    'perro': 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=600',
+    'elefante': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=600',
+    'flor': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=600',
+    'jirafa': 'https://images.unsplash.com/photo-1547721064-da6cfb341d50?q=80&w=600',
+    'casa': 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=600',
+    
+    // Hindi
+    'सेब': 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?q=80&w=600',
+    'केला': 'https://images.unsplash.com/photo-1543218024-57a70143c369?q=80&w=600',
+    'बिल्ली': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=600',
+    'कुत्ता': 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=600',
+    'हाथी': 'https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?q=80&w=600',
+    'फूल': 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=600',
+
+    // Additional languages can follow the same pattern
   };
   
   // Use provided image or get from default mapping or use placeholder
-  const imageUrl = option.image || defaultImages[option.text.toLowerCase()] || 'https://images.unsplash.com/photo-1472396961693-142e6e269027';
+  const imageUrl = option.image || defaultImages[option.text.toLowerCase()] || 'https://images.unsplash.com/photo-1579547945413-497e1b99dac0?q=80&w=600';
   
   return (
     <motion.button
@@ -57,7 +70,7 @@ const OptionButton: React.FC<OptionButtonProps> = ({ option, languageId, onSelec
           className="w-full h-full object-cover" 
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.src = 'https://images.unsplash.com/photo-1472396961693-142e6e269027';
+            target.src = 'https://images.unsplash.com/photo-1579547945413-497e1b99dac0?q=80&w=600';
           }}
         />
       </div>
