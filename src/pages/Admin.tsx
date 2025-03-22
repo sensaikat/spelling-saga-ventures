@@ -8,6 +8,7 @@ import CustomerQueriesPanel from '../components/admin/CustomerQueriesPanel';
 import MaintenanceScheduler from '../components/admin/MaintenanceScheduler';
 import SystemMonitoring from '../components/admin/SystemMonitoring';
 import ChatbotManager from '../components/admin/ChatbotManager';
+import LearningAnalyticsPanel from '../components/admin/analytics/LearningAnalyticsPanel';
 import { useSubscriptionStore, isPlanActive } from '../utils/subscription';
 
 const Admin = () => {
@@ -28,11 +29,12 @@ const Admin = () => {
       <AdminHeader />
       
       <Tabs defaultValue="monitoring" className="mt-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="monitoring">System Monitoring</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
           <TabsTrigger value="queries">Customer Queries</TabsTrigger>
           <TabsTrigger value="chatbot">Chatbot Settings</TabsTrigger>
+          <TabsTrigger value="analytics">Learning Analytics</TabsTrigger>
         </TabsList>
         
         <TabsContent value="monitoring" className="mt-6">
@@ -56,6 +58,12 @@ const Admin = () => {
         <TabsContent value="chatbot" className="mt-6">
           <Card className="p-6">
             <ChatbotManager />
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="analytics" className="mt-6">
+          <Card className="p-6">
+            <LearningAnalyticsPanel />
           </Card>
         </TabsContent>
       </Tabs>

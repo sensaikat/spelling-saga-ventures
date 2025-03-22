@@ -1,124 +1,98 @@
 
+import { useCallback } from 'react';
 import { Word } from '../../../../utils/game';
-import { Language } from '../../../../utils/game/types';
+import { useGameAnalytics } from './useGameAnalytics';
 
 interface UseWordSubmissionProps {
-  currentWord: Word;
-  filteredWords: Word[];
-  currentWordIndex: number;
-  setCurrentWordIndex: (index: number) => void;
+  currentWord: Word | null;
+  selectedLanguage: string | null;
+  userInput: string;
   setUserInput: (input: string) => void;
-  setIsCorrect: (correct: boolean | null) => void;
+  setIsCorrect: (isCorrect: boolean | null) => void;
   setShowResult: (show: boolean) => void;
-  setShowHint: (show: boolean) => void;
-  setGameCompleted: (completed: boolean) => void;
-  score: number;
   setScore: (score: number) => void;
-  remainingLives: number;
+  score: number;
+  setCorrectWords: (words: Word[]) => void;
+  correctWords: Word[];
+  setIncorrectWords: (words: Word[]) => void;
+  incorrectWords: Word[];
   setRemainingLives: (lives: number) => void;
-  recordWordAttempt: (word: Word, correct: boolean, selectedLanguage: Language | string) => void;
-  updateProgress: (wordId: string, isCorrect: boolean) => void;
-  addPlayerPoints: (points: number) => void;
-  selectedLanguage: Language | null | string;
+  remainingLives: number;
+  updateProgress?: (wordId: string, isCorrect: boolean) => void;
+  addPlayerPoints?: (points: number) => void;
 }
 
 export const useWordSubmission = ({
   currentWord,
-  filteredWords,
-  currentWordIndex,
-  setCurrentWordIndex,
+  selectedLanguage,
+  userInput,
   setUserInput,
   setIsCorrect,
   setShowResult,
-  setShowHint,
-  setGameCompleted,
-  score,
   setScore,
-  remainingLives,
+  score,
+  setCorrectWords,
+  correctWords,
+  setIncorrectWords,
+  incorrectWords,
   setRemainingLives,
-  recordWordAttempt,
-  updateProgress,
-  addPlayerPoints,
-  selectedLanguage
+  remainingLives,
+  updateProgress = () => {},
+  addPlayerPoints = () => {}
 }: UseWordSubmissionProps) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const { recordWordAttempt } = useGameAnalytics();
+
+  // Handle form submission
+  const handleSubmit = useCallback((event: React.FormEvent) => {
+    event.preventDefault();
     
     if (!currentWord) return;
     
     // Get the user input from the form
-    const formElement = e.target as HTMLFormElement;
+    const formElement = event.target as HTMLFormElement;
     const formData = new FormData(formElement);
-    const userInput = formData.get('wordInput')?.toString() || '';
+    const userInputValue = formData.get('wordInput')?.toString() || '';
     
-    const isCorrect = userInput.trim().toLowerCase() === currentWord.text.toLowerCase();
+    const isCorrectAnswer = userInputValue.trim().toLowerCase() === currentWord.text.toLowerCase();
     
-    setIsCorrect(isCorrect);
+    // Record the attempt in analytics
+    recordWordAttempt(currentWord, isCorrectAnswer, selectedLanguage);
+    
+    // Update UI
+    setIsCorrect(isCorrectAnswer);
     setShowResult(true);
     
-    // Record analytics
-    if (selectedLanguage) {
-      recordWordAttempt(currentWord, isCorrect, selectedLanguage);
-    }
-    
-    // Update score
-    if (isCorrect) {
-      setScore(score + 10);
+    // Update score and progress
+    if (isCorrectAnswer) {
+      setScore(prevScore => prevScore + 10);
       addPlayerPoints(2);
+      setCorrectWords([...correctWords, currentWord]);
     } else {
-      setRemainingLives(remainingLives - 1);
+      setRemainingLives(prevLives => prevLives - 1);
+      setIncorrectWords([...incorrectWords, currentWord]);
     }
     
-    // Update progress
+    // Update progress in game store
     if (currentWord.id) {
-      updateProgress(currentWord.id, isCorrect);
+      updateProgress(currentWord.id, isCorrectAnswer);
     }
-    
-    // Move to next word after a delay
-    setTimeout(() => {
-      setShowResult(false);
-      setShowHint(false);
-      
-      if (currentWordIndex >= filteredWords.length - 1 || remainingLives <= 1 && !isCorrect) {
-        // Game over
-        setGameCompleted(true);
-      } else if (isCorrect || remainingLives > 1) {
-        // Move to next word
-        setCurrentWordIndex(currentWordIndex + 1);
-        setUserInput('');
-      }
-    }, 1500);
-  };
-  
-  const handleSkip = () => {
-    if (!currentWord) return;
-    
-    // Record as incorrect
-    if (selectedLanguage) {
-      recordWordAttempt(currentWord, false, selectedLanguage);
-    }
-    
-    // Reduce score or lives
-    setRemainingLives(remainingLives - 1);
-    
-    // Check if game is over
-    if (remainingLives <= 1) {
-      setGameCompleted(true);
-      return;
-    }
-    
-    // Move to next word
-    if (currentWordIndex < filteredWords.length - 1) {
-      setCurrentWordIndex(currentWordIndex + 1);
-      setUserInput('');
-      setShowHint(false);
-    } else {
-      setGameCompleted(true);
-    }
-  };
-  
+  }, [
+    currentWord,
+    selectedLanguage,
+    correctWords,
+    incorrectWords,
+    setIsCorrect,
+    setShowResult,
+    setScore,
+    addPlayerPoints,
+    setCorrectWords,
+    setRemainingLives,
+    setIncorrectWords,
+    updateProgress,
+    recordWordAttempt
+  ]);
+
   return {
-    handleSubmit,
-    handleSkip
+    handleSubmit
   };
 };

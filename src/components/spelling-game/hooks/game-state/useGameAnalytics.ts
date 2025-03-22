@@ -7,8 +7,14 @@ export const useGameAnalytics = () => {
   const wordStartTimeRef = useRef<number>(Date.now());
   const wordHintsUsedRef = useRef<number>(0);
   
-  const recordWordAttempt = (word: Word, correct: boolean, selectedLanguage: Language | string) => {
+  const recordWordAttempt = (word: Word, correct: boolean, selectedLanguage: Language | string | null) => {
     const attemptDuration = Date.now() - wordStartTimeRef.current;
+    
+    // If no language selected, use a default
+    if (!selectedLanguage) {
+      console.warn('No language selected for analytics. Using default.');
+      selectedLanguage = 'english';
+    }
     
     // If selectedLanguage is a string, we need to handle it differently
     // The analytics service expects a Language object
