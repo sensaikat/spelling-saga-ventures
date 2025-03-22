@@ -1,13 +1,15 @@
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { languages, useGameStore } from '../utils/game';
+import { languages, useGameStore, Language } from '../utils/game';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-const LanguageSelector = () => {
-  const navigate = useNavigate();
-  const { selectLanguage } = useGameStore();
+interface LanguageSelectorProps {
+  onSelect: (language: Language) => void;
+}
+
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({ onSelect }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLanguages, setFilteredLanguages] = useState(languages);
@@ -25,12 +27,11 @@ const LanguageSelector = () => {
     }
   }, [searchQuery]);
 
-  const handleLanguageSelect = (language: typeof languages[0], index: number) => {
+  const handleLanguageSelect = (language: Language, index: number) => {
     setSelectedIndex(index);
-    selectLanguage(language);
     
     setTimeout(() => {
-      navigate('/game-mode');
+      onSelect(language);
     }, 800);
   };
 
