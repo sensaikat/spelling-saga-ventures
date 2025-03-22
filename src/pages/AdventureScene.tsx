@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import AnimatedCompanion from '../components/adventure/AnimatedCompanion';
 import { TerrainType } from '../contexts/adventure/types';
 import AdventureSceneComponent from '../components/AdventureScene';
+import { ScrollArea } from '../components/ui/scroll-area';
 
 const AdventureScenePage: React.FC = () => {
   const { locationId } = useParams<{ locationId: string }>();
@@ -40,17 +41,19 @@ const AdventureScenePage: React.FC = () => {
             </Button>
           </div>
           
-          <div className="flex flex-col items-center justify-center h-full p-6">
-            <h1 className="text-4xl font-bold mb-8 capitalize">
-              {locationId} Challenge
-            </h1>
-            
-            <div className="bg-white/80 dark:bg-gray-800/80 rounded-lg p-6 max-w-lg w-full shadow-lg">
-              <p className="text-lg mb-4">
-                This is where the language challenge for the {locationId} would appear.
-              </p>
+          <ScrollArea className="h-full">
+            <div className="flex flex-col items-center justify-center min-h-full p-6">
+              <h1 className="text-4xl font-bold mb-8 capitalize">
+                {locationId} Challenge
+              </h1>
+              
+              <div className="bg-white/80 dark:bg-gray-800/80 rounded-lg p-6 max-w-lg w-full shadow-lg">
+                <p className="text-lg mb-4">
+                  This is where the language challenge for the {locationId} would appear.
+                </p>
+              </div>
             </div>
-          </div>
+          </ScrollArea>
           
           <AnimatedCompanion terrain={terrain} />
         </div>

@@ -10,6 +10,7 @@ import { Button } from './ui/button';
 import { MessageCircle, Search } from 'lucide-react';
 import { GuideCharacter } from './guide';
 import { toast } from '@/hooks/use-toast';
+import { ScrollArea } from './ui/scroll-area';
 
 const AdventureScene: React.FC<{
   onStartChallenge: () => void;
@@ -56,44 +57,46 @@ const AdventureScene: React.FC<{
   return (
     <>
       <TerrainBackground terrain={currentLocation.terrain}>
-        <div className="max-w-4xl mx-auto">
-          <AdventureHeader
-            currentLocation={currentLocation}
-            character={character}
-            selectedLanguage={selectedLanguage}
-            onReturnToMap={onReturnToMap}
-            onToggleTips={handleToggleTips}
-            showTips={showTips}
-          />
-          
-          <AdventureContent
-            currentLocation={currentLocation}
-            showTips={showTips}
-            onStartChallenge={() => {
-              onStartChallenge();
-            }}
-          />
-
-          <div className="flex justify-center gap-4 mt-6">
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2" 
-              onClick={handleTalkToGuide}
-            >
-              <MessageCircle size={18} />
-              Talk to Guide
-            </Button>
+        <ScrollArea className="h-[calc(100vh-4rem)] px-2">
+          <div className="max-w-4xl mx-auto pb-20">
+            <AdventureHeader
+              currentLocation={currentLocation}
+              character={character}
+              selectedLanguage={selectedLanguage}
+              onReturnToMap={onReturnToMap}
+              onToggleTips={handleToggleTips}
+              showTips={showTips}
+            />
             
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2" 
-              onClick={handleFindHiddenObjects}
-            >
-              <Search size={18} />
-              Find Hidden Objects
-            </Button>
+            <AdventureContent
+              currentLocation={currentLocation}
+              showTips={showTips}
+              onStartChallenge={() => {
+                onStartChallenge();
+              }}
+            />
+
+            <div className="flex justify-center gap-4 mt-6">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2" 
+                onClick={handleTalkToGuide}
+              >
+                <MessageCircle size={18} />
+                Talk to Guide
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2" 
+                onClick={handleFindHiddenObjects}
+              >
+                <Search size={18} />
+                Find Hidden Objects
+              </Button>
+            </div>
           </div>
-        </div>
+        </ScrollArea>
       </TerrainBackground>
       
       <AdventureMagicItems onUseMagicItem={handleUseMagicItem} />
