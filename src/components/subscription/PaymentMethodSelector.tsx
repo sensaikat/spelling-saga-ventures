@@ -2,23 +2,36 @@
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { Label } from '../ui/label';
+import { Check } from 'lucide-react';
 import { availablePaymentMethods, PaymentMethodType, PaymentMethod } from '../../utils/payment/paymentMethods';
 import { cn } from '../../lib/utils';
 
 interface PaymentMethodSelectorProps {
   selectedMethod: PaymentMethodType;
   onSelectMethod: (method: PaymentMethodType) => void;
+  title?: string;
+  className?: string;
 }
 
 const PaymentMethodSelector = ({ 
   selectedMethod, 
-  onSelectMethod 
+  onSelectMethod,
+  title = 'Payment Method',
+  className
 }: PaymentMethodSelectorProps) => {
   const methods = availablePaymentMethods();
   
+  if (methods.length === 0) {
+    return (
+      <div className="p-4 text-center text-gray-500 border rounded-md">
+        No payment methods available
+      </div>
+    );
+  }
+  
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-medium mb-3">Payment Method</h3>
+    <div className={cn("space-y-4", className)}>
+      {title && <h3 className="text-sm font-medium mb-3">{title}</h3>}
       
       <RadioGroup 
         value={selectedMethod} 
@@ -72,6 +85,9 @@ const PaymentMethodOption = ({ method, isSelected }: PaymentMethodOptionProps) =
           <div className="font-medium">{method.name}</div>
           <div className="text-xs text-gray-500">{method.description}</div>
         </div>
+        {isSelected && (
+          <Check className="h-5 w-5 text-purple-600" />
+        )}
       </Label>
     </div>
   );
