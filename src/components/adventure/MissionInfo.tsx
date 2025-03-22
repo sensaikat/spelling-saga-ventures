@@ -11,6 +11,9 @@ import {
   Waves, 
   Rocket 
 } from 'lucide-react';
+import { useGameStore } from '../../utils/game';
+import TranslatedWord from './TranslatedWord';
+import { vocabularyTranslations } from '../../utils/translations/vocabularyTranslations';
 
 interface MissionInfoProps {
   description: string;
@@ -24,6 +27,7 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
   terrain
 }) => {
   const companion = terrainCompanions[terrain];
+  const { selectedLanguage } = useGameStore();
   
   // Cultural insights based on terrain type with added emphasis on heritage
   const culturalInsight = React.useMemo(() => {
@@ -58,9 +62,42 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
     }
   };
   
+  // Process description to wrap key vocabulary words in TranslatedWord components
+  const processDescription = (text: string) => {
+    const keyWordsRegex = new RegExp(
+      Object.keys(vocabularyTranslations).join('|'), 
+      'gi'
+    );
+    
+    // Split the text based on matches
+    const parts = text.split(keyWordsRegex);
+    const matches = text.match(keyWordsRegex) || [];
+    
+    // Interleave the parts with TranslatedWord components
+    return parts.reduce((result, part, index) => {
+      result.push(part);
+      if (index < matches.length) {
+        const match = matches[index].toLowerCase();
+        if (vocabularyTranslations[match]) {
+          result.push(
+            <TranslatedWord 
+              key={`${match}-${index}`}
+              word={matches[index]} 
+              translations={vocabularyTranslations[match]}
+              language={selectedLanguage}
+            />
+          );
+        } else {
+          result.push(matches[index]);
+        }
+      }
+      return result;
+    }, [] as React.ReactNode[]);
+  };
+  
   return (
     <>
-      <p className="mb-4 text-gray-700">{description}</p>
+      <p className="mb-4 text-gray-700">{processDescription(description)}</p>
       
       {culturalInsight && (
         <motion.div
@@ -74,7 +111,7 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
               <span className="mr-1">💫</span>
               {getTerrainIcon()}
             </span>
-            <p>{culturalInsight}</p>
+            <p>{processDescription(culturalInsight)}</p>
           </div>
         </motion.div>
       )}
@@ -89,7 +126,7 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
           <span className="text-2xl mr-3 mt-1">{companion}</span>
           <div>
             <p className="font-medium mb-1">Your mission:</p>
-            <p>{challengeDescription}</p>
+            <p>{processDescription(challengeDescription)}</p>
           </div>
         </div>
       </motion.div>
