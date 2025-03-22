@@ -1,7 +1,11 @@
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Word } from '../../../../utils/game';
-import { useGameProgress } from '../game-state/useGameProgress';
+import { 
+  useSubmissionHandler, 
+  useWordNavigation,
+  useGameLifecycleActions
+} from './actions';
 
 interface UseSpellingGameActionsProps {
   words: Word[];
@@ -54,127 +58,51 @@ export const useSpellingGameActions = ({
   incorrectWords,
   setIncorrectWords
 }: UseSpellingGameActionsProps) => {
-  const { updateProgress, addPlayerPoints } = useGameProgress();
+  // Get current word and filtered words list
   const currentWord = words[currentWordIndex] || null;
   const filteredWords = words.filter(word => word);
   
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!currentWord) return;
-    
-    // Get the user input from the form
-    const formElement = e.target as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const userInputValue = formData.get('wordInput')?.toString() || '';
-    
-    const isCorrectAnswer = userInputValue.trim().toLowerCase() === currentWord.text.toLowerCase();
-    
-    setIsCorrect(isCorrectAnswer);
-    setShowResult(true);
-    
-    // Update score
-    if (isCorrectAnswer) {
-      setScore(score + 10);
-      addPlayerPoints(2);
-      setCorrectWords([...correctWords, currentWord]);
-    } else {
-      setRemainingLives(remainingLives - 1);
-      setIncorrectWords([...incorrectWords, currentWord]);
-    }
-    
-    // Update progress
-    if (currentWord.id) {
-      updateProgress(currentWord.id, isCorrectAnswer);
-    }
-    
-    // Move to next word after a delay
-    setTimeout(() => {
-      setShowResult(false);
-      setShowHint(false);
-      
-      if (currentWordIndex >= filteredWords.length - 1 || (remainingLives <= 1 && !isCorrectAnswer)) {
-        // Game over
-        setGameCompleted(true);
-      } else if (isCorrectAnswer || remainingLives > 1) {
-        // Move to next word
-        setCurrentWordIndex(currentWordIndex + 1);
-        setUserInput('');
-      }
-    }, 1500);
-  }, [
-    currentWord, 
-    currentWordIndex, 
-    filteredWords, 
-    score, 
-    remainingLives, 
-    correctWords, 
+  // Submission handling
+  const { handleSubmit } = useSubmissionHandler({
+    currentWord,
+    score,
+    remainingLives,
+    correctWords,
     incorrectWords,
-    updateProgress,
-    addPlayerPoints,
     setIsCorrect,
     setShowResult,
     setScore,
-    setRemainingLives,
     setCorrectWords,
     setIncorrectWords,
-    setGameCompleted,
-    setCurrentWordIndex,
-    setUserInput,
-    setShowHint
-  ]);
+    setRemainingLives
+  });
   
-  const handleSkip = useCallback(() => {
-    if (!currentWord) return;
-    
-    // Reduce lives
-    setRemainingLives(remainingLives - 1);
-    setIncorrectWords([...incorrectWords, currentWord]);
-    
-    // Check if game is over
-    if (remainingLives <= 1) {
-      setGameCompleted(true);
-      return;
-    }
-    
-    // Move to next word
-    if (currentWordIndex < filteredWords.length - 1) {
-      setCurrentWordIndex(currentWordIndex + 1);
-      setUserInput('');
-      setShowHint(false);
-    } else {
-      setGameCompleted(true);
-    }
-  }, [
+  // Word navigation
+  const { handleSkip, handleNextWord } = useWordNavigation({
     currentWord,
-    currentWordIndex,
     filteredWords,
+    currentWordIndex,
     remainingLives,
     incorrectWords,
-    setRemainingLives,
-    setIncorrectWords,
-    setGameCompleted,
     setCurrentWordIndex,
     setUserInput,
-    setShowHint
-  ]);
+    setShowHint,
+    setGameCompleted,
+    setRemainingLives,
+    setIncorrectWords,
+    setShowResult,
+    setIsCorrect
+  });
   
-  const handleShowHint = useCallback(() => {
-    setShowHint(true);
-  }, [setShowHint]);
-  
-  const handlePlayAgainClick = useCallback(() => {
-    setGameCompleted(false);
-    setCurrentWordIndex(0);
-    setUserInput('');
-    setIsCorrect(null);
-    setShowResult(false);
-    setShowHint(false);
-    setScore(0);
-    setRemainingLives(3);
-    setCorrectWords([]);
-    setIncorrectWords([]);
-  }, [
+  // Game lifecycle actions
+  const { 
+    handlePlayAgainClick, 
+    handleAdventureReturn,
+    handleShowHint
+  } = useGameLifecycleActions({
+    isAdventure,
+    onAdventureComplete,
+    score,
     setGameCompleted,
     setCurrentWordIndex,
     setUserInput,
@@ -185,14 +113,18 @@ export const useSpellingGameActions = ({
     setRemainingLives,
     setCorrectWords,
     setIncorrectWords
-  ]);
+  });
   
-  const handleAdventureReturn = useCallback(() => {
-    setGameCompleted(false);
-    if (onAdventureComplete) {
-      onAdventureComplete(score);
+  // Handle moving to next word after showing result
+  useEffect(() => {
+    if (showResult) {
+      const timer = setTimeout(() => {
+        handleNextWord(isCorrect || false);
+      }, 1500);
+      
+      return () => clearTimeout(timer);
     }
-  }, [onAdventureComplete, score, setGameCompleted]);
+  }, [showResult, isCorrect, handleNextWord]);
   
   return {
     currentWord,

@@ -13,3 +13,4 @@ export * from './useGuideMessages';
 export * from './useSpellingGameState';
 export * from './useSpellingGameActions';
 export * from './useSpellingGameTimer';
+export * from './actions';
