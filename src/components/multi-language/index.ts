@@ -8,3 +8,4 @@ export { default as GameHeader } from './GameHeader';
 export * from './types';
 export * from './hooks/useMultiLanguageGame';
 export * from './utils/wordUtils';
+export * from './question-components';
