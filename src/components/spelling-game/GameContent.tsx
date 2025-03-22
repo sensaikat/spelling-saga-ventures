@@ -9,6 +9,7 @@ import {
 } from '../../components/spelling-game';
 import GameControls from '../../components/GameControls';
 import AlphabetHelper from '../../components/alphabet-helper';
+import { WordCard } from '../word-card';
 import { useNavigate } from 'react-router-dom';
 
 interface GameContentProps {

@@ -1,9 +1,7 @@
-
-import React, { useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Volume, Check, X } from 'lucide-react';
+import React from 'react';
+import { WordCard } from '../word-card';
 import { Input } from '@/components/ui/input';
-import WordCard from '../../components/WordCard';
+import { Volume, Check, X } from 'lucide-react';
 import { Word } from '../../utils/game';
 
 interface GameFormProps {
@@ -41,14 +39,12 @@ export const GameForm: React.FC<GameFormProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Set focus to the input field when it becomes available
   useEffect(() => {
     if (inputRef.current && !showResult) {
       inputRef.current.focus();
     }
   }, [currentWord, showResult]);
 
-  // Early return if currentWord is undefined
   if (!currentWord) {
     return (
       <div className="flex justify-center items-center p-8">

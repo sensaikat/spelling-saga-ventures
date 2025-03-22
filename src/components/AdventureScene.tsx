@@ -1,7 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAdventure } from '../contexts/adventure/useAdventure';
 import { useGameStore } from '../utils/game';
 import { toast } from '@/components/ui/use-toast';
+import { WordCard } from './word-card';
 
 // Import the refactored components
 import TerrainBackground from './adventure/TerrainBackground';

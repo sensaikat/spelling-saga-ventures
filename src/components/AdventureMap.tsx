@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Lock, Check, ChevronRight, Star, Trophy, Rocket } from 'lucide-react';
 import { Location, useAdventure } from '../contexts/adventure';
 import { useGameStore } from '../utils/game';
+import { WordCard } from './word-card';
 
 const terrainColors = {
   forest: 'bg-gradient-to-br from-green-100 to-green-300 border-green-500 text-green-800',
