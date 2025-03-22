@@ -1,81 +1,147 @@
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import GuideCharacter from '../guide';
-import { TerrainType } from '../../contexts/adventure/types';
-import { useNavigate } from 'react-router-dom';
-import { useGameStore } from '../../utils/game';
+import { GuideCharacter } from '@/components/guide';
+import { learningAnalytics } from '../../services/analytics/learningAnalytics';
+import { Language } from '../../utils/game/types';
 
 interface GuideSectionProps {
-  showGuide: boolean;
-  isAdventure: boolean;
-  terrain?: TerrainType;
+  currentWordDifficulty: string;
+  currentLanguage: Language;
+  correctSubmission: boolean | null;
+  wordHintRequested: boolean;
+  isGameActive: boolean;
+  isGameCompleted: boolean;
+  gameProgress: number;
+  selectedTerrain: string;
+  wordAttempts: number;
 }
 
-export const GuideSection: React.FC<GuideSectionProps> = ({
-  showGuide,
-  isAdventure,
-  terrain = 'forest'
+const GuideSection: React.FC<GuideSectionProps> = ({
+  currentWordDifficulty,
+  currentLanguage,
+  correctSubmission,
+  wordHintRequested,
+  isGameActive,
+  isGameCompleted,
+  gameProgress,
+  selectedTerrain,
+  wordAttempts
 }) => {
-  const [initialMessage, setInitialMessage] = useState<string | null>(null);
-  const navigate = useNavigate();
-  const { selectedLanguage } = useGameStore();
-  
-  // Set an initial welcome message based on game context
+  const [guideMessage, setGuideMessage] = useState<string | null>(null);
+
+  // Show appropriate guide messages based on game state
   useEffect(() => {
-    if (showGuide) {
-      // Get dual language messages based on adventure mode or regular mode
-      const messages = isAdventure 
-        ? [
-            `Welcome to the ${terrain} adventure! / ¡Bienvenido a la aventura de ${terrain}!`,
-            `Explore this ${terrain} and solve language puzzles! / ¡Explora este ${terrain} y resuelve acertijos de idiomas!`,
-            `Adventure awaits in the ${terrain}! Click on me for help. / ¡La aventura te espera en el ${terrain}! Haz clic en mí para obtener ayuda.`,
-            `Ready for a language quest in the ${terrain}? / ¿Listo para una búsqueda de idiomas en el ${terrain}?`
-          ]
-        : [
-            "Welcome to the Spelling Game! / ¡Bienvenido al Juego de Ortografía!",
-            "Try to spell words correctly to earn points! / ¡Intenta deletrear palabras correctamente para ganar puntos!",
-            "Need help? Just click on me anytime! / ¿Necesitas ayuda? ¡Simplemente haz clic en mí!",
-            "Listen carefully to pronunciations to improve! / ¡Escucha atentamente las pronunciaciones para mejorar!"
-          ];
-      
-      // Randomly select a message
-      const randomIndex = Math.floor(Math.random() * messages.length);
-      setInitialMessage(messages[randomIndex]);
-      
-      // Clear the message after it's been displayed
+    if (!isGameActive) return;
+    
+    if (isGameCompleted) {
+      setGuideMessage("Congratulations! You've completed all the words.");
+      return;
+    }
+    
+    if (correctSubmission === true) {
+      const messages = [
+        "Great job! That's correct!",
+        "Excellent! Keep going!",
+        "Perfect spelling!",
+        "Well done! You're doing great!"
+      ];
+      setGuideMessage(messages[Math.floor(Math.random() * messages.length)]);
+      return;
+    }
+    
+    if (correctSubmission === false) {
+      const messages = [
+        "Not quite right. Try again!",
+        "Almost! Check your spelling.",
+        "You can do this! Try once more."
+      ];
+      setGuideMessage(messages[Math.floor(Math.random() * messages.length)]);
+      return;
+    }
+    
+    if (wordHintRequested) {
+      setGuideMessage("Here's a hint to help you spell this word!");
+      return;
+    }
+    
+    if (wordAttempts > 2) {
+      setGuideMessage("Need help? Try using the hint button.");
+      return;
+    }
+    
+    // Progress-based messages
+    if (gameProgress > 0.75) {
+      setGuideMessage("You're almost done! Just a few more words!");
+      return;
+    }
+    
+    if (gameProgress > 0.5) {
+      setGuideMessage("You're making great progress! Keep it up!");
+      return;
+    }
+    
+    if (gameProgress > 0.25) {
+      setGuideMessage("You're doing well so far!");
+      return;
+    }
+    
+    // Default to null to not show any message
+    setGuideMessage(null);
+    
+  }, [
+    correctSubmission, 
+    wordHintRequested, 
+    isGameActive, 
+    isGameCompleted, 
+    gameProgress, 
+    wordAttempts
+  ]);
+  
+  // Reset message after a delay
+  useEffect(() => {
+    if (guideMessage) {
       const timer = setTimeout(() => {
-        setInitialMessage(null);
-      }, 6000);
+        setGuideMessage(null);
+      }, 5000);
       
       return () => clearTimeout(timer);
     }
-  }, [showGuide, isAdventure, terrain]);
+  }, [guideMessage]);
   
-  // Navigation handler for the guide character
-  const handleNavigate = (path: string) => {
-    navigate(path);
-  };
-  
+  // Get personalized guide message if available
+  useEffect(() => {
+    if (!isGameActive || guideMessage || !currentLanguage) return;
+    
+    // Only show personalized messages occasionally
+    if (Math.random() > 0.7) {
+      const userPreferences = learningAnalytics.getUserPreferences();
+      
+      if (userPreferences.allowPersonalization) {
+        const difficulty = currentWordDifficulty;
+        let personalizedTip = "";
+        
+        if (difficulty === 'hard') {
+          personalizedTip = "This is a challenging word! Take your time.";
+        } else if (difficulty === 'medium') {
+          personalizedTip = "Focus on the word patterns you've learned.";
+        } else {
+          personalizedTip = "Try sounding out the word letter by letter.";
+        }
+        
+        setGuideMessage(personalizedTip);
+      }
+    }
+  }, [isGameActive, guideMessage, currentWordDifficulty, currentLanguage]);
+
   return (
-    <AnimatePresence>
-      {showGuide && (
-        <motion.div 
-          className="fixed bottom-20 right-4 z-40"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.3 }}
-        >
-          <GuideCharacter 
-            terrain={terrain}
-            isAdventure={isAdventure}
-            proactiveMessage={initialMessage || undefined}
-            selectedLanguage={selectedLanguage}
-            navigateTo={handleNavigate}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="h-32 flex items-end justify-center">
+      <GuideCharacter 
+        terrain={selectedTerrain}
+        proactiveMessage={guideMessage || undefined}
+        selectedLanguage={currentLanguage.id}
+      />
+    </div>
   );
 };
+
+export default GuideSection;

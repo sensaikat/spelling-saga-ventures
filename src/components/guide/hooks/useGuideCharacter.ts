@@ -1,24 +1,17 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useGameStore } from '../../../utils/game';
-import { GreetingType } from '../types';
+import { GreetingType, UseGuideCharacterProps } from '../types';
 import { getTipsByPersonality, getGuideGreeting, getRandomTip } from '../utils/tipUtils';
 import { useNavigate } from 'react-router-dom';
-
-interface UseGuideCharacterProps {
-  selectedAvatar?: string;
-  terrain?: string;
-  selectedLanguage?: string;
-  proactiveMessage?: string;
-  isAdventure?: boolean;
-}
 
 export const useGuideCharacter = ({
   selectedAvatar,
   terrain = 'forest',
   selectedLanguage,
   proactiveMessage,
-  isAdventure = false
+  isAdventure = false,
+  navigateTo
 }: UseGuideCharacterProps) => {
   const navigate = useNavigate();
   const [showMessage, setShowMessage] = useState(false);
@@ -137,10 +130,14 @@ export const useGuideCharacter = ({
     }
   };
   
-  // Handle navigation assistance
-  const navigateTo = (path: string) => {
+  // Handle navigation assistance 
+  const handleNavigate = (path: string) => {
     setShowMessage(false);
-    navigate(path);
+    if (navigateTo) {
+      navigateTo(path);
+    } else {
+      navigate(path);
+    }
   };
 
   return {
@@ -156,7 +153,8 @@ export const useGuideCharacter = ({
     handleUseMagicItem,
     showSpecificMessage,
     handleGuideClick,
-    navigateTo,
+    handleNavigate,
+    navigateTo: handleNavigate,
     getContextualTip
   };
 };

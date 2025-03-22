@@ -1,77 +1,57 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Lightbulb, ExternalLink } from 'lucide-react';
+import { Book, Star } from 'lucide-react';
 import { Word } from '../../../utils/game/types';
-import { useNavigate } from 'react-router-dom';
-import { useGameStore } from '../../../utils/game';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface RecommendedWordsCardProps {
   words: Word[];
 }
 
 const RecommendedWordsCard: React.FC<RecommendedWordsCardProps> = ({ words }) => {
-  const navigate = useNavigate();
-  const { setCurrentWordList, selectedLanguage, selectedGameMode } = useGameStore();
-  
-  if (!words || words.length === 0 || !selectedGameMode || !selectedLanguage) {
-    return null;
-  }
-  
-  const handlePracticeWord = (word: Word) => {
-    // Create a temporary word list with just this word
-    const singleWordList = {
-      id: `practice-${word.id}`,
-      name: `Practice: ${word.text}`,
-      description: 'Focused practice on a recommended word',
-      words: [word],
-      languageId: selectedLanguage.id,
-      difficulty: word.difficulty
-    };
-    
-    // Set as current word list and navigate to game
-    setCurrentWordList(singleWordList);
-    navigate(`/game/${selectedGameMode.id}`);
-  };
-  
   return (
-    <div className="bg-amber-50 border border-amber-100 rounded-lg p-4">
-      <div className="flex items-center mb-3">
-        <Lightbulb className="h-5 w-5 text-amber-600 mr-2" />
-        <h3 className="font-medium text-amber-800">Recommended Practice</h3>
-      </div>
-      
-      <p className="text-sm text-amber-700 mb-4">
-        Based on your performance, we recommend practicing these words:
-      </p>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-        {words.map((word, index) => (
-          <motion.div
-            key={word.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-white rounded-md p-3 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => handlePracticeWord(word)}
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <p className="font-medium">{word.text}</p>
-                <p className={`text-xs mt-1 ${
-                  word.difficulty === 'easy' ? 'text-green-600' :
-                  word.difficulty === 'medium' ? 'text-amber-600' :
-                  'text-red-600'
-                }`}>
-                  {word.difficulty}
-                </p>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Book className="h-5 w-5 text-blue-600" />
+          Recommended Practice Words
+        </CardTitle>
+        <CardDescription>
+          Words tailored to help you improve your skills
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {words.map((word) => (
+            <div key={word.id} className="flex items-start border rounded-lg p-3 hover:bg-blue-50 transition-colors">
+              <div className="flex-grow">
+                <div className="font-medium text-lg">{word.word}</div>
+                <div className="text-gray-600 text-sm">
+                  {word.translation}
+                </div>
+                <div className="mt-2 space-x-2">
+                  <Badge variant={
+                    word.difficulty === 'easy' ? 'outline' : 
+                    word.difficulty === 'medium' ? 'secondary' : 'destructive'
+                  }>
+                    {word.difficulty}
+                  </Badge>
+                  {word.tags && word.tags.map((tag, i) => (
+                    <Badge key={i} variant="outline" className="bg-blue-50">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              <ExternalLink className="h-4 w-4 text-gray-400" />
+              <div className="flex items-center">
+                <Star className="h-5 w-5 text-yellow-400" />
+              </div>
             </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

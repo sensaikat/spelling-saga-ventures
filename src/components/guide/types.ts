@@ -1,49 +1,22 @@
 
-import { TerrainType } from '../../contexts/adventure/types';
+import { Language } from '../../utils/game/types';
 
-export type GreetingType = 'hello' | 'wellDone' | 'goodbye';
+export type GreetingType = 'hello' | 'goodbye' | 'wellDone';
 
-export interface GuideAppearance {
-  emoji: string;
-  name: string;
-  color: string;
-  personality?: string;
-  greetings?: {
-    [key: string]: {
-      hello: string;
-      wellDone: string;
-      goodbye: string;
-    };
-  };
-}
-
-export interface GuideAppearances {
-  wizard: GuideAppearance;
-  explorer: GuideAppearance;
-  robot: GuideAppearance;
-  dragon: GuideAppearance;
-  alien: GuideAppearance;
-  forest: GuideAppearance;
-  desert: GuideAppearance;
-  river: GuideAppearance;
-  mountain: GuideAppearance;
-  castle: GuideAppearance;
-  space: GuideAppearance;
-  default: GuideAppearance;
-  [key: string]: GuideAppearance;
+export interface UseGuideCharacterProps {
+  selectedAvatar?: string;
+  terrain?: string;
+  selectedLanguage?: string;
+  proactiveMessage?: string;
+  isAdventure?: boolean;
+  navigateTo?: (path: string) => void;
 }
 
 export interface GuideCharacterProps {
-  terrain?: TerrainType;
-  isAdventure?: boolean;
-  onUseMagicItem?: () => void;
   selectedAvatar?: string;
-  selectedLanguage?: string;
-  onChangeAvatar?: () => void;
+  terrain?: string;
+  isAdventure?: boolean;
   proactiveMessage?: string;
-}
-
-export interface GuideTip {
-  text: string;
-  category: 'general' | 'spelling' | 'vocabulary' | 'grammar';
+  selectedLanguage?: string;
+  navigateTo?: (path: string) => void;
 }
