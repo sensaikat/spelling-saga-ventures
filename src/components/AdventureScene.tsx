@@ -15,7 +15,7 @@ const AdventureScene: React.FC<{
   onStartChallenge: () => void;
   onReturnToMap: () => void;
 }> = ({ onStartChallenge, onReturnToMap }) => {
-  const { getCurrentLocation, character, completeLocation, addCredits, addStar } = useAdventure();
+  const { getCurrentLocation, character, completeLocation, addCredits, addStar, setStoryPhase } = useAdventure();
   const { selectedLanguage } = useGameStore();
   const [showDialog, setShowDialog] = useState(false);
   const [dialogType, setDialogType] = useState<'intro' | 'reward'>('intro');
@@ -27,6 +27,10 @@ const AdventureScene: React.FC<{
   useEffect(() => {
     setDialogType('intro');
     setShowDialog(true);
+    // After intro dialog is shown, we'll set the story phase
+    if (character.currentStoryPhase === 'introduction') {
+      setStoryPhase('introduction');
+    }
   }, []);
   
   if (!currentLocation) return null;
@@ -50,7 +54,10 @@ const AdventureScene: React.FC<{
   };
   
   const handleContinue = () => {
-    if (dialogType === 'reward') {
+    if (dialogType === 'intro') {
+      // When intro dialog is closed, move to exploration phase
+      setStoryPhase('exploration');
+    } else if (dialogType === 'reward') {
       onReturnToMap();
     }
   };
@@ -71,7 +78,10 @@ const AdventureScene: React.FC<{
           <AdventureContent
             currentLocation={currentLocation}
             showTips={showTips}
-            onStartChallenge={onStartChallenge}
+            onStartChallenge={() => {
+              setStoryPhase('challenge');
+              onStartChallenge();
+            }}
           />
         </div>
       </TerrainBackground>

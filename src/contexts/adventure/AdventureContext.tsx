@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useGameStore } from '../../utils/game';
-import { AdventureContextType, Location, Character } from './types';
+import { AdventureContextType, Location, Character, StoryPhase } from './types';
 import { defaultCharacter, defaultLocations } from './defaultData';
 import { 
   unlockLocationAction, 
@@ -54,11 +54,20 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     // Add credits and points
     addCredits(50);
     addPoints(50);
+    
+    // Set story phase to reward
+    setStoryPhase('reward');
   };
 
   const setCurrentLocation = (locationId: string) => {
     setCurrentLocationId(locationId);
-    setCharacter(prev => setCurrentLocationAction(prev, locationId));
+    setCharacter(prev => {
+      const updatedCharacter = setCurrentLocationAction(prev, locationId);
+      return {
+        ...updatedCharacter,
+        currentStoryPhase: 'introduction'
+      };
+    });
   };
 
   const addCredits = (amount: number) => {
@@ -76,6 +85,23 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const getNextLocation = () => {
     return getNextLocationByCurrentId(locations, currentLocationId);
   };
+  
+  const setStoryPhase = (phase: StoryPhase) => {
+    setCharacter(prev => ({
+      ...prev,
+      currentStoryPhase: phase
+    }));
+  };
+  
+  const getStoryline = (phase: StoryPhase) => {
+    const location = getCurrentLocation();
+    if (location?.storylines?.[phase]) {
+      const stories = location.storylines[phase];
+      const randomIndex = Math.floor(Math.random() * stories.length);
+      return stories[randomIndex];
+    }
+    return undefined;
+  };
 
   return (
     <AdventureContext.Provider value={{
@@ -88,7 +114,9 @@ export const AdventureProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       addCredits,
       addStar,
       getCurrentLocation,
-      getNextLocation
+      getNextLocation,
+      setStoryPhase,
+      getStoryline
     }}>
       {children}
     </AdventureContext.Provider>

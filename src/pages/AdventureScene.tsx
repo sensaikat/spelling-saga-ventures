@@ -8,6 +8,7 @@ import GuideCharacter from '../components/GuideCharacter';
 import { MagicItemType } from '../components/MagicItems';
 import { toast } from '@/components/ui/use-toast';
 import { Language, useGameStore } from '../utils/game';
+import { StoryPhase } from '../contexts/adventure/types';
 
 // Import our new components
 import LanguageSelectorModal from '../components/adventure/LanguageSelectorModal';
@@ -17,12 +18,19 @@ import LanguageIndicator from '../components/adventure/LanguageIndicator';
 const AdventureScenePage = () => {
   const navigate = useNavigate();
   const { locationId } = useParams<{ locationId: string }>();
-  const { setCurrentLocation, getCurrentLocation } = useAdventure();
+  const { 
+    setCurrentLocation, 
+    getCurrentLocation, 
+    character,
+    setStoryPhase,
+    getStoryline
+  } = useAdventure();
   const [showGame, setShowGame] = useState(false);
   const [activeMagicItem, setActiveMagicItem] = useState<MagicItemType | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
   const [showLanguageSelector, setShowLanguageSelector] = useState(true);
   const { selectLanguage } = useGameStore();
+  const [proactiveMessage, setProactiveMessage] = useState<string | undefined>(undefined);
   
   const currentLocation = getCurrentLocation();
   
@@ -33,6 +41,35 @@ const AdventureScenePage = () => {
     }
   }, [locationId, setCurrentLocation]);
   
+  // Trigger proactive storytelling based on the current phase
+  useEffect(() => {
+    if (character.currentStoryPhase && !showLanguageSelector && currentLocation) {
+      const storyline = getStoryline(character.currentStoryPhase);
+      if (storyline) {
+        setProactiveMessage(storyline);
+        
+        // Clear the message after it's been shown
+        const timer = setTimeout(() => {
+          setProactiveMessage(undefined);
+        }, 15000);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [character.currentStoryPhase, showLanguageSelector, currentLocation, getStoryline]);
+  
+  // Progress through story phases during the adventure
+  useEffect(() => {
+    if (!showLanguageSelector && !showGame && character.currentStoryPhase === 'introduction') {
+      // After introduction, move to exploration phase after a delay
+      const timer = setTimeout(() => {
+        setStoryPhase('exploration');
+      }, 20000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showLanguageSelector, showGame, character.currentStoryPhase, setStoryPhase]);
+  
   const handleStartChallenge = () => {
     if (!selectedLanguage) {
       toast({
@@ -42,11 +79,17 @@ const AdventureScenePage = () => {
       });
       return;
     }
+    setStoryPhase('challenge');
     setShowGame(true);
   };
   
   const handleReturnToMap = () => {
-    navigate('/adventure');
+    setStoryPhase('conclusion');
+    
+    // Give a moment for the conclusion message to be shown
+    setTimeout(() => {
+      navigate('/adventure');
+    }, 5000);
   };
   
   const handleGameComplete = (score: number) => {
@@ -85,6 +128,7 @@ const AdventureScenePage = () => {
             terrain={currentLocation?.terrain}
             isAdventure={true}
             onUseMagicItem={handleGuideUseMagicItem}
+            proactiveMessage={proactiveMessage}
           />
         </>
       ) : (
@@ -105,6 +149,7 @@ const AdventureScenePage = () => {
                 terrain={currentLocation?.terrain}
                 isAdventure={true}
                 onUseMagicItem={handleGuideUseMagicItem}
+                proactiveMessage={proactiveMessage}
               />
               
               {/* Magic items toolbar */}

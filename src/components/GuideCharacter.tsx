@@ -1,12 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Wand2, Sparkles, Lightbulb, MessageCircle, X, UserRound, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useGameStore } from '../utils/game';
-import { TerrainType } from '../contexts/AdventureContext';
+import { TerrainType } from '../contexts/adventure/types';
 
-// Expanded guide appearances with different personalities and phrases
 const guideAppearances = {
   wizard: { 
     emoji: '🧙‍♂️', 
@@ -68,7 +66,6 @@ const guideAppearances = {
       fr: { hello: "Salutations, apprenant terrien!", wellDone: "Compétences terriennes très impressionnantes!", goodbye: "Jusqu'à ce que nos chemins se croisent à nouveau!" }
     }
   },
-  // Default terrain-based guides can continue to be used
   forest: { emoji: '👧', name: 'Flora', color: 'bg-green-100 border-green-300 text-green-800' },
   desert: { emoji: '👦', name: 'Sandy', color: 'bg-amber-100 border-amber-300 text-amber-800' },
   river: { emoji: '🧒', name: 'Marina', color: 'bg-blue-100 border-blue-300 text-blue-800' },
@@ -78,7 +75,6 @@ const guideAppearances = {
   default: { emoji: '🧙‍♂️', name: 'Wizzy', color: 'bg-violet-100 border-violet-300 text-violet-800' }
 };
 
-// Modified tip types based on personality
 const getTipsByPersonality = (personality: string = 'wise') => {
   const commonTips = [
     "Look for patterns in the spelling.",
@@ -127,9 +123,10 @@ interface GuideCharacterProps {
   terrain?: TerrainType;
   isAdventure?: boolean;
   onUseMagicItem?: () => void;
-  selectedAvatar?: string; // new prop for selected avatar
-  selectedLanguage?: string; // new prop for selected language code
-  onChangeAvatar?: () => void; // new prop to handle avatar change
+  selectedAvatar?: string;
+  selectedLanguage?: string;
+  onChangeAvatar?: () => void;
+  proactiveMessage?: string;
 }
 
 const GuideCharacter: React.FC<GuideCharacterProps> = ({ 
@@ -138,7 +135,8 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
   onUseMagicItem,
   selectedAvatar,
   selectedLanguage,
-  onChangeAvatar
+  onChangeAvatar,
+  proactiveMessage
 }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [currentTip, setCurrentTip] = useState('');
@@ -146,16 +144,13 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
   const [greetingType, setGreetingType] = useState<'hello' | 'wellDone' | 'goodbye'>('hello');
   const { selectedLanguage: gameLanguage } = useGameStore();
   
-  // Determine which avatar to show
   const avatarKey = selectedAvatar || terrain;
   const guide = guideAppearances[avatarKey as keyof typeof guideAppearances] || guideAppearances.default;
   const personality = (guide as any).personality || 'wise';
   
-  // Get the language for greetings
   const languageCode = selectedLanguage || (gameLanguage ? gameLanguage.id.split('-')[0] : 'en');
   const tipTypes = getTipsByPersonality(personality);
   
-  // Show greeting in the selected language or fallback to English
   const getGreeting = () => {
     if ((guide as any).greetings) {
       const langGreetings = (guide as any).greetings[languageCode] || (guide as any).greetings.en;
@@ -164,20 +159,34 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
     return "Hello!";
   };
   
-  // Randomly show guide messages
   useEffect(() => {
-    const randomAppearance = Math.random() > 0.7;
-    if (randomAppearance && !showMessage) {
+    if (proactiveMessage) {
+      setCurrentTip(proactiveMessage);
+      setShowMessage(true);
+      
       const timer = setTimeout(() => {
-        const randomTip = tipTypes[Math.floor(Math.random() * tipTypes.length)];
-        setCurrentTip(randomTip);
-        setGreetingType(Math.random() > 0.8 ? 'wellDone' : 'hello');
-        setShowMessage(true);
-      }, 5000 + Math.random() * 15000); // Random time between 5-20 seconds
+        setShowMessage(false);
+      }, 10000);
       
       return () => clearTimeout(timer);
     }
-  }, [showMessage, tipTypes]);
+  }, [proactiveMessage]);
+  
+  useEffect(() => {
+    if (!proactiveMessage) {
+      const randomAppearance = Math.random() > 0.7;
+      if (randomAppearance && !showMessage) {
+        const timer = setTimeout(() => {
+          const randomTip = tipTypes[Math.floor(Math.random() * tipTypes.length)];
+          setCurrentTip(randomTip);
+          setGreetingType(Math.random() > 0.8 ? 'wellDone' : 'hello');
+          setShowMessage(true);
+        }, 5000 + Math.random() * 15000);
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [showMessage, tipTypes, proactiveMessage]);
   
   const handleUseMagicItem = () => {
     setMagicItemUsed(true);
@@ -185,23 +194,62 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
       onUseMagicItem();
     }
     
-    // Reset the magic item after a delay
     setTimeout(() => {
       setMagicItemUsed(false);
     }, 5000);
   };
   
+  const showSpecificMessage = (message: string) => {
+    setCurrentTip(message);
+    setShowMessage(true);
+  };
+  
+  const bubbleVariants = {
+    hidden: { 
+      opacity: 0,
+      scale: 0.8,
+      y: 20
+    },
+    visible: { 
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 12
+      }
+    },
+    exit: { 
+      opacity: 0,
+      scale: 0.8,
+      y: 20
+    }
+  };
+  
+  const guideVariants = {
+    normal: { 
+      scale: 1, 
+      rotate: 0 
+    },
+    excited: { 
+      scale: [1, 1.2, 1],
+      rotate: [0, -10, 10, -5, 0],
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+  
   return (
     <>
-      {/* Floating guide character */}
       <motion.div
         className="fixed bottom-6 right-6 z-40"
         initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        animate={showMessage ? "excited" : "normal"}
+        variants={guideVariants}
         transition={{ type: 'spring', delay: 1 }}
       >
         <div className="relative">
-          {/* Magic lens/specs */}
           <motion.div
             className={`absolute -top-16 -left-10 p-3 rounded-full ${
               magicItemUsed ? 'bg-yellow-200' : 'bg-white'
@@ -231,7 +279,6 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
             </div>
           </motion.div>
           
-          {/* Avatar change button */}
           {onChangeAvatar && (
             <motion.div
               className="absolute -top-16 -right-10 p-3 rounded-full bg-white shadow-md cursor-pointer"
@@ -243,7 +290,6 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
             </motion.div>
           )}
           
-          {/* Guide character bubble */}
           <motion.div
             className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl ${
               showMessage ? 'border-4' : 'border-2'
@@ -252,7 +298,6 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
             whileTap={{ scale: 0.9 }}
             onClick={() => {
               if (!showMessage) {
-                // Alternate between greetings and tips
                 if (Math.random() > 0.5) {
                   const randomType = Math.random() > 0.7 ? 'goodbye' : (Math.random() > 0.5 ? 'wellDone' : 'hello');
                   setGreetingType(randomType as 'hello' | 'wellDone' | 'goodbye');
@@ -276,7 +321,6 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
           >
             {guide.emoji}
             
-            {/* Pulsing effect around the character */}
             <motion.div
               className="absolute inset-0 rounded-full"
               animate={{ 
@@ -300,14 +344,14 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
         </div>
       </motion.div>
       
-      {/* Message bubble */}
       <AnimatePresence>
         {showMessage && (
           <motion.div
             className={`fixed bottom-24 right-8 max-w-xs p-4 rounded-xl rounded-br-none shadow-lg z-40 ${guide.color}`}
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            variants={bubbleVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
           >
             <Button 
               variant="ghost" 
