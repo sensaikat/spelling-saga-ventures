@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useGameStore, Word } from '../utils/game';
@@ -15,6 +15,7 @@ import {
   GameResult,
   terrainBackgrounds
 } from '../components/spelling-game';
+import { learningAnalytics } from '../services/analytics/learningAnalytics';
 
 interface SpellingGameProps {
   isAdventure?: boolean;
@@ -32,7 +33,8 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
     selectedGameMode, 
     currentWordList,
     updateWordProgress,
-    addPoints 
+    addPoints,
+    checkAndUpdateStreak
   } = useGameStore();
   
   const { getCurrentLocation } = useAdventure();
@@ -55,11 +57,18 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
   const [showAlphabetHelper, setShowAlphabetHelper] = useState(true);
   const [cursorPosition, setCursorPosition] = useState(0);
   
+  // For analytics
+  const wordStartTimeRef = useRef<number>(Date.now());
+  const wordHintsUsedRef = useRef<number>(0);
+  
   useEffect(() => {
     if (!isAdventure && (!selectedLanguage || !selectedGameMode || !currentWordList)) {
       navigate('/');
     }
-  }, [selectedLanguage, selectedGameMode, currentWordList, navigate, isAdventure]);
+    
+    // Update streak when starting a game
+    checkAndUpdateStreak();
+  }, [selectedLanguage, selectedGameMode, currentWordList, navigate, isAdventure, checkAndUpdateStreak]);
   
   useEffect(() => {
     if (selectedLanguage && currentWordList) {
@@ -77,6 +86,10 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
       setRemainingLives(3);
       setHintsUsed(0);
       setShowHint(false);
+      
+      // Reset word timer when starting a new word list
+      wordStartTimeRef.current = Date.now();
+      wordHintsUsedRef.current = 0;
     }
   }, [selectedLanguage, currentWordList, difficultyLevel]);
   
@@ -86,6 +99,12 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
       setShowAlphabetHelper(true);
     }
   }, [selectedLanguage]);
+  
+  // Reset analytics data when moving to a new word
+  useEffect(() => {
+    wordStartTimeRef.current = Date.now();
+    wordHintsUsedRef.current = 0;
+  }, [currentWordIndex]);
   
   if (!isAdventure && (!selectedLanguage || !selectedGameMode || !currentWordList || filteredWords.length === 0)) {
     return null;
@@ -99,6 +118,18 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
     const correct = userInput.toLowerCase().trim() === currentWord.text.toLowerCase();
     setIsCorrect(correct);
     setShowResult(true);
+    
+    // Record analytics data
+    if (selectedLanguage) {
+      const attemptDuration = Date.now() - wordStartTimeRef.current;
+      learningAnalytics.recordWordAttempt(
+        currentWord,
+        correct,
+        attemptDuration,
+        wordHintsUsedRef.current,
+        selectedLanguage
+      );
+    }
     
     updateWordProgress(currentWord.id, correct);
     
@@ -145,6 +176,10 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
     setRemainingLives(3);
     setHintsUsed(0);
     setShowHint(false);
+    
+    // Reset analytics data
+    wordStartTimeRef.current = Date.now();
+    wordHintsUsedRef.current = 0;
   };
 
   const handleDifficultyChange = (level: string) => {
@@ -195,6 +230,18 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
   };
   
   const handleSkip = () => {
+    // Record skipped word as incorrect for analytics
+    if (selectedLanguage) {
+      const attemptDuration = Date.now() - wordStartTimeRef.current;
+      learningAnalytics.recordWordAttempt(
+        currentWord,
+        false,
+        attemptDuration,
+        wordHintsUsedRef.current,
+        selectedLanguage
+      );
+    }
+    
     setRemainingLives(prev => prev - 1);
     setIsCorrect(false);
     setShowResult(true);
@@ -231,6 +278,9 @@ const SpellingGame: React.FC<SpellingGameProps> = ({
     if (hintsUsed < maxHints) {
       setShowHint(true);
       setHintsUsed(prev => prev + 1);
+      
+      // Increment hint counter for analytics
+      wordHintsUsedRef.current += 1;
     }
   };
   

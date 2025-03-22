@@ -1,45 +1,39 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-import { AdventureProvider } from "./contexts/AdventureContext";
-import Index from "./pages/Index";
-import GameMode from "./pages/GameMode";
-import SpellingGame from "./pages/SpellingGame";
-import Progress from "./pages/Progress";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
-import AdventureMapPage from "./pages/AdventureMap";
-import AdventureScenePage from "./pages/AdventureScene";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import Index from './pages/Index';
+import GameMode from './pages/GameMode';
+import SpellingGame from './pages/SpellingGame';
+import NotFound from './pages/NotFound';
+import Settings from './pages/Settings';
+import Progress from './pages/Progress';
+import AdventureMap from './pages/AdventureMap';
+import AdventureScene from './pages/AdventureScene';
+import LearningDashboard from './pages/LearningDashboard';
+import { AdventureProvider } from './contexts/adventure/AdventureContext';
+import './App.css';
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+function App() {
+  return (
+    <Router>
       <AdventureProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/game-mode" element={<GameMode />} />
+          <Route path="/game/:gameId" element={<SpellingGame />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/learning-dashboard" element={<LearningDashboard />} />
+          <Route path="/adventure" element={<AdventureMap />} />
+          <Route path="/adventure/:locationId" element={<AdventureScene />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<Navigate to="/404" replace />} />
+        </Routes>
         <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/game-mode" element={<GameMode />} />
-              <Route path="/play/:gameId" element={<SpellingGame />} />
-              <Route path="/progress" element={<Progress />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/adventure" element={<AdventureMapPage />} />
-              <Route path="/adventure/:locationId" element={<AdventureScenePage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AnimatePresence>
-        </BrowserRouter>
       </AdventureProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </Router>
+  );
+}
 
 export default App;

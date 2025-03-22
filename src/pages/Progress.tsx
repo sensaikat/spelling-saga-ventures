@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Star, Calendar, Award, BarChart } from 'lucide-react';
+import { ArrowLeft, Star, Calendar, Award, BarChart, BarChart2 } from 'lucide-react';
 import { useGameStore, Word, wordLists } from '../utils/game';
 
 const Progress = () => {
@@ -34,7 +35,7 @@ const Progress = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
       <div className="container mx-auto px-4 py-12">
         <motion.div 
-          className="mb-8 flex items-center"
+          className="mb-8 flex items-center justify-between"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
@@ -46,6 +47,16 @@ const Progress = () => {
             <ArrowLeft size={20} className="mr-2" />
             <span>Back to Home</span>
           </button>
+          
+          <motion.button
+            onClick={() => navigate('/learning-dashboard')}
+            className="bg-blue-100 text-blue-700 px-4 py-2 rounded-full hover:bg-blue-200 transition-colors flex items-center gap-2"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <BarChart2 size={16} />
+            <span>Learning Dashboard</span>
+          </motion.button>
         </motion.div>
         
         <motion.h1 
