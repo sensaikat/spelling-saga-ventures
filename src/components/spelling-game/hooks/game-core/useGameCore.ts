@@ -46,8 +46,6 @@ export const useGameCore = ({
     setGameCompleted,
     score,
     setScore,
-    currentIndex: currentWordIndex,
-    setCurrentIndex: setCurrentWordIndex,
     remainingLives,
     setRemainingLives,
     isCheckingAnswer,
@@ -58,10 +56,13 @@ export const useGameCore = ({
   const [correctWords, setCorrectWords] = useState<Word[]>([]);
   const [incorrectWords, setIncorrectWords] = useState<Word[]>([]);
   
+  // Current word index to track progress
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  
   // Game analytics
   const { recordWordAttempt, incrementHintCounter } = useGameAnalytics();
   
-  // Time handling - using a simplified approach for this fix
+  // Time handling
   const [timeRemaining, setTimeRemaining] = useState(60);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   
@@ -157,7 +158,7 @@ export const useGameCore = ({
     const isCorrectAnswer = userInputValue.trim().toLowerCase() === currentWord.text.toLowerCase();
     
     // Record the attempt in analytics
-    recordWordAttempt(currentWord, isCorrectAnswer, selectedLanguage);
+    recordWordAttempt(currentWord, isCorrectAnswer, selectedLanguage || '');
     
     // Call the original handler
     wordSubmitHandler(e);
