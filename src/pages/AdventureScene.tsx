@@ -7,6 +7,7 @@ import AnimatedCompanion from '../components/adventure/AnimatedCompanion';
 import { TerrainType } from '../contexts/adventure/types';
 import AdventureSceneComponent from '../components/AdventureScene';
 import { ScrollArea } from '../components/ui/scroll-area';
+import BedroomChallenge from '../components/adventure/BedroomChallenge';
 
 const AdventureScenePage: React.FC = () => {
   const { locationId } = useParams<{ locationId: string }>();
@@ -26,6 +27,13 @@ const AdventureScenePage: React.FC = () => {
     navigate('/adventure');
   };
 
+  const handleChallengeComplete = (score: number) => {
+    // Hide the challenge after a short delay
+    setTimeout(() => {
+      setShowChallenge(false);
+    }, 1000);
+  };
+
   return (
     <AdventureProvider>
       {!showChallenge ? (
@@ -42,15 +50,16 @@ const AdventureScenePage: React.FC = () => {
           </div>
           
           <ScrollArea className="h-full">
-            <div className="flex flex-col items-center justify-center min-h-full p-6">
-              <h1 className="text-4xl font-bold mb-8 capitalize">
+            <div className="flex flex-col items-center justify-start min-h-full p-6 pt-16">
+              <h1 className="text-4xl font-bold mb-8 capitalize text-center">
                 {locationId} Challenge
               </h1>
               
-              <div className="bg-white/80 dark:bg-gray-800/80 rounded-lg p-6 max-w-lg w-full shadow-lg">
-                <p className="text-lg mb-4">
-                  This is where the language challenge for the {locationId} would appear.
-                </p>
+              <div className="w-full max-w-3xl mx-auto">
+                <BedroomChallenge 
+                  terrain={terrain}
+                  onComplete={handleChallengeComplete}
+                />
               </div>
             </div>
           </ScrollArea>

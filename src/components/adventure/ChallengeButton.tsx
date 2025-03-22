@@ -10,8 +10,8 @@ interface ChallengeButtonProps {
 const ChallengeButton: React.FC<ChallengeButtonProps> = ({ onClick }) => {
   return (
     <motion.button
-      className="primary-button flex items-center gap-2 text-lg"
-      whileHover={{ scale: 1.05, boxShadow: '0 5px 15px rgba(0,0,0,0.1)' }}
+      className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-medium py-3 px-6 rounded-full shadow-md flex items-center gap-2 transition-all"
+      whileHover={{ scale: 1.05, boxShadow: '0 5px 15px rgba(0,0,0,0.2)' }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
     >
