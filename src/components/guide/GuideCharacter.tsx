@@ -16,7 +16,8 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
   selectedAvatar,
   selectedLanguage,
   onChangeAvatar,
-  proactiveMessage
+  proactiveMessage,
+  navigateTo
 }) => {
   const {
     showMessage,
@@ -26,13 +27,14 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
     avatarKey,
     handleUseMagicItem: handleUseMagicItemInternal,
     handleGuideClick,
-    navigateTo
+    handleNavigate
   } = useGuideCharacter({
     selectedAvatar,
     terrain,
     selectedLanguage,
     proactiveMessage,
-    isAdventure
+    isAdventure,
+    navigateTo
   });
   
   const guide = guideAppearances[avatarKey as keyof typeof guideAppearances] || guideAppearances.default;
@@ -65,7 +67,7 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
         initial={{ scale: 0, opacity: 0 }}
         animate={showMessage ? "excited" : "normal"}
         variants={guideVariants}
-        transition={{ type: 'spring', delay: 1 }}
+        transition={{ type: 'spring', delay: 0.5 }}
       >
         <div className="relative">
           {/* Magic Wand Button */}
@@ -96,7 +98,7 @@ const GuideCharacter: React.FC<GuideCharacterProps> = ({
         isAdventure={isAdventure}
         onClose={() => setShowMessage(false)}
         onUseMagicItem={handleMagicItemClick}
-        navigateTo={navigateTo}
+        navigateTo={handleNavigate}
       />
     </>
   );
