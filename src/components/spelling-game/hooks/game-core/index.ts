@@ -4,3 +4,6 @@ export * from './useGameInitialization';
 export * from './useGameTimeHandling';
 export * from './useGameStateManagement';
 export * from './useGameWordActions';
+export * from './useGameSubmissionHandler';
+export * from './useWordTracking';
+

@@ -1,31 +1,63 @@
 
-import { useCallback } from 'react';
-import { useGameTimer, UseGameTimerProps } from '../game-state/useGameTimer';
+import { useState, useCallback, useEffect } from 'react';
 
-export const useGameTimeHandling = (onTimeUp: () => void, initialTime: number = 60) => {
-  const timerProps: UseGameTimerProps = {
-    onTimeUp,
-    initialTime
-  };
+interface UseGameTimeHandlingProps {
+  initialTime?: number;
+  isGameCompleted: boolean;
+  onTimeout: () => void;
+}
+
+export const useGameTimeHandling = ({
+  initialTime = 60,
+  isGameCompleted,
+  onTimeout
+}: UseGameTimeHandlingProps) => {
+  const [timeRemaining, setTimeRemaining] = useState(initialTime);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   
-  const { 
-    isTimerRunning, 
-    timeRemaining, 
-    startTimer, 
-    pauseTimer, 
-    resetTimer 
-  } = useGameTimer(timerProps);
+  const startTimer = useCallback(() => {
+    setIsTimerRunning(true);
+  }, []);
   
-  const handleTimeout = useCallback(() => {
-    onTimeUp();
-  }, [onTimeUp]);
+  const pauseTimer = useCallback(() => {
+    setIsTimerRunning(false);
+  }, []);
+  
+  const resetTimer = useCallback((newTime: number = initialTime) => {
+    setTimeRemaining(newTime);
+    setIsTimerRunning(false);
+  }, [initialTime]);
+  
+  // Timer effect that counts down when running
+  useEffect(() => {
+    let timerInterval: number | undefined;
+    
+    if (isTimerRunning && !isGameCompleted && timeRemaining > 0) {
+      timerInterval = window.setInterval(() => {
+        setTimeRemaining((prev) => {
+          const newTime = prev - 1;
+          if (newTime <= 0) {
+            pauseTimer();
+            onTimeout();
+            return 0;
+          }
+          return newTime;
+        });
+      }, 1000);
+    }
+    
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [isTimerRunning, isGameCompleted, timeRemaining, pauseTimer, onTimeout]);
   
   return {
-    isTimerRunning,
     timeRemaining,
+    isTimerRunning,
     startTimer,
     pauseTimer,
-    resetTimer,
-    handleTimeout
+    resetTimer
   };
 };

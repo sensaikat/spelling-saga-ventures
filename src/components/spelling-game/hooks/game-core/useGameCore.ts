@@ -3,7 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
 import { useGameInitialization } from './useGameInitialization';
 import { useGameStateManagement } from './useGameStateManagement';
-import { useGameWordActions } from './useGameWordActions';
+import { useGameSubmissionHandler } from './useGameSubmissionHandler';
+import { useGameTimeHandling } from './useGameTimeHandling';
+import { useWordTracking } from './useWordTracking';
 import { useGameAnalytics } from '../game-state/useGameAnalytics';
 
 interface GameCoreProps {
@@ -53,8 +55,12 @@ export const useGameCore = ({
   } = useGameStateManagement();
 
   // Track correct and incorrect words
-  const [correctWords, setCorrectWords] = useState<Word[]>([]);
-  const [incorrectWords, setIncorrectWords] = useState<Word[]>([]);
+  const {
+    correctWords,
+    incorrectWords,
+    trackWord,
+    resetWordTracking
+  } = useWordTracking();
   
   // Current word index to track progress
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -62,32 +68,11 @@ export const useGameCore = ({
   // Game analytics
   const { recordWordAttempt, incrementHintCounter } = useGameAnalytics();
   
-  // Time handling
-  const [timeRemaining, setTimeRemaining] = useState(60);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
-  
-  const startTimer = useCallback(() => {
-    setIsTimerRunning(true);
-  }, []);
-  
-  const pauseTimer = useCallback(() => {
-    setIsTimerRunning(false);
-  }, []);
-  
-  const resetTimer = useCallback((newTime: number = 60) => {
-    setTimeRemaining(newTime);
-    setIsTimerRunning(false);
-  }, []);
-  
-  const handleTimeout = useCallback(() => {
-    setGameCompleted(true);
-  }, [setGameCompleted]);
-  
-  // Word actions
+  // Game submission handler
   const {
     handleSubmit: wordSubmitHandler,
     handleSkip: wordSkipHandler
-  } = useGameWordActions(
+  } = useGameSubmissionHandler({
     currentWord,
     filteredWords,
     currentWordIndex,
@@ -104,8 +89,24 @@ export const useGameCore = ({
     recordWordAttempt,
     updateProgress,
     addPlayerPoints,
-    selectedLanguage
-  );
+    selectedLanguage,
+    trackWord,
+    isCheckingAnswer,
+    setIsCheckingAnswer
+  });
+  
+  // Time handling
+  const {
+    timeRemaining,
+    isTimerRunning,
+    startTimer,
+    pauseTimer,
+    resetTimer
+  } = useGameTimeHandling({
+    initialTime: 60,
+    isGameCompleted: gameCompleted,
+    onTimeout: () => setGameCompleted(true)
+  });
   
   // Additional handlers
   const handleShowHint = useCallback(() => {
@@ -122,8 +123,7 @@ export const useGameCore = ({
     setShowHint(false);
     setScore(0);
     setRemainingLives(3);
-    setCorrectWords([]);
-    setIncorrectWords([]);
+    resetWordTracking();
     resetTimer(60);
   }, [
     setGameCompleted,
@@ -134,6 +134,7 @@ export const useGameCore = ({
     setShowHint,
     setScore,
     setRemainingLives,
+    resetWordTracking,
     resetTimer
   ]);
   
@@ -146,33 +147,8 @@ export const useGameCore = ({
   
   // Wrap word actions to include analytics
   const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!currentWord) return;
-    
-    // Get the user input from the form
-    const formElement = e.target as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const userInputValue = formData.get('wordInput')?.toString() || '';
-    
-    const isCorrectAnswer = userInputValue.trim().toLowerCase() === currentWord.text.toLowerCase();
-    
-    // Record the attempt in analytics
-    recordWordAttempt(currentWord, isCorrectAnswer, selectedLanguage || '');
-    
-    // Call the original handler
     wordSubmitHandler(e);
-    
-    // Update progress in the game store
-    if (currentWord.id) {
-      updateProgress(currentWord.id, isCorrectAnswer);
-    }
-    
-    // Add points if correct
-    if (isCorrectAnswer) {
-      addPlayerPoints(2);
-    }
-  }, [currentWord, wordSubmitHandler, recordWordAttempt, selectedLanguage, updateProgress, addPlayerPoints]);
+  }, [wordSubmitHandler]);
   
   // Set current word based on index
   useEffect(() => {
