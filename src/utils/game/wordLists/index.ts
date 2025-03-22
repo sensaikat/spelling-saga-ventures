@@ -9,6 +9,13 @@ import {
   tamilWordLists,
   teluguWordLists,
   polishWordLists,
+  dogriWordLists,
+  assameseWordLists,
+  sinhaleseWordLists,
+  germanWordLists,
+  gujaratiWordLists,
+  filipinoWordLists,
+  pashtoWordLists,
   otherWordLists
 } from './other';
 
@@ -22,5 +29,12 @@ export const wordLists: Record<string, WordList[]> = {
   ta: tamilWordLists,
   te: teluguWordLists,
   pl: polishWordLists,
+  doi: dogriWordLists,
+  as: assameseWordLists,
+  si: sinhaleseWordLists,
+  de: germanWordLists,
+  gu: gujaratiWordLists,
+  fil: filipinoWordLists,
+  ps: pashtoWordLists,
   ...otherWordLists
 };

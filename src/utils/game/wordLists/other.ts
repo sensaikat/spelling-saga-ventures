@@ -84,6 +84,120 @@ export const polishWordLists: WordList[] = [
   }
 ];
 
+// New word lists for added languages
+export const dogriWordLists: WordList[] = [
+  {
+    id: 'doi-basics',
+    name: 'मौलिक शब्द',
+    description: 'आरंभिक लेई आम शब्द',
+    words: [
+      { id: 'doi-1', text: 'सेब', hint: 'इक लाल या हरा फल जेह्ड़ा रुक्खें पर उग्गदा', difficulty: 'easy' },
+      { id: 'doi-2', text: 'केला', hint: 'इक लम्मा पीला फल जिसदी शक्ल मुड़ियेदी ऐ', difficulty: 'easy' },
+      { id: 'doi-3', text: 'बिल्ली', hint: 'इक छोटा दा पालतू जानवर जेह्ड़ा म्याऊं म्याऊं करदा', difficulty: 'easy' },
+      { id: 'doi-4', text: 'कुत्ता', hint: 'इक आम पालतू जानवर जेह्ड़ा भौंकदा', difficulty: 'easy' },
+    ],
+    languageId: 'doi',
+    difficulty: 'easy',
+  }
+];
+
+export const assameseWordLists: WordList[] = [
+  {
+    id: 'as-basics',
+    name: 'মূল শব্দবোৰ',
+    description: 'আৰম্ভণিৰ বাবে সাধাৰণ শব্দবোৰ',
+    words: [
+      { id: 'as-1', text: 'আপেল', hint: 'এটা ৰঙা বা সেউজীয়া ফল যি গছত হয়', difficulty: 'easy' },
+      { id: 'as-2', text: 'কল', hint: 'এটা দীঘল হালধীয়া ফল যাৰ আকাৰ বেঁকা', difficulty: 'easy' },
+      { id: 'as-3', text: 'মেকুৰী', hint: 'এটা সৰু পোহনীয়া জন্তু যি মিয়াও মিয়াও কৰে', difficulty: 'easy' },
+      { id: 'as-4', text: 'কুকুৰ', hint: 'এটা সাধাৰণ পোহনীয়া জন্তু যি ভুকে', difficulty: 'easy' },
+    ],
+    languageId: 'as',
+    difficulty: 'easy',
+  }
+];
+
+export const sinhaleseWordLists: WordList[] = [
+  {
+    id: 'si-basics',
+    name: 'මූලික වචන',
+    description: 'ආරම්භකයින් සඳහා සාමාන්‍ය වචන',
+    words: [
+      { id: 'si-1', text: 'ඇපල්', hint: 'ගසේ වැවෙන රතු හෝ කොළ පාට පලතුරක්', difficulty: 'easy' },
+      { id: 'si-2', text: 'කෙසෙල්', hint: 'නැමුණු හැඩයකින් යුත් දිගු කහ පාට පලතුරක්', difficulty: 'easy' },
+      { id: 'si-3', text: 'පූසා', hint: 'මියාව් යන හඬ නගන කුඩා සුරතල් සතෙක්', difficulty: 'easy' },
+      { id: 'si-4', text: 'බල්ලා', hint: 'බුරන සාමාන්‍ය සුරතල් සතෙක්', difficulty: 'easy' },
+    ],
+    languageId: 'si',
+    difficulty: 'easy',
+  }
+];
+
+export const germanWordLists: WordList[] = [
+  {
+    id: 'de-basics',
+    name: 'Grundwörter',
+    description: 'Allgemeine Wörter für Anfänger',
+    words: [
+      { id: 'de-1', text: 'Apfel', hint: 'Eine rote oder grüne Frucht, die auf Bäumen wächst', difficulty: 'easy' },
+      { id: 'de-2', text: 'Banane', hint: 'Eine lange gelbe Frucht mit gebogener Form', difficulty: 'easy' },
+      { id: 'de-3', text: 'Katze', hint: 'Ein kleines pelziges Haustier, das miaut', difficulty: 'easy' },
+      { id: 'de-4', text: 'Hund', hint: 'Ein gewöhnliches Haustier, das bellt', difficulty: 'easy' },
+      { id: 'de-5', text: 'Elefant', hint: 'Ein großes graues Tier mit einem Rüssel', difficulty: 'medium' },
+    ],
+    languageId: 'de',
+    difficulty: 'easy',
+  }
+];
+
+export const gujaratiWordLists: WordList[] = [
+  {
+    id: 'gu-basics',
+    name: 'મૂળભૂત શબ્દો',
+    description: 'શરૂઆતીઓ માટે સામાન્ય શબ્દો',
+    words: [
+      { id: 'gu-1', text: 'સફરજન', hint: 'એક લાલ અથવા લીલું ફળ જે વૃક્ષો પર ઉગે છે', difficulty: 'easy' },
+      { id: 'gu-2', text: 'કેળું', hint: 'એક લાંબું પીળું ફળ જેનો આકાર વાંકો હોય છે', difficulty: 'easy' },
+      { id: 'gu-3', text: 'બિલાડી', hint: 'એક નાનું પાલતુ પ્રાણી જે મ્યાઉં મ્યાઉં કરે છે', difficulty: 'easy' },
+      { id: 'gu-4', text: 'કૂતરો', hint: 'એક સામાન્ય પાલતુ પ્રાણી જે ભસે છે', difficulty: 'easy' },
+    ],
+    languageId: 'gu',
+    difficulty: 'easy',
+  }
+];
+
+export const filipinoWordLists: WordList[] = [
+  {
+    id: 'fil-basics',
+    name: 'Mga Pangunahing Salita',
+    description: 'Karaniwang salita para sa mga nagsisimula',
+    words: [
+      { id: 'fil-1', text: 'mansanas', hint: 'Isang prutas na pula o berde na tumutubo sa mga puno', difficulty: 'easy' },
+      { id: 'fil-2', text: 'saging', hint: 'Isang mahabang dilaw na prutas na may kurvang hugis', difficulty: 'easy' },
+      { id: 'fil-3', text: 'pusa', hint: 'Isang maliit na hayop na pet na ngumingiyaw', difficulty: 'easy' },
+      { id: 'fil-4', text: 'aso', hint: 'Isang karaniwang hayop na pet na tumatahol', difficulty: 'easy' },
+    ],
+    languageId: 'fil',
+    difficulty: 'easy',
+  }
+];
+
+export const pashtoWordLists: WordList[] = [
+  {
+    id: 'ps-basics',
+    name: 'بنسټیز کلمې',
+    description: 'د پیل کوونکو لپاره عام کلمې',
+    words: [
+      { id: 'ps-1', text: 'مڼه', hint: 'يوه سره يا شنه ميوه چې په ونو کې وده کوي', difficulty: 'easy' },
+      { id: 'ps-2', text: 'کيله', hint: 'يوه اوږده ژيړه ميوه چې کږه بڼه لري', difficulty: 'easy' },
+      { id: 'ps-3', text: 'پيشو', hint: 'يو کوچنی پالنه شوی ژوی چې مياو مياو کوي', difficulty: 'easy' },
+      { id: 'ps-4', text: 'سپی', hint: 'يو عام پالل شوی ژوی چې غپيږي', difficulty: 'easy' },
+    ],
+    languageId: 'ps',
+    difficulty: 'easy',
+  }
+];
+
 export const otherWordLists: Record<string, WordList[]> = {
   ar: [
     {
@@ -228,4 +342,12 @@ export const otherWordLists: Record<string, WordList[]> = {
       difficulty: 'easy',
     }
   ],
+  // Adding new languages to the otherWordLists record
+  doi: dogriWordLists,
+  as: assameseWordLists,
+  si: sinhaleseWordLists,
+  de: germanWordLists,
+  gu: gujaratiWordLists,
+  fil: filipinoWordLists,
+  ps: pashtoWordLists,
 };

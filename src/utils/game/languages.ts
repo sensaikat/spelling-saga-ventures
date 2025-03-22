@@ -20,4 +20,13 @@ export const languages: Language[] = [
   { id: 'ml', name: 'Malayalam', nativeName: 'മലയാളം', flag: '🇮🇳' },
   { id: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴' },
   { id: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
+  
+  // Adding the requested languages
+  { id: 'doi', name: 'Dogri', nativeName: 'डोगरी', flag: '🇮🇳' },
+  { id: 'as', name: 'Assamese', nativeName: 'অসমীয়া', flag: '🇮🇳' },
+  { id: 'si', name: 'Sinhalese', nativeName: 'සිංහල', flag: '🇱🇰' },
+  { id: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
+  { id: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી', flag: '🇮🇳' },
+  { id: 'fil', name: 'Filipino', nativeName: 'Filipino', flag: '🇵🇭' },
+  { id: 'ps', name: 'Pashto', nativeName: 'پښتو', flag: '🇦🇫' },
 ];

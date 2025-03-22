@@ -38,6 +38,32 @@ export const alphabetData: Record<string, AlphabetData> = {
     'Consonants': ['క', 'ఖ', 'గ', 'ఘ', 'ఙ', 'చ', 'ఛ', 'జ', 'ఝ', 'ఞ', 'ట', 'ఠ', 'డ', 'ఢ', 'ణ', 'త', 'థ', 'ద', 'ధ', 'న', 'ప', 'ఫ', 'బ', 'భ', 'మ', 'య', 'ర', 'ల', 'వ', 'శ', 'ష', 'స', 'హ', 'ళ', 'క్ష', 'ఱ'],
     'Numbers': ['౦', '౧', '౨', '౩', '౪', '౫', '౬', '౭', '౮', '౯'],
   },
+  // Adding new scripts for the added languages
+  assamese: {
+    'Vowels': ['অ', 'আ', 'ই', 'ঈ', 'উ', 'ঊ', 'ঋ', 'এ', 'ঐ', 'ও', 'ঔ'],
+    'Consonants': ['ক', 'খ', 'গ', 'ঘ', 'ঙ', 'চ', 'ছ', 'জ', 'ঝ', 'ঞ', 'ট', 'ঠ', 'ড', 'ঢ', 'ণ', 'ত', 'থ', 'দ', 'ধ', 'ন', 'প', 'ফ', 'ব', 'ভ', 'ম', 'য', 'ৰ', 'ল', 'ৱ', 'শ', 'ষ', 'স', 'হ', 'ক্ষ'],
+    'Numbers': ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'],
+  },
+  sinhalese: {
+    'Vowels': ['අ', 'ආ', 'ඇ', 'ඈ', 'ඉ', 'ඊ', 'උ', 'ඌ', 'ඍ', 'ඎ', 'ඏ', 'ඐ', 'එ', 'ඒ', 'ඓ', 'ඔ', 'ඕ', 'ඖ'],
+    'Consonants': ['ක', 'ඛ', 'ග', 'ඝ', 'ඞ', 'ඟ', 'ච', 'ඡ', 'ජ', 'ඣ', 'ඤ', 'ඥ', 'ඦ', 'ට', 'ඨ', 'ඩ', 'ඪ', 'ණ', 'ඬ', 'ත', 'ථ', 'ද', 'ධ', 'න', 'ඳ', 'ප', 'ඵ', 'බ', 'භ', 'ම', 'ඹ', 'ය', 'ර', 'ල', 'ව', 'ශ', 'ෂ', 'ස', 'හ', 'ළ', 'ෆ'],
+    'Numbers': ['෦', '෧', '෨', '෩', '෪', '෫', '෬', '෭', '෮', '෯'],
+  },
+  gujarati: {
+    'Vowels': ['અ', 'આ', 'ઇ', 'ઈ', 'ઉ', 'ઊ', 'ઋ', 'ૠ', 'ઌ', 'ૡ', 'એ', 'ઐ', 'ઓ', 'ઔ'],
+    'Consonants': ['ક', 'ખ', 'ગ', 'ઘ', 'ઙ', 'ચ', 'છ', 'જ', 'ઝ', 'ઞ', 'ટ', 'ઠ', 'ડ', 'ઢ', 'ણ', 'ત', 'થ', 'દ', 'ધ', 'ન', 'પ', 'ફ', 'બ', 'ભ', 'મ', 'ય', 'ર', 'લ', 'વ', 'શ', 'ષ', 'સ', 'હ', 'ળ'],
+    'Numbers': ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯'],
+  },
+  latin: {
+    'Letters': ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    'Numbers': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+    'Special': ['ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü'],
+  },
+  pashto: {
+    'Letters': ['ا', 'ب', 'پ', 'ت', 'ټ', 'ث', 'ج', 'چ', 'ح', 'خ', 'د', 'ډ', 'ذ', 'ر', 'ړ', 'ز', 'ژ', 'ږ', 'س', 'ش', 'ښ', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ک', 'ګ', 'ل', 'م', 'ن', 'ڼ', 'و', 'ه', 'ی', 'ې', 'ۍ', 'ئ'],
+    'Diacritics': ['َ', 'ِ', 'ُ', 'ً', 'ٍ', 'ٌ', 'ّ', 'ْ'],
+    'Numbers': ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'],
+  },
 };
 
 // Category labels in different languages
@@ -77,15 +103,46 @@ export const scriptCategoryLabels: ScriptCategoryLabels = {
     'Consonants': 'హల్లులు',
     'Numbers': 'సంఖ్యలు',
   },
+  // Adding category labels for new languages
+  assamese: {
+    'Vowels': 'স্বৰবৰ্ণ',
+    'Consonants': 'ব্যঞ্জনবৰ্ণ',
+    'Numbers': 'সংখ্যা',
+  },
+  sinhalese: {
+    'Vowels': 'ස්වර',
+    'Consonants': 'ව්යඤ්ජන',
+    'Numbers': 'අංක',
+  },
+  gujarati: {
+    'Vowels': 'સ્વર',
+    'Consonants': 'વ્યંજન',
+    'Numbers': 'અંક',
+  },
+  latin: {
+    'Letters': 'Buchstaben',
+    'Numbers': 'Zahlen',
+    'Special': 'Sonderzeichen',
+  },
+  pashto: {
+    'Letters': 'توري',
+    'Diacritics': 'اعراب',
+    'Numbers': 'اعداد',
+  },
 };
 
 // Language to script group mapping
 export const scriptGroups: ScriptGroups = {
-  devanagari: ['hi', 'mr', 'ne', 'sa'],
+  devanagari: ['hi', 'mr', 'ne', 'sa', 'doi'],
   bengali: ['bn'],
   arabic: ['ar', 'ur'],
   chinese: ['zh'],
   oriya: ['or'],
   tamil: ['ta'],
   telugu: ['te'],
+  assamese: ['as'],
+  sinhalese: ['si'],
+  gujarati: ['gu'],
+  latin: ['en', 'es', 'fr', 'de', 'pl', 'ro', 'fil'],
+  pashto: ['ps'],
 };
