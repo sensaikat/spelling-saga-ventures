@@ -1,23 +1,24 @@
-
 import React from 'react';
-import { motion } from 'framer-motion';
-import SettingsHeader from '../components/settings/SettingsHeader';
-import LanguageSettings from '../components/settings/LanguageSettings';
-import AppSettings from '../components/settings/AppSettings';
-import AboutSection from '../components/settings/AboutSection';
-import ParentalControlsSettings from '../components/settings/ParentalControlsSettings';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import ResolutionSettings from '../components/settings/ResolutionSettings';
 
-const Settings = () => {
+const Settings: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50">
-      <div className="container mx-auto px-4 py-12">
-        <SettingsHeader />
+    <div className="h-screen p-6 bg-gradient-to-b from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+      
+      <div className="max-w-2xl mx-auto space-y-6">
+        <ResolutionSettings />
         
-        <div className="max-w-2xl mx-auto">
-          <ParentalControlsSettings />
-          <LanguageSettings />
-          <AppSettings />
-          <AboutSection />
+        {/* Other settings could go here */}
+        
+        <div className="mt-8">
+          <Button variant="default" onClick={() => navigate('/')}>
+            Back to Home
+          </Button>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 
 // Types for our adventure system
-export type TerrainType = 'forest' | 'desert' | 'river' | 'mountain' | 'castle' | 'space';
+export type TerrainType = 'forest' | 'desert' | 'river' | 'mountain' | 'castle' | 'space' | 'bedroom';
 export type RoomType = 'bedroom' | 'kitchen' | 'livingRoom' | 'garden' | 'school' | 'market' | 'park' | 'busStop';
 export type StoryPhase = 'introduction' | 'exploration' | 'challenge' | 'reward' | 'conclusion';
 

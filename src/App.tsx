@@ -2,7 +2,11 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query/devtools';
+import { useSubscriptionStore } from './utils/subscription';
+import { ThemeAudioProvider } from './contexts/theme/ThemeContext';
+import { ResolutionProvider } from './contexts/resolution/ResolutionContext';
+
+// Import your pages (these need to be created)
 import Home from './pages/Home';
 import Adventure from './pages/Adventure';
 import AdventureScenePage from './pages/AdventureScene';
@@ -10,9 +14,6 @@ import Settings from './pages/Settings';
 import Game from './pages/Game';
 import Subscription from './pages/Subscription';
 import NotFound from './pages/NotFound';
-import { useSubscriptionStore } from './utils/subscription';
-import { ThemeAudioProvider } from './contexts/theme/ThemeContext';
-import { ResolutionProvider } from './contexts/resolution/ResolutionContext';
 
 function App() {
   const queryClient = new QueryClient();
@@ -39,7 +40,6 @@ function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Router>
-            <ReactQueryDevtools initialIsOpen={false} />
           </div>
         </ResolutionProvider>
       </ThemeAudioProvider>
