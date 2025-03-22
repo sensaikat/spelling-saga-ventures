@@ -7,10 +7,12 @@ import { GameStage } from './GameStage';
 import { GameComplete } from './GameComplete';
 import { GuideSection } from './GuideSection';
 import { SpellingGameContainerProps } from './types';
+import { TerrainType } from '../../contexts/adventure/types';
 
 const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({ 
   isAdventure = false,
-  onAdventureComplete
+  onAdventureComplete,
+  terrain = 'forest' as TerrainType
 }) => {
   const { 
     selectedLanguage, 
@@ -124,7 +126,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
       <GuideSection 
         showGuide={showGuide}
         isAdventure={isAdventure}
-        terrain="forest"
+        terrain={terrain}
       />
     </div>
   );

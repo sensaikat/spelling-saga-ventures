@@ -1,9 +1,10 @@
-
 import { Word } from "../../utils/game";
+import { TerrainType } from "../../contexts/adventure/types";
 
 export interface SpellingGameContainerProps {
   isAdventure?: boolean;
   onAdventureComplete?: (score: number) => void;
+  terrain?: TerrainType;
 }
 
 export interface GameStageProps {

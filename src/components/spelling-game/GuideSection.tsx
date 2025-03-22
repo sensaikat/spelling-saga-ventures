@@ -2,11 +2,12 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GuideCharacter from '../GuideCharacter';
+import { TerrainType } from '../../contexts/adventure/types';
 
 interface GuideSectionProps {
   showGuide: boolean;
   isAdventure: boolean;
-  terrain?: string;
+  terrain?: TerrainType;
 }
 
 export const GuideSection: React.FC<GuideSectionProps> = ({
