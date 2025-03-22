@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -37,13 +36,11 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
     isGameCompleted: false
   });
   
-  // Generate questions when game starts
   useEffect(() => {
     generateQuestion();
     checkAndUpdateStreak();
   }, []);
   
-  // Get a random word from a specific language word list
   const getRandomWord = (languageId: string): Word | null => {
     const wordList = selectedWordLists.find(list => list.languageId === languageId);
     if (!wordList || wordList.words.length === 0) return null;
@@ -52,13 +49,10 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
     return wordList.words[randomIndex];
   };
   
-  // Find matching word in target language
   const findMatchingWord = (sourceWord: Word, targetLanguageId: string): Word | null => {
     const targetWordList = selectedWordLists.find(list => list.languageId === targetLanguageId);
     if (!targetWordList) return null;
     
-    // Try to find a word with the same meaning (in this simplified version,
-    // we'll just use words with the same array index, assuming they match in meaning)
     const sourceWordList = selectedWordLists.find(list => 
       list.words.some(word => word.id === sourceWord.id)
     );
@@ -67,7 +61,6 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
     
     const sourceIndex = sourceWordList.words.findIndex(word => word.id === sourceWord.id);
     
-    // If the target word list has this index, use it, otherwise pick a random word
     if (sourceIndex >= 0 && sourceIndex < targetWordList.words.length) {
       return targetWordList.words[sourceIndex];
     } else {
@@ -75,7 +68,6 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
     }
   };
   
-  // Generate a new question
   const generateQuestion = () => {
     if (selectedLanguages.length < 2) {
       toast({
@@ -86,7 +78,6 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
       return;
     }
     
-    // Pick random source and target languages
     const sourceLanguageIndex = Math.floor(Math.random() * selectedLanguages.length);
     let targetLanguageIndex;
     do {
@@ -96,15 +87,12 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
     const sourceLanguage = selectedLanguages[sourceLanguageIndex];
     const targetLanguage = selectedLanguages[targetLanguageIndex];
     
-    // Get a random word from source language
     const sourceWord = getRandomWord(sourceLanguage.id);
     if (!sourceWord) return;
     
-    // Find matching word in target language
     const correctAnswer = findMatchingWord(sourceWord, targetLanguage.id);
     if (!correctAnswer) return;
     
-    // Generate wrong options
     const options: Word[] = [correctAnswer];
     const optionsCount = 3;
     
@@ -115,10 +103,9 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
       }
     }
     
-    // Shuffle options
     const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
     
-    const question: MultiLanguageQuestion = {
+    const question: QuestionType = {
       sourceLanguage,
       targetLanguage,
       sourceWord,
@@ -165,7 +152,6 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
       }));
     }
     
-    // Check if game should end
     setTimeout(() => {
       setGameState(prev => {
         const gameCompleted = 
@@ -176,7 +162,6 @@ const MultiLanguageGameContainer: React.FC<MultiLanguageGameContainerProps> = ({
           return { ...prev, isGameCompleted: true };
         }
         
-        // Continue with next question
         generateQuestion();
         return prev;
       });
