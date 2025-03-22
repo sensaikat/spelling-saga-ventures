@@ -35,3 +35,4 @@ export * from './useGameEvents';
 export * from './useGameReset';
 export * from './useGameSettings';
 export * from './utils';
+export * from './word-submission';

@@ -2,31 +2,13 @@
 import { useCallback } from 'react';
 import { Word, Language } from '../../../../utils/game';
 import { useGameSettings } from './useGameSettings';
+import { useWordValidator } from './word-submission/useWordValidator';
+import { useWordProgression } from './word-submission/useWordProgression';
+import { useGameScoring } from './word-submission/useGameScoring';
 
 /**
  * Props for the useGameSubmissionHandler hook
  * @interface UseGameSubmissionHandlerProps
- * @property {Word | null} currentWord - Current word being played
- * @property {Word[]} filteredWords - Array of filtered words for the game
- * @property {number} currentWordIndex - Index of current word
- * @property {Function} setCurrentWordIndex - Function to set current word index
- * @property {Function} setUserInput - Function to clear user input
- * @property {Function} setIsCorrect - Function to set correctness state
- * @property {Function} setShowResult - Function to show result
- * @property {Function} setShowHint - Function to reset hint display
- * @property {Function} setGameCompleted - Function to mark game as completed
- * @property {number} score - Current score
- * @property {Function} setScore - Function to update score
- * @property {number} remainingLives - Remaining lives
- * @property {Function} setRemainingLives - Function to update lives
- * @property {Function} recordWordAttempt - Analytics recorder function
- * @property {Function} updateProgress - Progress update function
- * @property {Function} addPlayerPoints - Function to add player points
- * @property {Language | string | null} selectedLanguage - Selected language
- * @property {Function} trackWord - Function to track word for history
- * @property {boolean} isCheckingAnswer - Whether currently checking answer
- * @property {Function} setIsCheckingAnswer - Function to set checking state
- * @property {number} resultDelay - Delay for showing result before moving on
  */
 interface UseGameSubmissionHandlerProps {
   currentWord: Word | null;
@@ -55,14 +37,10 @@ interface UseGameSubmissionHandlerProps {
 /**
  * Hook for handling word submission and validation
  * 
- * This hook provides functions for:
- * - Submitting answers
- * - Validating correctness
- * - Handling skipped words
- * - Updating game state based on answers
- * 
- * @param {UseGameSubmissionHandlerProps} props - Submission handling configuration
- * @returns Submission handler functions
+ * This hook coordinates the different aspects of word submission:
+ * - Validating user answers
+ * - Updating game state based on correctness
+ * - Managing progression to next word
  */
 export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) => {
   const {
@@ -92,6 +70,38 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
   // Get game settings
   const { settings } = useGameSettings();
   
+  // Hook for validating word submissions
+  const { validateSubmission } = useWordValidator({
+    recordWordAttempt,
+    trackWord,
+    selectedLanguage
+  });
+  
+  // Hook for updating score and lives
+  const { handleCorrectAnswer, handleIncorrectAnswer } = useGameScoring({
+    score,
+    setScore,
+    remainingLives,
+    setRemainingLives,
+    addPlayerPoints,
+    updateProgress
+  });
+  
+  // Local state for tracking current answer correctness for word progression
+  const [localIsCorrect, setLocalIsCorrect] = useState<boolean>(false);
+  
+  // Hook for managing word progression
+  const { progressToNextWord } = useWordProgression({
+    filteredWords,
+    currentWordIndex,
+    setCurrentWordIndex,
+    setUserInput,
+    setShowHint,
+    setGameCompleted,
+    remainingLives,
+    isCorrect: localIsCorrect
+  });
+  
   /**
    * Validates and processes a user submission
    * @param {React.FormEvent} e - Form submission event
@@ -108,35 +118,19 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
     const formData = new FormData(formElement);
     const userInput = formData.get('wordInput')?.toString() || '';
     
-    // Check answer
-    const isCorrect = userInput.trim().toLowerCase() === currentWord.text.trim().toLowerCase();
+    // Validate the submission
+    const isCorrect = validateSubmission(userInput, currentWord);
     
+    // Update UI state
     setIsCorrect(isCorrect);
     setShowResult(true);
+    setLocalIsCorrect(isCorrect);
     
-    // Record analytics if available
-    if (recordWordAttempt && currentWord) {
-      recordWordAttempt(currentWord, isCorrect, selectedLanguage || null);
-    }
-    
-    // Track word for history
-    if (currentWord) {
-      trackWord(currentWord, isCorrect);
-    }
-    
-    // Update score
+    // Update score or lives based on correctness
     if (isCorrect) {
-      setScore(score + settings.correctAnswerPoints);
-      if (addPlayerPoints) {
-        addPlayerPoints(settings.playerPointsIncrement);
-      }
+      handleCorrectAnswer(currentWord.id);
     } else {
-      setRemainingLives(remainingLives - 1);
-    }
-    
-    // Update progress if function is provided
-    if (currentWord.id && updateProgress) {
-      updateProgress(currentWord.id, isCorrect);
+      handleIncorrectAnswer(currentWord.id);
     }
     
     // Move to next word after delay
@@ -145,38 +139,22 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
       setShowHint(false);
       setIsCheckingAnswer(false);
       
-      if (currentWordIndex >= filteredWords.length - 1 || (remainingLives <= 1 && !isCorrect)) {
-        // Game over
-        setGameCompleted(true);
-      } else if (isCorrect || remainingLives > 1) {
-        // Move to next word
-        setCurrentWordIndex(currentWordIndex + 1);
-        setUserInput('');
-      }
+      progressToNextWord();
     }, resultDelay || settings.resultDisplayDuration);
   }, [
     currentWord,
     isCheckingAnswer,
     setIsCheckingAnswer,
-    filteredWords,
-    currentWordIndex,
-    setCurrentWordIndex,
-    setUserInput,
+    validateSubmission,
     setIsCorrect,
     setShowResult,
+    setLocalIsCorrect,
+    handleCorrectAnswer,
+    handleIncorrectAnswer,
+    resultDelay,
+    settings.resultDisplayDuration,
     setShowHint,
-    setGameCompleted,
-    score,
-    setScore,
-    remainingLives,
-    setRemainingLives,
-    recordWordAttempt,
-    updateProgress,
-    addPlayerPoints,
-    selectedLanguage,
-    trackWord,
-    settings,
-    resultDelay
+    progressToNextWord
   ]);
   
   /**
@@ -230,3 +208,6 @@ export const useGameSubmissionHandler = (props: UseGameSubmissionHandlerProps) =
     handleSkip
   };
 };
+
+// Add missing imports
+import { useState } from 'react';
