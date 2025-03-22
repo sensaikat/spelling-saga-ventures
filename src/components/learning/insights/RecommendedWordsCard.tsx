@@ -1,15 +1,16 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Lightbulb, ExternalLink } from 'lucide-react';
-import { Word } from '../../utils/game/types';
+import { Word } from '../../../utils/game/types';
 import { useNavigate } from 'react-router-dom';
-import { useGameStore } from '../../utils/game';
+import { useGameStore } from '../../../utils/game';
 
-interface RecommendedWordsProps {
+interface RecommendedWordsCardProps {
   words: Word[];
 }
 
-const RecommendedWords: React.FC<RecommendedWordsProps> = ({ words }) => {
+const RecommendedWordsCard: React.FC<RecommendedWordsCardProps> = ({ words }) => {
   const navigate = useNavigate();
   const { setCurrentWordList, selectedLanguage, selectedGameMode } = useGameStore();
   
@@ -74,4 +75,4 @@ const RecommendedWords: React.FC<RecommendedWordsProps> = ({ words }) => {
   );
 };
 
-export default RecommendedWords;
+export default RecommendedWordsCard;

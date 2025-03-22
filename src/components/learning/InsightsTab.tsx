@@ -3,8 +3,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { LearningInsight } from '../../services/analytics/learningAnalytics';
 import { Word } from '../../utils/game/types';
-import LearningInsights from './LearningInsights';
-import RecommendedWords from './RecommendedWords';
+import InsightsContainer from './insights/InsightsContainer';
+import RecommendedWordsCard from './insights/RecommendedWordsCard';
 
 interface InsightsTabProps {
   insights: LearningInsight[];
@@ -20,7 +20,7 @@ const InsightsTab: React.FC<InsightsTabProps> = ({ insights, recommendedWords })
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <LearningInsights insights={insights} />
+        <InsightsContainer insights={insights} />
       </motion.div>
       
       {/* Recommended Words Section */}
@@ -31,7 +31,7 @@ const InsightsTab: React.FC<InsightsTabProps> = ({ insights, recommendedWords })
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-8"
         >
-          <RecommendedWords words={recommendedWords} />
+          <RecommendedWordsCard words={recommendedWords} />
         </motion.div>
       )}
     </>
