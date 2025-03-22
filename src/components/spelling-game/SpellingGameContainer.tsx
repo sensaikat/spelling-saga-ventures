@@ -11,6 +11,7 @@ import AlphabetHelper from '../alphabet-helper/AlphabetHelper';
 import { GameControlsContainer } from '../game-controls/GameControlsContainer';
 import GuideCharacter from '../GuideCharacter';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface SpellingGameContainerProps {
   isAdventure?: boolean;
@@ -21,6 +22,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   isAdventure = false,
   onAdventureComplete
 }) => {
+  const navigate = useNavigate();
   const { 
     selectedLanguage, 
     selectedGameMode, 
@@ -40,12 +42,12 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isCheckingAnswer, setIsCheckingAnswer] = useState(false);
   const [inputStatus, setInputStatus] = useState<'correct' | 'incorrect' | null>(null);
-  const [hint, setHint] = useState('');
+  const [showHint, setShowHint] = useState(false);
   const [showHintButton, setShowHintButton] = useState(true);
+  const [remainingLives, setRemainingLives] = useState(3);
   
   // Pass isAdventure as the first parameter to useGameState
   const gameState = useGameState(isAdventure, onAdventureComplete, words);
-  const { remainingWords } = gameState;
   
   const {
     audioEnabled,
@@ -129,8 +131,7 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
     setTimeout(() => {
       setIsCheckingAnswer(false);
       setInputStatus(null);
-      // Use the gameState.nextWord function instead
-      if (gameState && currentIndex < words.length - 1) {
+      if (currentIndex < words.length - 1) {
         setCurrentIndex(prevIndex => prevIndex + 1);
         setCurrentWord(words[currentIndex + 1]);
       } else {
@@ -154,7 +155,6 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   };
   
   const handleSkipClick = () => {
-    // Use local skip implementation instead of gameState.handleSkip
     if (currentIndex < words.length - 1) {
       setCurrentIndex(prevIndex => prevIndex + 1);
       setCurrentWord(words[currentIndex + 1]);
@@ -166,68 +166,82 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
   
   const handleShowHint = () => {
     setShowHintButton(false);
+    setShowHint(true);
+  };
+  
+  const handleAdventureReturn = () => {
+    if (onAdventureComplete) {
+      onAdventureComplete(score);
+    }
   };
   
   return (
     <div className="flex flex-col h-full relative">
       <GameHeader 
-        score={score} 
-        isCheckingAnswer={isCheckingAnswer} 
+        remainingLives={remainingLives}
         isAdventure={isAdventure}
+        handleAdventureReturn={handleAdventureReturn}
+        navigate={navigate}
       />
       
       <div className="flex-grow flex flex-col">
-        <GameContent 
-          currentWord={currentWord} 
-          wordCount={wordCount}
-          currentIndex={currentIndex}
-          remainingWords={remainingWords || words.length - currentIndex - 1}
-          elapsedTime={elapsedTime}
-          isAdventure={isAdventure}
-        >
-          <GameForm
+        {currentWord && (
+          <GameContent 
+            currentWord={currentWord}
             userInput={userInput}
             setUserInput={setUserInput}
+            isCorrect={inputStatus === 'correct'}
+            showResult={isCheckingAnswer}
+            score={score}
+            remainingLives={remainingLives}
+            showHint={showHint}
+            hintsUsed={showHint ? 1 : 0}
+            maxHints={3}
+            difficultyLevel="all"
+            progressPercentage={(currentIndex / wordCount) * 100}
+            isAdventure={isAdventure}
+            audioEnabled={audioEnabled}
+            showAlphabetHelper={showAlphabetHelper}
+            handleSubmit={handleSubmit}
+            handleSkip={handleSkipClick}
+            handleShowHint={handleShowHint}
+            handlePlayAgain={handlePlayAgainClick}
+            handleDifficultyChange={() => {}}
+            toggleAudio={toggleAudio}
+            speakWord={speakWord}
+            handleAlphabetHelperToggle={handleAlphabetHelperToggle}
             handleInputSelect={handleInputSelect}
             handleInputChange={(e) => handleInputChange(e, setUserInput)}
-            handleSubmit={handleSubmit}
+            handleAdventureReturn={handleAdventureReturn}
             cursorPosition={cursorPosition}
-            isCheckingAnswer={isCheckingAnswer}
-            inputStatus={inputStatus}
+            handleCharacterClick={handleCharacterClickWrapper}
           />
-          
-          {showAlphabetHelper && selectedLanguage && (
-            <AlphabetHelper 
-              languageId={selectedLanguage.id} 
-              onCharacterClick={handleCharacterClickWrapper}
-              onPronounce={handlePronounceWrapper}
-            />
-          )}
-        </GameContent>
+        )}
         
         {gameFinished && (
           <GameResult 
-            score={score} 
-            incorrectWords={incorrectWords} 
-            correctWords={correctWords}
-            onPlayAgain={handlePlayAgainClick}
             isAdventure={isAdventure}
-            onAdventureComplete={onAdventureComplete}
+            score={score}
+            handlePlayAgain={handlePlayAgainClick}
+            handleAdventureReturn={handleAdventureReturn}
           />
         )}
       </div>
 
       <GameControlsContainer 
-        currentWord={currentWord}
-        hasAlphabetHelper={hasComplexScript}
-        showAlphabetHelper={showAlphabetHelper}
-        onAlphabetHelperToggle={handleAlphabetHelperToggle}
+        onSkip={handleSkipClick}
+        onSpeak={() => currentWord && speakWord(currentWord)}
+        onHint={handleShowHint}
+        onRestart={handlePlayAgainClick}
+        difficultyLevel="all"
+        onDifficultyChange={() => {}}
         audioEnabled={audioEnabled}
         onAudioToggle={toggleAudio}
-        onSpeak={() => currentWord && speakWord(currentWord)}
-        onSkip={handleSkipClick}
-        onShowHint={handleShowHint}
-        gameMode="spelling"
+        hintsUsed={showHint ? 1 : 0}
+        maxHints={3}
+        isPlaying={!gameFinished}
+        showAlphabetHelper={showAlphabetHelper}
+        onAlphabetHelperToggle={handleAlphabetHelperToggle}
       />
       
       <AnimatePresence>
@@ -240,9 +254,8 @@ const SpellingGameContainer: React.FC<SpellingGameContainerProps> = ({
             transition={{ duration: 0.3 }}
           >
             <GuideCharacter 
-              message={guideMessage} 
-              isSpeaking={true}
-              character="owl"
+              terrain="forest"
+              isAdventure={isAdventure}
             />
           </motion.div>
         )}
