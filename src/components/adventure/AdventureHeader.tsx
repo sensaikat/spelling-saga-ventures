@@ -142,7 +142,7 @@ const AdventureHeader: React.FC<AdventureHeaderProps> = ({
           <div className="flex items-center">
             {previewImage && (
               <motion.div 
-                className="relative w-24 h-24 mr-4 overflow-hidden rounded-lg shadow-md"
+                className="relative w-24 h-24 mr-4 overflow-hidden rounded-lg shadow-md bg-gray-100"
                 whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -152,6 +152,10 @@ const AdventureHeader: React.FC<AdventureHeaderProps> = ({
                   src={previewImage} 
                   alt={`${currentLocation.name} preview`}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder.svg';
+                    e.currentTarget.onerror = null; // Prevent infinite loop if placeholder also fails
+                  }}
                 />
               </motion.div>
             )}
@@ -160,7 +164,8 @@ const AdventureHeader: React.FC<AdventureHeaderProps> = ({
               className="text-4xl"
               animate={{ 
                 y: [0, -5, 0],
-                rotate: [0, 5, 0]
+                rotate: [0, 5, 0, -5, 0],
+                scale: [1, 1.05, 1],
               }}
               transition={{ 
                 repeat: Infinity, 

@@ -24,15 +24,15 @@ export const terrainIcons: Record<TerrainType, string> = {
   bedroom: '🛏️',
 };
 
-// Preview images for each terrain type
+// Preview images for each terrain type - Using placeholder images that exist
 export const terrainImages: Record<TerrainType, string> = {
-  forest: '/images/terrain/forest-preview.jpg',
-  desert: '/images/terrain/desert-preview.jpg',
-  river: '/images/terrain/river-preview.jpg',
-  mountain: '/images/terrain/mountain-preview.jpg',
-  castle: '/images/terrain/castle-preview.jpg',
-  space: '/images/terrain/space-preview.jpg',
-  bedroom: '/images/terrain/bedroom-preview.jpg',
+  forest: '/placeholder.svg',  // Using the available placeholder image
+  desert: '/placeholder.svg',
+  river: '/placeholder.svg',
+  mountain: '/placeholder.svg',
+  castle: '/placeholder.svg',
+  space: '/placeholder.svg',
+  bedroom: '/placeholder.svg',
 };
 
 // Companion characters for each terrain
