@@ -104,7 +104,7 @@ const Index = () => {
               className="glass-panel p-6"
             >
               <h2 className="text-2xl font-medium mb-6 text-center">Single Language Mode</h2>
-              <LanguageSelector onSelect={handleLanguageSelect} />
+              <LanguageSelector />
             </motion.div>
             
             <motion.div
@@ -112,7 +112,19 @@ const Index = () => {
               className="glass-panel p-6"
             >
               <h2 className="text-2xl font-medium mb-6 text-center">Multi-Language Mode</h2>
-              <MultiLanguageSelector onSelect={handleMultiLanguageSelect} />
+              <div className="flex flex-col items-center">
+                <p className="text-gray-600 mb-4">
+                  Challenge yourself with vocabulary from multiple languages at once.
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="bg-game-purple hover:bg-purple-600 text-white px-6 py-3 rounded-full text-lg"
+                  onClick={handleMultiLanguageSelect}
+                >
+                  Start Multi-Language Mode
+                </motion.button>
+              </div>
             </motion.div>
           </div>
         </motion.div>
