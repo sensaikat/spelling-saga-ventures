@@ -1,4 +1,6 @@
-import React from 'react';
+
+import React, { useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { WordCard } from '../word-card';
 import { Input } from '@/components/ui/input';
 import { Volume, Check, X } from 'lucide-react';
