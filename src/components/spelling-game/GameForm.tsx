@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Volume, Check, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -40,6 +40,15 @@ export const GameForm: React.FC<GameFormProps> = ({
   setCursorPosition,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Early return if currentWord is undefined
+  if (!currentWord) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <p className="text-gray-500">Loading word...</p>
+      </div>
+    );
+  }
 
   return (
     <AnimatePresence mode="wait">

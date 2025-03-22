@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdventureScene from '../components/AdventureScene';
 import SpellingGame from './SpellingGame';
@@ -19,7 +19,7 @@ const AdventureScenePage = () => {
   const currentLocation = getCurrentLocation();
   
   // Set the current location based on the URL param
-  React.useEffect(() => {
+  useEffect(() => {
     if (locationId) {
       setCurrentLocation(locationId);
     }
@@ -75,6 +75,13 @@ const AdventureScenePage = () => {
     const randomItem = items[Math.floor(Math.random() * items.length)];
     handleUseMagicItem(randomItem);
   };
+  
+  // Fix for infinite update loop - add a dependency array
+  useEffect(() => {
+    if (locationId) {
+      setCurrentLocation(locationId);
+    }
+  }, [locationId]); // Only run when locationId changes
   
   return (
     <div className="min-h-screen">
