@@ -2,15 +2,19 @@
 import { useSubscriptionStore } from "../subscription";
 import { SubscriptionPlan } from "../subscription/types";
 import { toast } from "../../hooks/use-toast";
+import { PaymentMethodType } from "./paymentMethods";
 
 // Simulate payment processing - in a real app, this would be replaced by Stripe, PayPal, etc.
 export const processPayment = async (
   plan: SubscriptionPlan,
   paymentDetails: {
-    cardNumber: string;
-    expiryDate: string;
-    cvv: string;
-    name: string;
+    method: PaymentMethodType;
+    currency: string;
+    cardNumber?: string;
+    expiryDate?: string;
+    cvv?: string;
+    name?: string;
+    email?: string;
   }
 ): Promise<{ success: boolean; transactionId?: string; error?: string }> => {
   // Simulate network delay
@@ -19,13 +23,15 @@ export const processPayment = async (
   const { addPaymentRecord, setSubscription } = useSubscriptionStore.getState();
   
   try {
-    // Validate card (very basic validation for demo)
-    if (paymentDetails.cardNumber.length < 16) {
-      return { success: false, error: "Invalid card number" };
-    }
-    
-    if (paymentDetails.cvv.length < 3) {
-      return { success: false, error: "Invalid CVV" };
+    // Validate payment details based on the method
+    if (paymentDetails.method === 'credit-card') {
+      if (!paymentDetails.cardNumber || paymentDetails.cardNumber.length < 16) {
+        return { success: false, error: "Invalid card number" };
+      }
+      
+      if (!paymentDetails.cvv || paymentDetails.cvv.length < 3) {
+        return { success: false, error: "Invalid CVV" };
+      }
     }
     
     // In a real app, we would send the payment details to a server
@@ -43,6 +49,8 @@ export const processPayment = async (
         planId: plan.id,
         amount: plan.price,
         status: 'completed',
+        currency: paymentDetails.currency || 'USD',
+        method: paymentDetails.method,
       });
       
       // Set the user's subscription
@@ -75,6 +83,8 @@ export const processPayment = async (
         planId: plan.id,
         amount: plan.price,
         status: 'failed',
+        currency: paymentDetails.currency || 'USD',
+        method: paymentDetails.method,
       });
       
       return { 
@@ -90,6 +100,8 @@ export const processPayment = async (
       planId: plan.id,
       amount: plan.price,
       status: 'failed',
+      currency: paymentDetails.currency || 'USD',
+      method: paymentDetails.method,
     });
     
     return { 

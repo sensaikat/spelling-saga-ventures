@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { SubscriptionPlan, SubscriptionStatus, FeatureLimits } from './types';
 import { featureLimits, premiumFeatureLimits, subscriptionPlans } from './plans';
+import { PaymentMethodType } from '../payment/paymentMethods';
 
 interface SubscriptionState {
   subscription: SubscriptionStatus;
@@ -12,9 +13,17 @@ interface SubscriptionState {
     id: string;
     planId: string;
     amount: number;
+    currency: string;
+    method: PaymentMethodType;
     date: string;
     status: 'completed' | 'pending' | 'failed';
   }[];
+  userProfile?: {
+    email?: string;
+    name?: string;
+    isVerified: boolean;
+    createdAt: string;
+  };
   
   // Actions
   setSubscription: (subscription: SubscriptionStatus) => void;
@@ -25,10 +34,17 @@ interface SubscriptionState {
   addPaymentRecord: (record: {
     planId: string;
     amount: number;
+    currency?: string;
+    method: PaymentMethodType;
     status: 'completed' | 'pending' | 'failed';
   }) => void;
   checkAccess: (feature: keyof FeatureLimits) => boolean;
   hasLanguageAccess: (languageId: string, availableLanguageIds: string[]) => boolean;
+  setUserProfile: (profile: {
+    email?: string;
+    name?: string;
+    isVerified?: boolean;
+  }) => void;
 }
 
 export const useSubscriptionStore = create<SubscriptionState>()(
@@ -108,6 +124,7 @@ export const useSubscriptionStore = create<SubscriptionState>()(
             {
               id: `payment_${Date.now()}`,
               ...record,
+              currency: record.currency || 'USD',
               date: new Date().toISOString(),
             },
             ...state.paymentHistory,
@@ -140,6 +157,20 @@ export const useSubscriptionStore = create<SubscriptionState>()(
         // For free users, check if the language is within their accessible limit
         const accessibleLanguages = availableLanguageIds.slice(0, limits.languages.free);
         return accessibleLanguages.includes(languageId);
+      },
+      
+      setUserProfile: (profile) => {
+        const current = get().userProfile || {
+          isVerified: false,
+          createdAt: new Date().toISOString()
+        };
+        
+        set({
+          userProfile: {
+            ...current,
+            ...profile,
+          }
+        });
       },
     }),
     {
