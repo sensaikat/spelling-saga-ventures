@@ -6,6 +6,7 @@ import { useSpellingGame } from './useSpellingGame';
 import { useAudioControls } from './useAudioControls';
 import { useAlphabetHelper } from './useAlphabetHelper';
 import { Word } from '../../../utils/game';
+import { InputStatus } from '../types';
 
 export const useSpellingGameContainer = (
   isAdventure: boolean = false,
@@ -24,18 +25,17 @@ export const useSpellingGameContainer = (
     currentWord,
     userInput,
     score,
-    wordCount,
-    currentIndex,
-    incorrectWords,
-    correctWords,
-    gameFinished,
-    isCheckingAnswer,
-    inputStatus,
+    isCorrect,
+    showResult,
     showHint,
+    gameCompleted: gameFinished,
     remainingLives,
     showGuide,
     timeRemaining,
     isTimerRunning,
+    inputStatus,
+    correctWords = [],
+    incorrectWords = [],
     
     setUserInput,
     handleSubmit,
@@ -45,6 +45,10 @@ export const useSpellingGameContainer = (
     handleAdventureReturn,
     showGuideWithMessage
   } = useSpellingGame(words, isAdventure, onAdventureComplete);
+  
+  // Calculate current index for progress
+  const currentIndex = words.findIndex(w => currentWord && w.id === currentWord.id);
+  const wordCount = words.length;
   
   // Audio controls hook
   const {
@@ -73,7 +77,9 @@ export const useSpellingGameContainer = (
   
   // Handle pronunciation with animation
   const handlePronounceWrapper = (text: string) => {
-    showGuideWithMessage(text);
+    if (showGuideWithMessage) {
+      showGuideWithMessage(text);
+    }
     handlePronounce(text);
   };
   
@@ -87,8 +93,8 @@ export const useSpellingGameContainer = (
     incorrectWords,
     correctWords,
     gameFinished,
-    isCheckingAnswer,
-    inputStatus,
+    isCheckingAnswer: showResult,
+    inputStatus: isCorrect === true ? 'correct' as InputStatus : isCorrect === false ? 'incorrect' as InputStatus : 'idle' as InputStatus,
     showHint,
     remainingLives,
     showGuide,
