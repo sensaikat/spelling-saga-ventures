@@ -1,4 +1,3 @@
-
 // Types for our game system
 export type Language = {
   id: string;
@@ -14,6 +13,7 @@ export type Word = {
   image?: string;
   hint?: string;
   difficulty: 'easy' | 'medium' | 'hard';
+  language?: string; // Added language property
 };
 
 export type WordList = {
