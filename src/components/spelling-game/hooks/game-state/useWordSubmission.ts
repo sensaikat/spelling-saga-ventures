@@ -41,10 +41,15 @@ export const useWordSubmission = ({
   addPlayerPoints,
   selectedLanguage
 }: UseWordSubmissionProps) => {
-  const handleSubmit = (e: React.FormEvent, userInput: string) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!currentWord) return;
+    
+    // Get the user input from the form
+    const formElement = e.target as HTMLFormElement;
+    const formData = new FormData(formElement);
+    const userInput = formData.get('wordInput')?.toString() || '';
     
     const isCorrect = userInput.trim().toLowerCase() === currentWord.text.toLowerCase();
     

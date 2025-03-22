@@ -3,8 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Word } from '../../../utils/game';
 import { useGameAnalytics } from './game-state/useGameAnalytics';
 import { useGameProgress } from './game-state/useGameProgress';
-import { useGameTimer } from './spelling-game/useGameTimer';
-import { useWordSubmission } from './game-state/useWordSubmission';
+import { useGameTimer } from './useGameTimer';
 import { Language } from '../../../utils/game/types';
 
 interface UseSpellingGameProps {
@@ -45,37 +44,88 @@ export const useSpellingGame = (
   };
 
   const { 
-    isTimerRunning, 
     timeRemaining, 
+    isRunning: isTimerRunning, 
     startTimer, 
     pauseTimer, 
     resetTimer 
   } = useGameTimer({
-    onTimeUp: handleTimeout,
+    enabled: true,
+    initialTime: 60,
+    onTimerEnd: handleTimeout,
   });
   
   // Filter words with appropriate field
   const filteredWords = words.filter(word => word);
   
-  const { handleSubmit, handleSkip } = useWordSubmission({
-    currentWord,
-    filteredWords,
-    currentWordIndex,
-    setCurrentWordIndex,
-    setUserInput,
-    setIsCorrect,
-    setShowResult,
-    setShowHint,
-    setGameCompleted,
-    score,
-    setScore,
-    remainingLives,
-    setRemainingLives,
-    recordWordAttempt,
-    updateProgress,
-    addPlayerPoints,
-    selectedLanguage: null
-  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!currentWord) return;
+    
+    // Get the user input from the form
+    const formElement = e.target as HTMLFormElement;
+    const formData = new FormData(formElement);
+    const userInput = formData.get('wordInput')?.toString() || '';
+    
+    const isCorrect = userInput.trim().toLowerCase() === currentWord.text.toLowerCase();
+    
+    setIsCorrect(isCorrect);
+    setShowResult(true);
+    
+    // Update score
+    if (isCorrect) {
+      setScore(score + 10);
+      addPlayerPoints(2);
+      setCorrectWords(prev => [...prev, currentWord]);
+    } else {
+      setRemainingLives(remainingLives - 1);
+      setIncorrectWords(prev => [...prev, currentWord]);
+    }
+    
+    // Update progress
+    if (currentWord.id) {
+      updateProgress(currentWord.id, isCorrect);
+    }
+    
+    // Move to next word after a delay
+    setTimeout(() => {
+      setShowResult(false);
+      setShowHint(false);
+      
+      if (currentWordIndex >= filteredWords.length - 1 || (remainingLives <= 1 && !isCorrect)) {
+        // Game over
+        setGameCompleted(true);
+      } else if (isCorrect || remainingLives > 1) {
+        // Move to next word
+        setCurrentWordIndex(currentWordIndex + 1);
+        setUserInput('');
+      }
+    }, 1500);
+  };
+  
+  const handleSkip = () => {
+    if (!currentWord) return;
+    
+    // Reduce lives
+    setRemainingLives(remainingLives - 1);
+    setIncorrectWords(prev => [...prev, currentWord]);
+    
+    // Check if game is over
+    if (remainingLives <= 1) {
+      setGameCompleted(true);
+      return;
+    }
+    
+    // Move to next word
+    if (currentWordIndex < filteredWords.length - 1) {
+      setCurrentWordIndex(currentWordIndex + 1);
+      setUserInput('');
+      setShowHint(false);
+    } else {
+      setGameCompleted(true);
+    }
+  };
   
   const handleShowHint = () => {
     setShowHint(true);
@@ -90,6 +140,8 @@ export const useSpellingGame = (
     setShowHint(false);
     setScore(0);
     setRemainingLives(3);
+    setCorrectWords([]);
+    setIncorrectWords([]);
     resetTimer();
   };
   

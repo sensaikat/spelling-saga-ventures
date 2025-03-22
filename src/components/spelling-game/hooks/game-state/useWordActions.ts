@@ -121,16 +121,8 @@ export const useWordActions = (props: UseWordActionsProps) => {
     }
   };
 
-  // Simple wrapper for updating progress
-  const updateProgress = (wordId: string, isCorrect: boolean) => {
-    if (props.updateProgress) {
-      props.updateProgress(wordId, isCorrect);
-    }
-  };
-  
   return {
     handleSubmit,
-    handleSkip,
-    updateProgress
+    handleSkip
   };
 };
