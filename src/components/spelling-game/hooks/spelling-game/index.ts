@@ -10,3 +10,6 @@ export * from './useGameInitializer';
 export * from './useGuideState';
 export * from './useGuideTimers';
 export * from './useGuideMessages';
+export * from './useSpellingGameState';
+export * from './useSpellingGameActions';
+export * from './useSpellingGameTimer';

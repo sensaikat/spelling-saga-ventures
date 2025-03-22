@@ -33,9 +33,9 @@ export const useSpellingGameContainer = (
     showGuide,
     timeRemaining,
     isTimerRunning,
+    correctWords,
+    incorrectWords,
     inputStatus,
-    correctWords = [],
-    incorrectWords = [],
     
     setUserInput,
     handleSubmit,
