@@ -78,3 +78,4 @@ const WordCard: React.FC<WordCardProps> = ({
 };
 
 export default WordCard;
+

@@ -165,3 +165,4 @@ export const defaultImages: Record<string, string> = {
   'शिवाजी': 'https://images.unsplash.com/photo-1588709702687-9e382e60a921?q=80&w=600',
   'रानी लक्ष्मीबाई': 'https://images.unsplash.com/photo-1590071688232-0300e0c3604b?q=80&w=600',
 };
+

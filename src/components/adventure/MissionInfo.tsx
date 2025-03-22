@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { TerrainType } from '../../contexts/adventure/types';
 import { terrainCompanions } from './TerrainBackground';
+import { Tree, Building, Mountain, Sun, Waves, Rocket } from 'lucide-react';
 
 interface MissionInfoProps {
   description: string;
@@ -17,25 +18,38 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
 }) => {
   const companion = terrainCompanions[terrain];
   
-  // Cultural insights based on terrain type
+  // Cultural insights based on terrain type with added emphasis on heritage
   const culturalInsight = React.useMemo(() => {
     switch(terrain) {
       case 'forest':
-        return "Forests are often sacred places in many cultures, with unique folklore and traditions associated with woodland spirits.";
+        return "Forests are often sacred places in many cultures, with unique folklore and traditions associated with woodland spirits and tree species.";
       case 'desert':
-        return "Desert communities have developed ingenious ways to survive harsh conditions, creating rich cultural traditions and cuisine.";
+        return "Desert communities have developed ingenious ways to survive harsh conditions, creating rich cultural traditions and unique architecture adapted to the environment.";
       case 'river':
-        return "Rivers are the lifeblood of civilizations, often giving rise to important cities, trade routes, and cultural exchanges.";
+        return "Rivers are the lifeblood of civilizations, often giving rise to important cities, heritage bridges, and unique water-based transportation systems.";
       case 'mountain':
-        return "Mountain communities often preserve ancient traditions, crafts, and languages due to their relative isolation.";
+        return "Mountain communities often preserve ancient traditions, crafts, and architectural styles that showcase their adaptation to high-altitude environments.";
       case 'castle':
-        return "Historical buildings like castles reflect local architectural styles, building materials, and defensive innovations.";
+        return "Historical buildings like castles, temples, and palaces reflect local cultural heritage through their architectural styles and construction techniques.";
       case 'space':
-        return "Even in our imagined future among the stars, we carry our cultural heritage with us through stories, art, and traditions.";
+        return "Even in our imagined future among the stars, we carry our cultural heritage with us through traditional stories, art, and celebrations.";
       default:
         return "";
     }
   }, [terrain]);
+  
+  // Cultural icon for each terrain type
+  const getTerrainIcon = () => {
+    switch(terrain) {
+      case 'forest': return <Tree className="text-green-600" />;
+      case 'desert': return <Sun className="text-amber-500" />;
+      case 'river': return <Waves className="text-blue-500" />;
+      case 'mountain': return <Mountain className="text-slate-600" />;
+      case 'castle': return <Building className="text-stone-600" />;
+      case 'space': return <Rocket className="text-purple-600" />;
+      default: return <Tree className="text-green-600" />;
+    }
+  };
   
   return (
     <>
@@ -49,7 +63,10 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center">
-            <span className="text-lg mr-2">💫</span>
+            <span className="text-lg mr-2 flex items-center">
+              <span className="mr-1">💫</span>
+              {getTerrainIcon()}
+            </span>
             <p>{culturalInsight}</p>
           </div>
         </motion.div>
@@ -74,3 +91,4 @@ const MissionInfo: React.FC<MissionInfoProps> = ({
 };
 
 export default MissionInfo;
+

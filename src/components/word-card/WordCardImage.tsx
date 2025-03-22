@@ -21,3 +21,4 @@ export const WordCardImage: React.FC<WordCardImageProps> = ({ text, imageUrl }) 
     </div>
   );
 };
+
