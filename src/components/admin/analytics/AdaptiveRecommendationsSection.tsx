@@ -101,7 +101,7 @@ const AdaptiveRecommendationsSection: React.FC = () => {
                         <span>{word.text}</span>
                         <div className="flex items-center gap-2">
                           <span className="text-sm">{word.accuracy}%</span>
-                          <Badge variant="success" className="bg-green-100 text-green-800">
+                          <Badge variant="outline" className="bg-green-100 text-green-800">
                             {word.attempts} attempts
                           </Badge>
                         </div>

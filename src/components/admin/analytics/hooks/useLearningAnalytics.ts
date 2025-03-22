@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { learningAnalytics } from '../../../../services/analytics/learningAnalytics';
 import { AnonymizedLearningData, LearningPattern, LearningInsight, AdaptiveSettings } from '../../../../services/analytics/types';
 import { Word } from '../../../../utils/game';
 
-// Add missing types
 interface WordPerformance {
   word: string;
   wordId: string;
@@ -55,32 +53,31 @@ export const useLearningAnalytics = () => {
       setIsLoading(true);
       
       try {
-        // Get local analytics data
         const localData = learningAnalytics.getLocalAnalyticsData();
         
-        // Filter by time frame
         const filteredData = filterDataByTimeFrame(localData, timeFrame);
         setAnalyticsData(filteredData);
         
-        // Process the data
         processWordPerformance(filteredData);
         processDifficultyDistribution(filteredData);
         processTimeSpentDistribution(filteredData);
         processWeeklyActivity(filteredData);
         
-        // Get insights and patterns
-        const userInsights = learningAnalytics.generateInsights({ wordsMastered: [], wordsInProgress: {}, points: 0, level: 1, streakDays: 0 });
+        const userInsights = learningAnalytics.generateInsights({ 
+          wordsMastered: [], 
+          wordsInProgress: {}, 
+          points: 0, 
+          level: 1, 
+          streakDays: 0,
+          lastPlayed: null
+        });
         setInsights(userInsights);
         
-        // In a real app, these would be fetched from the analytics service
-        // For demo purposes, we're using mock patterns
         setLearningPatterns(getMockLearningPatterns());
         
-        // Get adaptive settings
         const settings = learningAnalytics.getAdaptiveSettings();
         setAdaptiveSettings(settings);
         
-        // Process word performance for top/struggling words
         processTopAndStrugglingWords(filteredData);
       } catch (error) {
         console.error('Error fetching analytics data:', error);
@@ -117,7 +114,6 @@ export const useLearningAnalytics = () => {
   const processWordPerformance = (data: AnonymizedLearningData[]) => {
     const wordMap = new Map<string, { correct: number, total: number, wordId: string }>();
     
-    // Group by wordId
     data.forEach(item => {
       if (!wordMap.has(item.wordId)) {
         wordMap.set(item.wordId, { correct: 0, total: 0, wordId: item.wordId });
@@ -130,15 +126,13 @@ export const useLearningAnalytics = () => {
       }
     });
     
-    // Convert to array and sort by most attempted
     const wordPerformanceArray: WordPerformance[] = Array.from(wordMap.entries()).map(([wordId, stats]) => ({
-      word: `Word-${wordId.substring(0, 5)}...`, // In a real app, we'd resolve the actual word text
+      word: `Word-${wordId.substring(0, 5)}...`,
       wordId,
       successRate: stats.total > 0 ? (stats.correct / stats.total) * 100 : 0,
       attempts: stats.total
     }));
     
-    // Sort by number of attempts (descending)
     wordPerformanceArray.sort((a, b) => b.attempts - a.attempts);
     
     setWordPerformance(wordPerformanceArray);
@@ -147,15 +141,13 @@ export const useLearningAnalytics = () => {
   const processDifficultyDistribution = (data: AnonymizedLearningData[]) => {
     const difficultyMap = new Map<string, number>();
     
-    // Count attempts by difficulty
     data.forEach(item => {
       const difficulty = item.difficulty || 'unknown';
       difficultyMap.set(difficulty, (difficultyMap.get(difficulty) || 0) + 1);
     });
     
-    // Convert to array format for chart
     const distribution = Array.from(difficultyMap.entries()).map(([name, value]) => ({
-      name: name.charAt(0).toUpperCase() + name.slice(1), // Capitalize
+      name: name.charAt(0).toUpperCase() + name.slice(1),
       value
     }));
     
@@ -163,8 +155,6 @@ export const useLearningAnalytics = () => {
   };
   
   const processTimeSpentDistribution = (data: AnonymizedLearningData[]) => {
-    // In a real app, we'd categorize time spent on different activities
-    // For demo purposes, we'll use some mock data based on difficulty
     const easyTime = data.filter(d => d.difficulty === 'easy')
       .reduce((sum, item) => sum + item.attemptDuration, 0);
     
@@ -186,7 +176,6 @@ export const useLearningAnalytics = () => {
   const processWeeklyActivity = (data: AnonymizedLearningData[]) => {
     const activityMap = new Map<string, { sessions: number, correct: number }>();
     
-    // Get date range (last 7 days)
     const dates: string[] = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
@@ -196,7 +185,6 @@ export const useLearningAnalytics = () => {
       activityMap.set(dateString, { sessions: 0, correct: 0 });
     }
     
-    // Count sessions and correct answers by date
     data.forEach(item => {
       const date = item.timestamp.split('T')[0];
       if (activityMap.has(date)) {
@@ -208,7 +196,6 @@ export const useLearningAnalytics = () => {
       }
     });
     
-    // Convert to array format for chart
     const activity: WeeklyActivity[] = dates.map(date => {
       const stats = activityMap.get(date) || { sessions: 0, correct: 0 };
       return {
@@ -224,7 +211,6 @@ export const useLearningAnalytics = () => {
   const processTopAndStrugglingWords = (data: AnonymizedLearningData[]) => {
     const wordMap = new Map<string, { correct: number, total: number, id: string }>();
     
-    // Group by wordId
     data.forEach(item => {
       if (!wordMap.has(item.wordId)) {
         wordMap.set(item.wordId, { correct: 0, total: 0, id: item.wordId });
@@ -237,26 +223,22 @@ export const useLearningAnalytics = () => {
       }
     });
     
-    // Convert to array, calculate accuracy and filter words with enough attempts
     const wordsWithEnoughAttempts = Array.from(wordMap.entries())
       .filter(([_, stats]) => stats.total >= 3)
       .map(([wordId, stats]) => ({
         id: stats.id,
-        text: `Word-${wordId.substring(0, 5)}...`, // In a real app, we'd resolve the word text
+        text: `Word-${wordId.substring(0, 5)}...`,
         accuracy: stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0,
         attempts: stats.total
       }));
     
-    // Sort for top performing (highest accuracy)
     const top = [...wordsWithEnoughAttempts].sort((a, b) => b.accuracy - a.accuracy);
     setTopPerformingWords(top.slice(0, 5));
     
-    // Sort for struggling (lowest accuracy)
     const struggling = [...wordsWithEnoughAttempts].sort((a, b) => a.accuracy - b.accuracy);
     setStrugglingWords(struggling.slice(0, 5));
   };
   
-  // Mock data for learning patterns
   const getMockLearningPatterns = (): LearningPattern[] => {
     return [
       {

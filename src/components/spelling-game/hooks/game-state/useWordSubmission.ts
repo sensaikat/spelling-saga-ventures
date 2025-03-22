@@ -64,11 +64,15 @@ export const useWordSubmission = ({
     
     // Update score and progress
     if (isCorrectAnswer) {
-      setScore(prevScore => prevScore + 10);
+      // Fix: Use direct value instead of a function for setScore
+      const newScore = score + 10;
+      setScore(newScore);
       addPlayerPoints(2);
       setCorrectWords([...correctWords, currentWord]);
     } else {
-      setRemainingLives(prevLives => prevLives - 1);
+      // Fix: Use direct value instead of a function for setRemainingLives
+      const newLives = remainingLives - 1;
+      setRemainingLives(newLives);
       setIncorrectWords([...incorrectWords, currentWord]);
     }
     
@@ -81,6 +85,8 @@ export const useWordSubmission = ({
     selectedLanguage,
     correctWords,
     incorrectWords,
+    score,
+    remainingLives,
     setIsCorrect,
     setShowResult,
     setScore,
