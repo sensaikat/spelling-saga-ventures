@@ -22,5 +22,13 @@ export const validateWordSubmission = (
   const normalizedAnswer = normalizeTextForComparison(word.text, languageId);
   const normalizedInput = normalizeTextForComparison(userInput, languageId);
   
+  // For debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`Language: ${languageId}`);
+    console.log(`Original word: ${word.text}, Normalized: ${normalizedAnswer}`);
+    console.log(`Original input: ${userInput}, Normalized: ${normalizedInput}`);
+    console.log(`Comparison result: ${normalizedInput === normalizedAnswer}`);
+  }
+  
   return normalizedInput === normalizedAnswer;
 };

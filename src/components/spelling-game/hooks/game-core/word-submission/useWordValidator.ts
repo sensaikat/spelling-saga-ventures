@@ -1,57 +1,44 @@
-
 import { useCallback } from 'react';
 import { Word, Language } from '../../../../../utils/game';
-import { useGameSettings } from '../useGameSettings';
-import { normalizeTextForComparison } from '../utils/textNormalizer';
-import { getLanguageIdFromContext } from '../utils/languageUtils';
+import { validateWordSubmission } from '../utils/wordValidator';
 
 interface UseWordValidatorProps {
   recordWordAttempt?: (word: Word, correct: boolean, selectedLanguage: Language | string | null) => void;
   trackWord: (word: Word, isCorrect: boolean) => void;
-  selectedLanguage?: Language | string | null;
+  selectedLanguage: Language | string | null;
 }
 
 /**
  * Hook for validating word submissions
- *
- * This hook provides functions to validate user submitted answers against the expected word
+ * 
+ * This hook provides functions for validating user submissions against expected words
  */
 export const useWordValidator = ({
   recordWordAttempt,
   trackWord,
   selectedLanguage
 }: UseWordValidatorProps) => {
-
   /**
-   * Validates if the user's answer matches the expected word
-   * Records analytics data for the attempt
+   * Validates a user submission against the current word
+   * 
+   * @param {string} userInput - User's submitted answer
+   * @param {Word} word - The word to validate against
+   * @returns {boolean} Whether the submission is correct
    */
-  const validateSubmission = useCallback((
-    userInput: string,
-    currentWord: Word
-  ): boolean => {
-    if (!currentWord) return false;
+  const validateSubmission = useCallback((userInput: string, word: Word): boolean => {
+    // Skip validation for empty submissions
+    if (!userInput || !word) return false;
     
-    // Get language ID for proper text normalization
-    const languageId = currentWord.language || 
-      (typeof selectedLanguage === 'object' && selectedLanguage ? selectedLanguage.id : 
-      (typeof selectedLanguage === 'string' ? selectedLanguage : 'en'));
+    // Use the language utils to validate with proper normalization
+    const isCorrect = validateWordSubmission(userInput, word, selectedLanguage);
     
-    // Normalize both texts for proper comparison
-    const normalizedAnswer = normalizeTextForComparison(currentWord.text, languageId);
-    const normalizedInput = normalizeTextForComparison(userInput, languageId);
-    
-    const isCorrect = normalizedInput === normalizedAnswer;
-    
-    // Record analytics if available
-    if (recordWordAttempt && currentWord) {
-      recordWordAttempt(currentWord, isCorrect, selectedLanguage || null);
+    // Record the attempt if tracking is enabled
+    if (recordWordAttempt) {
+      recordWordAttempt(word, isCorrect, selectedLanguage || null);
     }
     
-    // Track word for history
-    if (currentWord) {
-      trackWord(currentWord, isCorrect);
-    }
+    // Track the word for history
+    trackWord(word, isCorrect);
     
     return isCorrect;
   }, [recordWordAttempt, selectedLanguage, trackWord]);
