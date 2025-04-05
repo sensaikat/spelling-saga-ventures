@@ -1,4 +1,3 @@
-
 import { WordList } from '../types';
 
 export const hindiWordLists: WordList[] = [
@@ -7,12 +6,12 @@ export const hindiWordLists: WordList[] = [
     name: 'मूल शब्द',
     description: 'शुरुआती लोगों के लिए आम शब्द',
     words: [
-      { id: 'hi-1', text: 'सेब', difficulty: 'easy', hint: 'एक लाल फल' },
-      { id: 'hi-2', text: 'केला', difficulty: 'easy', hint: 'पीला फल' },
-      { id: 'hi-3', text: 'बिल्ली', difficulty: 'easy', hint: 'एक घरेलु जानवर' },
-      { id: 'hi-4', text: 'कुत्ता', difficulty: 'easy', hint: 'एक वफादार जानवर' },
-      { id: 'hi-5', text: 'हाथी', difficulty: 'medium', hint: 'एक बड़ा जानवर' },
-      { id: 'hi-6', text: 'फूल', difficulty: 'easy', hint: 'सुगंधित और सुंदर' },
+      { id: 'hi-1', text: 'सेब', difficulty: 'easy', hint: 'एक लाल फल', category: 'food' },
+      { id: 'hi-2', text: 'केला', difficulty: 'easy', hint: 'पीला फल', category: 'food' },
+      { id: 'hi-3', text: 'बिल्ली', difficulty: 'easy', hint: 'एक घरेलु जानवर', category: 'animal' },
+      { id: 'hi-4', text: 'कुत्ता', difficulty: 'easy', hint: 'एक वफादार जानवर', category: 'animal' },
+      { id: 'hi-5', text: 'हाथी', difficulty: 'medium', hint: 'एक बड़ा जानवर', category: 'animal' },
+      { id: 'hi-6', text: 'फूल', difficulty: 'easy', hint: 'सुगंधित और सुंदर', category: 'plant' },
     ],
     languageId: 'hi',
     difficulty: 'easy',
@@ -57,7 +56,7 @@ export const hindiWordLists: WordList[] = [
     description: 'भारतीय लोककथाओं और पौराणिक कहानियों के पात्र',
     words: [
       { id: 'hi-folk-1', text: 'कृष्ण', difficulty: 'medium', hint: 'बांसुरी बजाते हैं' },
-      { id: 'hi-folk-2', text: 'गणेश', difficulty: 'medium', hint: 'हाथी के सिर वाले देवता' },
+      { id: 'hi-folk-2', text: 'गणेश', difficulty: 'medium', hint: 'ह���थी के सिर वाले देवता' },
       { id: 'hi-folk-3', text: 'हनुमान', difficulty: 'medium', hint: 'बलवान वानर देवता' },
       { id: 'hi-folk-4', text: 'पंचतंत्र', difficulty: 'hard', hint: 'जानवरों की कहानियां' },
       { id: 'hi-folk-5', text: 'राम', difficulty: 'easy', hint: 'अयोध्या के राजकुमार' },

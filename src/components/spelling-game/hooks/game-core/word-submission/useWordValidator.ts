@@ -1,49 +1,50 @@
+
 import { useCallback } from 'react';
 import { Word, Language } from '../../../../../utils/game';
 import { validateWordSubmission } from '../utils/wordValidator';
 
 interface UseWordValidatorProps {
   recordWordAttempt?: (word: Word, correct: boolean, selectedLanguage: Language | string | null) => void;
-  trackWord: (word: Word, isCorrect: boolean) => void;
-  selectedLanguage: Language | string | null;
+  trackWord?: (word: Word, isCorrect: boolean) => void;
+  selectedLanguage?: Language | string | null;
 }
 
 /**
  * Hook for validating word submissions
  * 
- * This hook provides functions for validating user submissions against expected words
+ * @param {UseWordValidatorProps} props - Configuration options
+ * @returns {Object} Validation functions
  */
-export const useWordValidator = ({
-  recordWordAttempt,
-  trackWord,
-  selectedLanguage
-}: UseWordValidatorProps) => {
+export const useWordValidator = (props: UseWordValidatorProps = {}) => {
+  const { 
+    recordWordAttempt,
+    trackWord,
+    selectedLanguage 
+  } = props;
+  
   /**
-   * Validates a user submission against the current word
+   * Validates a user's input against the current word
    * 
    * @param {string} userInput - User's submitted answer
-   * @param {Word} word - The word to validate against
-   * @returns {boolean} Whether the submission is correct
+   * @param {Word} currentWord - Current word to check against
+   * @returns {boolean} Whether the answer is correct
    */
-  const validateSubmission = useCallback((userInput: string, word: Word): boolean => {
-    // Skip validation for empty submissions
-    if (!userInput || !word) return false;
+  const validateSubmission = useCallback((userInput: string, currentWord: Word): boolean => {
+    // Normalize inputs and validate
+    const isCorrect = validateWordSubmission(userInput, currentWord, selectedLanguage);
     
-    // Use the language utils to validate with proper normalization
-    const isCorrect = validateWordSubmission(userInput, word, selectedLanguage);
-    
-    // Record the attempt if tracking is enabled
+    // Record in analytics if function is provided
     if (recordWordAttempt) {
-      recordWordAttempt(word, isCorrect, selectedLanguage || null);
+      recordWordAttempt(currentWord, isCorrect, selectedLanguage || null);
     }
     
-    // Track the word for history
-    trackWord(word, isCorrect);
+    // Track word for game history if function is provided
+    if (trackWord) {
+      trackWord(currentWord, isCorrect);
+    }
     
     return isCorrect;
-  }, [recordWordAttempt, selectedLanguage, trackWord]);
+  }, [selectedLanguage, recordWordAttempt, trackWord]);
   
-  return {
-    validateSubmission
-  };
+  return { validateSubmission };
 };

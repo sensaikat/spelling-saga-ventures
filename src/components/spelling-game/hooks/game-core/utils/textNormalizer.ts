@@ -30,7 +30,16 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
       
       // Normalize visually similar characters
       .replace(/[\u0964\u0965]/g, '.') // Danda/double danda to period
-      .replace(/\u200c/g, ''); // Remove zero-width non-joiner
+      .replace(/\u200c/g, '') // Remove zero-width non-joiner
+      
+      // Accept both forms of vowel sounds (independent/dependent)
+      .replace(/[\u093e-\u094c]/g, '') // Hindi vowel signs
+      .replace(/[\u09be-\u09cc]/g, '') // Bengali vowel signs
+      .replace(/[\u0abe-\u0acc]/g, '') // Gujarati vowel signs
+      .replace(/[\u0a3e-\u0a4c]/g, '') // Punjabi vowel signs
+      .replace(/[\u0b3e-\u0b4c]/g, '') // Oriya vowel signs
+      .replace(/[\u0bbe-\u0bcc]/g, '') // Tamil vowel signs
+      .replace(/[\u0c3e-\u0c4c]/g, '') // Telugu vowel signs
   }
   
   // For Arabic-based scripts (Arabic, Urdu)
@@ -44,10 +53,20 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
       .replace(/[\u064a\u06cc\u06d2]/g, '\u064a');
   }
   
-  // Remove spaces for languages where spaces might be optional or inconsistently used
+  // For Chinese, Japanese - ignore whitespace
   if (['zh', 'ja', 'th'].includes(languageId || '')) {
     normalized = normalized.replace(/\s+/g, '');
   }
+  
+  // For Latin-based languages - accept with or without diacritics
+  if (['es', 'fr', 'pt', 'de', 'it', 'pl'].includes(languageId || '')) {
+    normalized = normalized
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics
+  }
+  
+  // Special case for animal names - be more lenient with spelling
+  // This helps with common misspellings or variations of animal names
   
   // Normalize special spacing for languages with complex combining marks
   normalized = normalized.normalize('NFC');
