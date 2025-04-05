@@ -256,6 +256,72 @@ export const vocabularyTranslations = {
     ta: 'ஆக்டோபஸ்',
   },
   
+  // Enhancing Bengali animal translations
+  monkey: {
+    en: 'monkey',
+    es: 'mono',
+    fr: 'singe',
+    hi: 'बंदर',
+    bn: 'বানর',
+    ta: 'குரங்கு'
+  },
+  lion: {
+    en: 'lion',
+    es: 'león',
+    fr: 'lion',
+    hi: 'शेर',
+    bn: 'সিংহ',
+    ta: 'சிங்கம்'
+  },
+  turtle: {
+    en: 'turtle',
+    es: 'tortuga',
+    fr: 'tortue',
+    hi: 'कछुआ',
+    bn: 'কচ্ছপ',
+    ta: 'ஆமை'
+  },
+  snake: {
+    en: 'snake',
+    es: 'serpiente',
+    fr: 'serpent',
+    hi: 'सांप',
+    bn: 'সাপ',
+    ta: 'பாம்பு'
+  },
+  fish: {
+    en: 'fish',
+    es: 'pez',
+    fr: 'poisson',
+    hi: 'मछली',
+    bn: 'মাছ',
+    ta: 'மீன்'
+  },
+  rabbit: {
+    en: 'rabbit',
+    es: 'conejo',
+    fr: 'lapin',
+    hi: 'खरगोश',
+    bn: 'খরগোশ',
+    ta: 'முயல்'
+  },
+  cow: {
+    en: 'cow',
+    es: 'vaca',
+    fr: 'vache',
+    hi: 'गाय',
+    bn: 'গরু',
+    ta: 'பசு'
+  },
+  goat: {
+    en: 'goat',
+    es: 'cabra',
+    fr: 'chèvre',
+    hi: 'बकरी',
+    bn: 'ছাগল',
+    ta: 'வெள்ளாடு'
+  },
+  
   // Common Objects
   bed: {
     en: 'bed',

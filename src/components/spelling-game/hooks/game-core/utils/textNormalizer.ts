@@ -40,6 +40,11 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
       .replace(/[\u0b3e-\u0b4c]/g, '') // Oriya vowel signs
       .replace(/[\u0bbe-\u0bcc]/g, '') // Tamil vowel signs
       .replace(/[\u0c3e-\u0c4c]/g, '') // Telugu vowel signs
+      
+      // Special Bengali normalizations
+      .replace(/\u09df/g, '\u09af') // YYA to YA 
+      .replace(/\u09a2\u09bc/g, '\u09dd') // DDHA+NUKTA to RHA
+      .replace(/\u09a1\u09bc/g, '\u09dc') // DDA+NUKTA to RRA
   }
   
   // For Arabic-based scripts (Arabic, Urdu)
@@ -65,8 +70,15 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
       .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics
   }
   
-  // Special case for animal names - be more lenient with spelling
-  // This helps with common misspellings or variations of animal names
+  // Special handling for Bengali animal names - common variations
+  if (languageId === 'bn') {
+    // Handle common spelling variations in Bengali animal names
+    normalized = normalized
+      .replace(/বিড়াল/g, 'বিড়াল') // Standardize cat
+      .replace(/কুকুর/g, 'কুকুর')   // Standardize dog
+      .replace(/হাতী/g, 'হাতি')    // Alternative spelling for elephant
+      .replace(/বাঘ/g, 'বাঘ')      // Standardize tiger
+  }
   
   // Normalize special spacing for languages with complex combining marks
   normalized = normalized.normalize('NFC');

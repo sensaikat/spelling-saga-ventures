@@ -1,4 +1,3 @@
-
 import { WordList } from '../types';
 
 export const bengaliWordLists: WordList[] = [
@@ -7,12 +6,16 @@ export const bengaliWordLists: WordList[] = [
     name: 'মৌলিক শব্দ',
     description: 'শিশুদের জন্য প্রাথমিক শব্দ',
     words: [
-      { id: 'bn-1', text: 'আপেল', hint: 'একটি লাল বা সবুজ ফল যা গাছে জন্মায়', difficulty: 'easy' },
-      { id: 'bn-2', text: 'কলা', hint: 'একটি লম্বা হলুদ ফল যার আকার বাঁকা', difficulty: 'easy' },
-      { id: 'bn-3', text: 'বিড়াল', hint: 'একটি ছোট পশুপালন প্রাণী যা মিউ মিউ শব্দ করে', difficulty: 'easy' },
-      { id: 'bn-4', text: 'কুকুর', hint: 'একটি সাধারণ পোষা প্রাণী যা ঘেউ ঘেউ করে', difficulty: 'easy' },
-      { id: 'bn-5', text: 'হাতি', hint: 'একটি বড় ধূসর প্রাণী যার শুঁড় আছে', difficulty: 'medium' },
-      { id: 'bn-6', text: 'ফুল', hint: 'একটি রঙিন উদ্ভিদ যা ফোটে', difficulty: 'easy' },
+      { id: 'bn-1', text: 'আপেল', hint: 'একটি লাল বা সবুজ ফল যা গাছে জন্মায়', difficulty: 'easy', category: 'fruit' },
+      { id: 'bn-2', text: 'কলা', hint: 'একটি লম্বা হলুদ ফল যার আকার বাঁকা', difficulty: 'easy', category: 'fruit' },
+      { id: 'bn-3', text: 'বিড়াল', hint: 'একটি ছোট পশুপালন প্রাণী যা মিউ মিউ শব্দ করে', difficulty: 'easy', category: 'animal' },
+      { id: 'bn-4', text: 'কুকুর', hint: 'একটি সাধারণ পোষা প্রাণী যা ঘেউ ঘেউ করে', difficulty: 'easy', category: 'animal' },
+      { id: 'bn-5', text: 'হাতি', hint: 'একটি বড় ধূসর প্রাণী যার শুঁড় আছে', difficulty: 'medium', category: 'animal' },
+      { id: 'bn-6', text: 'ফুল', hint: 'একটি রঙিন উদ্ভিদ যা ফোটে', difficulty: 'easy', category: 'plant' },
+      { id: 'bn-7', text: 'বাঘ', hint: 'একটি বড় বিড়াল প্রজাতি যার গায়ে কালো ডোরা আছে', difficulty: 'medium', category: 'animal' },
+      { id: 'bn-8', text: 'পাখি', hint: 'একটি পালকযুক্ত প্রাণী যা উড়তে পারে', difficulty: 'easy', category: 'animal' },
+      { id: 'bn-9', text: 'মাছ', hint: 'একটি জলজ প্রাণী যা পানিতে বাস করে', difficulty: 'easy', category: 'animal' },
+      { id: 'bn-10', text: 'ছাগল', hint: 'একটি গৃহপালিত প্রাণী যা দুধ দেয়', difficulty: 'easy', category: 'animal' },
     ],
     languageId: 'bn',
     difficulty: 'easy',
@@ -71,7 +74,7 @@ export const polishWordLists: WordList[] = [
   {
     id: 'pl-basics',
     name: 'Podstawowe Słowa',
-    description: 'Codzienne słowa dla pocz��tkujących',
+    description: 'Codzienne słowa dla pocztkujących',
     words: [
       { id: 'pl-1', text: 'jabłko', hint: 'Czerwony lub zielony owoc, który rośnie na drzewach', difficulty: 'easy' },
       { id: 'pl-2', text: 'banan', hint: 'Długi żółty owoc o zakrzywionym kształcie', difficulty: 'easy' },

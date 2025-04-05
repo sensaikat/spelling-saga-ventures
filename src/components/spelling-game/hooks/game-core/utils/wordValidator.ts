@@ -28,25 +28,55 @@ export const validateWordSubmission = (
   
   // If not correct directly, check if it matches animal names in vocabulary translations
   if (!isCorrect && word.category === 'animal') {
-    // Look for the English equivalent in vocabularyTranslations
+    // Look for the English equivalent in vocabularyTranslations for animal names
+    // First check all animal entries in the vocabulary translations
     const animalEntries = Object.entries(vocabularyTranslations).filter(([key, translations]) => {
-      return translations.en && (
-        // Try to match by either vernacular word or English word
-        (languageId !== 'en' && translations[languageId] === word.text) || 
-        (translations.en.toLowerCase() === word.text.toLowerCase())
+      // Filter only animal entries
+      return key && translations.en && (
+        // Check if this entry has our target language
+        languageId in translations
       );
     });
     
-    // If we found a match in vocabulary translations
-    if (animalEntries.length > 0) {
-      const [animalKey, translations] = animalEntries[0];
+    // For debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Looking for animal translations. Found ${animalEntries.length} animal entries`);
+      console.log(`Word text to check: ${word.text} in language: ${languageId}`);
+    }
+    
+    // Go through all animal translations to find if the user input matches any valid translation
+    for (const [animalKey, translations] of animalEntries) {
+      // Check if the current word's text matches this animal's entry in the target language
+      const wordMatchesThisAnimal = translations[languageId] === word.text;
       
-      // Check if user input matches any translation for this animal
-      const possibleTranslations = Object.entries(translations)
-        .filter(([lang, _]) => lang === languageId || lang === 'en')
-        .map(([_, text]) => normalizeTextForComparison(text as string, languageId));
+      // Or if we're showing an English word but the user answered in Bengali or another language
+      const isEnglishWordWithForeignAnswer = 
+        word.language === 'en' && 
+        translations.en.toLowerCase() === word.text.toLowerCase();
       
-      isCorrect = possibleTranslations.includes(normalizedInput);
+      if (wordMatchesThisAnimal || isEnglishWordWithForeignAnswer) {
+        // Get all possible correct translations for this animal
+        const allTranslations = Object.entries(translations)
+          .map(([lang, text]) => {
+            if (typeof text === 'string') {
+              return normalizeTextForComparison(text, lang);
+            }
+            return '';
+          })
+          .filter(text => text); // Remove empty strings
+        
+        // Check if user input matches any of these translations
+        isCorrect = allTranslations.includes(normalizedInput);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Checking animal: ${animalKey}`);
+          console.log(`Possible translations:`, allTranslations);
+          console.log(`User input (normalized): ${normalizedInput}`);
+          console.log(`Match found: ${isCorrect}`);
+        }
+        
+        if (isCorrect) break; // Stop checking if we found a match
+      }
     }
   }
   

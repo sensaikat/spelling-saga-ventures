@@ -1,6 +1,7 @@
 
 import { Word } from '../../../../utils/game';
 import { Language } from '../../../../utils/game/types';
+import { validateWordSubmission } from '../game-core/utils/wordValidator';
 
 interface UseWordActionsProps {
   currentWord: Word | null;
@@ -53,7 +54,8 @@ export const useWordActions = (props: UseWordActionsProps) => {
     const formData = new FormData(formElement);
     const userInput = formData.get('wordInput')?.toString() || '';
     
-    const isCorrect = userInput.trim().toLowerCase() === currentWord.text.toLowerCase();
+    // Use the enhanced word validator for multilingual support
+    const isCorrect = validateWordSubmission(userInput, currentWord, selectedLanguage);
     
     setIsCorrect(isCorrect);
     setShowResult(true);
