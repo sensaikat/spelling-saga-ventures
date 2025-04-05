@@ -12,6 +12,8 @@
  * @returns {string} Normalized text for comparison
  */
 export const normalizeTextForComparison = (text: string, languageId?: string): string => {
+  if (!text) return '';
+  
   // Start with basic lowercase and trim
   let normalized = text.toLowerCase().trim();
   
@@ -47,6 +49,19 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
       .replace(/\u09a1\u09bc/g, '\u09dc') // DDA+NUKTA to RRA
   }
   
+  // Special extra normalization for Bengali (used in second-pass checks)
+  if (languageId === 'bn-special') {
+    // Remove all vowel signs and other combining marks for Bengali
+    normalized = normalized
+      .replace(/[\u0981-\u0983]/g, '') // Bengali candrabindu, anusvara, visarga
+      .replace(/[\u09be-\u09cc]/g, '') // Bengali vowel signs
+      .replace(/[\u09cd]/g, '')       // Bengali virama
+      .replace(/[\u09d7]/g, '')       // Bengali au length mark
+      .replace(/[\u09dc-\u09df]/g, '') // Bengali formed characters
+      .replace(/\s+/g, '')           // Remove all whitespace
+      .replace(/[০-৯]/g, '');        // Remove Bengali digits
+  }
+  
   // For Arabic-based scripts (Arabic, Urdu)
   if (languageId === 'ar' || languageId === 'ur' || languageId === 'ps') {
     // Remove diacritics (harakat)
@@ -78,6 +93,8 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
       .replace(/কুকুর/g, 'কুকুর')   // Standardize dog
       .replace(/হাতী/g, 'হাতি')    // Alternative spelling for elephant
       .replace(/বাঘ/g, 'বাঘ')      // Standardize tiger
+      .replace(/সিংহ/g, 'সিংহ')    // Standardize lion
+      .replace(/খরগোশ/g, 'খরগোশ')  // Standardize rabbit
   }
   
   // Normalize special spacing for languages with complex combining marks
@@ -85,3 +102,35 @@ export const normalizeTextForComparison = (text: string, languageId?: string): s
   
   return normalized;
 };
+
+/**
+ * Test function to check normalization - accessible from console for debugging
+ */
+export const testNormalization = () => {
+  const testCases = [
+    { input: 'বিড়াল', lang: 'bn', expected: 'বিড়াল' },
+    { input: 'কুকুর', lang: 'bn', expected: 'কুকুর' },
+    { input: 'হাতি', lang: 'bn', expected: 'হাতি' },
+    { input: 'হাতী', lang: 'bn', expected: 'হাতি' }, // Alternative spelling
+    { input: 'बिल्ली', lang: 'hi', expected: 'बलल' }, // After removing vowel signs
+    { input: 'Cat', lang: 'en', expected: 'cat' },
+  ];
+  
+  console.group('Text Normalization Test');
+  testCases.forEach(test => {
+    const result = normalizeTextForComparison(test.input, test.lang);
+    console.log(`Input: ${test.input} (${test.lang})`);
+    console.log(`Output: ${result}`);
+    console.log(`Expected: ${test.expected}`);
+    console.log(`Result: ${result === test.expected ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log('---');
+  });
+  console.groupEnd();
+  
+  return 'Test complete. Check console for results.';
+};
+
+// Make it accessible from the global scope for testing
+if (typeof window !== 'undefined') {
+  (window as any).testNormalization = testNormalization;
+}

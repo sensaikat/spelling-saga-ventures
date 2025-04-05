@@ -54,7 +54,7 @@ export const useWordSubmission = ({
     const formData = new FormData(formElement);
     const userInputValue = formData.get('wordInput')?.toString() || '';
     
-    // Use the enhanced word validator
+    // Use the enhanced word validator - now with better Bengali support
     const isCorrectAnswer = validateWordSubmission(userInputValue, currentWord, selectedLanguage);
     
     // Record the attempt in analytics
