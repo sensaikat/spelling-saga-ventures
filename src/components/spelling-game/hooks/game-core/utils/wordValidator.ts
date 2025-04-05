@@ -18,8 +18,8 @@ const logValidationDebug = (word: Word, userInput: string, languageId: string, i
     // Special details for Bengali words
     if (languageId === 'bn' || word.language === 'bn') {
       console.log(`Bengali word detected, showing character codes:`);
-      console.log(`Word: ${Array.from(word.text).map(c => c + ' (U+' + c.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ')')}`);
-      console.log(`Input: ${Array.from(userInput).map(c => c + ' (U+' + c.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ')')}`);
+      console.log(`Word: ${Array.from(word.text || '').map(c => c + ' (U+' + c.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ')')}`);
+      console.log(`Input: ${Array.from(userInput || '').map(c => c + ' (U+' + c.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ')')}`);
     }
     console.groupEnd();
   }
@@ -58,6 +58,13 @@ export const validateWordSubmission = (
     const specialNormalizedAnswer = normalizeTextForComparison(word.text, 'bn-special');
     const specialNormalizedInput = normalizeTextForComparison(userInput, 'bn-special');
     isCorrect = specialNormalizedInput === specialNormalizedAnswer;
+    
+    // Enhanced logging for Bengali special case
+    console.log('Bengali special comparison:', {
+      original: { word: word.text, input: userInput },
+      normalized: { answer: normalizedAnswer, input: normalizedInput, match: normalizedInput === normalizedAnswer },
+      special: { answer: specialNormalizedAnswer, input: specialNormalizedInput, match: specialNormalizedInput === specialNormalizedAnswer }
+    });
   }
   
   // If not correct directly, check if it matches animal names in vocabulary translations
@@ -73,10 +80,8 @@ export const validateWordSubmission = (
     });
     
     // For debugging
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Looking for animal translations. Found ${animalEntries.length} animal entries`);
-      console.log(`Word text to check: ${word.text} in language: ${languageId}`);
-    }
+    console.log(`Looking for animal translations. Found ${animalEntries.length} animal entries`);
+    console.log(`Word text to check: ${word.text} in language: ${languageId}`);
     
     // Go through all animal translations to find if the user input matches any valid translation
     for (const [animalKey, translations] of animalEntries) {
@@ -105,18 +110,25 @@ export const validateWordSubmission = (
         // Check if user input matches any of these translations
         isCorrect = allTranslations.includes(normalizedInput);
         
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`Checking animal: ${animalKey}`);
-          console.log(`Possible translations:`, allTranslations);
-          console.log(`User input (normalized): ${normalizedInput}`);
-          console.log(`Match found: ${isCorrect}`);
-        }
+        console.log(`Checking animal: ${animalKey}`);
+        console.log(`Possible translations:`, allTranslations);
+        console.log(`User input (normalized): ${normalizedInput}`);
+        console.log(`Match found: ${isCorrect}`);
         
         // Extra check specifically for Bengali
         if (!isCorrect && (languageId === 'bn' || word.language === 'bn' || userInput.match(/[\u0980-\u09FF]/))) {
-          if (translations.bn && normalizeTextForComparison(translations.bn, 'bn-special') === normalizeTextForComparison(userInput, 'bn-special')) {
-            isCorrect = true;
-            console.log('Bengali special match found!');
+          if (translations.bn) {
+            const bnSpecialNormalized = normalizeTextForComparison(translations.bn, 'bn-special');
+            const inputSpecialNormalized = normalizeTextForComparison(userInput, 'bn-special');
+            isCorrect = bnSpecialNormalized === inputSpecialNormalized;
+            console.log('Bengali special animal check:', {
+              original: { word: translations.bn, input: userInput },
+              specialNormalized: { word: bnSpecialNormalized, input: inputSpecialNormalized, match: bnSpecialNormalized === inputSpecialNormalized }
+            });
+            
+            if (isCorrect) {
+              console.log('Bengali special match found!');
+            }
           }
         }
         
@@ -146,6 +158,9 @@ export const testBengaliAnimalValidation = () => {
   ];
   
   console.group('Bengali Animal Validation Test');
+  
+  // Test English → Bengali
+  console.log('🔍 Testing English → Bengali translations:');
   bengaliAnimals.forEach(animal => {
     const word = { 
       id: 'test', 
@@ -155,9 +170,14 @@ export const testBengaliAnimalValidation = () => {
     } as Word;
     
     const result = validateWordSubmission(animal.text, word, 'en');
-    console.log(`Testing ${animal.text} ↔ ${animal.expected}: ${result ? 'PASS ✓' : 'FAIL ✗'}`);
-    
-    // Test reverse (English → Bengali)
+    console.log(`Testing ${animal.text} ↔ ${animal.expected}: ${result ? '✅ PASS' : '❌ FAIL'}`);
+  });
+  
+  console.log('\n');
+  
+  // Test Bengali → English
+  console.log('🔍 Testing Bengali → English translations:');
+  bengaliAnimals.forEach(animal => {
     const reverseWord = {
       id: 'test',
       text: animal.text,
@@ -166,8 +186,24 @@ export const testBengaliAnimalValidation = () => {
     } as Word;
     
     const reverseResult = validateWordSubmission(animal.expected, reverseWord, 'bn');
-    console.log(`Testing reverse ${animal.expected} ↔ ${animal.text}: ${reverseResult ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(`Testing ${animal.text} ↔ ${animal.expected}: ${reverseResult ? '✅ PASS' : '❌ FAIL'}`);
   });
+  
+  // Test Bengali → Bengali (same word)
+  console.log('\n');
+  console.log('🔍 Testing Bengali → Bengali (identical word):');
+  bengaliAnimals.forEach(animal => {
+    const bengaliWord = {
+      id: 'test',
+      text: animal.text,
+      language: 'bn',
+      category: 'animal'
+    } as Word;
+    
+    const sameResult = validateWordSubmission(animal.text, bengaliWord, 'bn');
+    console.log(`Testing ${animal.text} ↔ ${animal.text}: ${sameResult ? '✅ PASS' : '❌ FAIL'}`);
+  });
+  
   console.groupEnd();
   
   return 'Test complete. Check console for results.';

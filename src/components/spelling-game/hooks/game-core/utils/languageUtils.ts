@@ -57,24 +57,55 @@ export const testLanguageDetection = () => {
     { text: 'बिल्ली', expected: 'hi' },
     { text: 'cat', expected: 'en' },
     { text: 'قطة', expected: 'ar' },
+    // Add more test cases for comprehensive testing
+    { text: 'কুকুর', expected: 'bn' }, // dog in Bengali
+    { text: 'হাতি', expected: 'bn' },  // elephant in Bengali
+    { text: 'बाघ', expected: 'hi' },   // tiger in Hindi
+    { text: 'كلب', expected: 'ar' },   // dog in Arabic
   ];
   
   console.group('Language Detection Test');
+  let passCount = 0;
   testCases.forEach(test => {
     const word = { text: test.text } as Word;
     const result = getLanguageIdFromContext(word, null);
+    const passed = result === test.expected;
+    
+    if (passed) passCount++;
+    
     console.log(`Text: ${test.text}`);
     console.log(`Detected: ${result}`);
     console.log(`Expected: ${test.expected}`);
-    console.log(`Result: ${result === test.expected ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(`Result: ${passed ? '✅ PASS' : '❌ FAIL'}`);
     console.log('---');
   });
+  
+  console.log(`Summary: ${passCount}/${testCases.length} tests passed (${Math.round(passCount/testCases.length*100)}%)`);
   console.groupEnd();
   
-  return 'Test complete. Check console for results.';
+  // Run all tests in sequence
+  console.log('\n🧪 Running all available tests:');
+  if (typeof window !== 'undefined') {
+    (window as any).testNormalization();
+    (window as any).testBengaliAnimalValidation();
+  }
+  
+  return 'Language detection test complete. Check console for results.';
 };
 
 // Make it accessible from the global scope for testing
 if (typeof window !== 'undefined') {
   (window as any).testLanguageDetection = testLanguageDetection;
+  
+  // Add a comprehensive test runner that executes all tests
+  (window as any).runAllTests = () => {
+    console.group('🧪 Comprehensive Language Testing Suite');
+    console.log('Running all language detection, normalization, and validation tests...');
+    (window as any).testLanguageDetection();
+    (window as any).testNormalization();
+    (window as any).testBengaliAnimalValidation();
+    console.log('All tests completed!');
+    console.groupEnd();
+    return 'All tests executed. Check console for detailed results.';
+  };
 }

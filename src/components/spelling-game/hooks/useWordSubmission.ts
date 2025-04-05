@@ -54,6 +54,15 @@ export const useWordSubmission = ({
     const formData = new FormData(formElement);
     const userInputValue = formData.get('wordInput')?.toString() || '';
     
+    // Log debugging information
+    console.log('Word submission attempt:', {
+      wordText: currentWord.text,
+      wordLanguage: currentWord.language,
+      wordCategory: currentWord.category,
+      userInput: userInputValue,
+      selectedLanguage
+    });
+    
     // Use the enhanced word validator - now with better Bengali support
     const isCorrectAnswer = validateWordSubmission(userInputValue, currentWord, selectedLanguage);
     
@@ -71,11 +80,23 @@ export const useWordSubmission = ({
       setScore(newScore);
       addPlayerPoints(2);
       setCorrectWords([...correctWords, currentWord]);
+      
+      console.log('Correct answer!', {
+        word: currentWord.text,
+        userInput: userInputValue,
+        newScore
+      });
     } else {
       // Fix: Use direct value instead of a function for setRemainingLives
       const newLives = remainingLives - 1;
       setRemainingLives(newLives);
       setIncorrectWords([...incorrectWords, currentWord]);
+      
+      console.log('Incorrect answer', {
+        word: currentWord.text,
+        userInput: userInputValue,
+        remainingLives: newLives
+      });
     }
     
     // Update progress in game store

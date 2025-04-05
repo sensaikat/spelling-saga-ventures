@@ -114,6 +114,10 @@ export const testNormalization = () => {
     { input: 'হাতী', lang: 'bn', expected: 'হাতি' }, // Alternative spelling
     { input: 'बिल्ली', lang: 'hi', expected: 'बलल' }, // After removing vowel signs
     { input: 'Cat', lang: 'en', expected: 'cat' },
+    // Additional test cases
+    { input: 'বাঘ', lang: 'bn', expected: 'বাঘ' }, // Tiger
+    { input: 'সিংহ', lang: 'bn', expected: 'সিংহ' }, // Lion
+    { input: 'খরগোশ', lang: 'bn', expected: 'খরগোশ' }, // Rabbit
   ];
   
   console.group('Text Normalization Test');
@@ -122,12 +126,30 @@ export const testNormalization = () => {
     console.log(`Input: ${test.input} (${test.lang})`);
     console.log(`Output: ${result}`);
     console.log(`Expected: ${test.expected}`);
-    console.log(`Result: ${result === test.expected ? 'PASS ✓' : 'FAIL ✗'}`);
+    console.log(`Result: ${result === test.expected ? '✅ PASS' : '❌ FAIL'}`);
     console.log('---');
   });
+  
+  // Test special Bengali normalization
+  console.log('\n🔍 Testing Bengali Special Normalization:');
+  const bengaliSpecialTests = [
+    { input: 'বিড়াল', expected: 'বডল' }, // Cat - after removing vowel signs
+    { input: 'কুকুর', expected: 'ককর' },  // Dog - after removing vowel signs
+    { input: 'হাতি', expected: 'হত' },    // Elephant - after removing vowel signs
+  ];
+  
+  bengaliSpecialTests.forEach(test => {
+    const result = normalizeTextForComparison(test.input, 'bn-special');
+    console.log(`Input: ${test.input} (bn-special)`);
+    console.log(`Output: ${result}`);
+    console.log(`Expected: ${test.expected}`);
+    console.log(`Result: ${result === test.expected ? '✅ PASS' : '❌ FAIL'}`);
+    console.log('---');
+  });
+  
   console.groupEnd();
   
-  return 'Test complete. Check console for results.';
+  return 'Text normalization test complete. Check console for results.';
 };
 
 // Make it accessible from the global scope for testing
