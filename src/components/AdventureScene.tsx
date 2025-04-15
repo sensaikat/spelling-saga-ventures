@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAdventureScene } from '../hooks/useAdventureScene';
 import TerrainBackground from './adventure/TerrainBackground';
@@ -34,6 +33,7 @@ const AdventureScene: React.FC<{
   const [showHiddenObjectsHint, setShowHiddenObjectsHint] = useState(false);
 
   const handleTalkToGuide = () => {
+    console.log('Talk to Guide button clicked');
     setShowGuide(true);
     toast({
       title: "Guide says:",
@@ -43,6 +43,7 @@ const AdventureScene: React.FC<{
   };
 
   const handleFindHiddenObjects = () => {
+    console.log('Find Hidden Objects button clicked');
     setShowHiddenObjectsHint(true);
     handleUseMagicItem('lens');
     toast({
