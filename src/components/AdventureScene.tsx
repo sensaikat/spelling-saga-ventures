@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useAdventureScene } from '../hooks/useAdventureScene';
 import TerrainBackground from './adventure/TerrainBackground';
 import AdventureHeader from './adventure/AdventureHeader';
@@ -32,18 +33,29 @@ const AdventureScene: React.FC<{
   const [showGuide, setShowGuide] = useState(false);
   const [showHiddenObjectsHint, setShowHiddenObjectsHint] = useState(false);
 
+  // Add testing utilities on component mount
+  useEffect(() => {
+    // Load testing utilities
+    import('../utils/testing').then(() => {
+      console.log('🔧 Adventure Scene testing utilities loaded');
+    });
+  }, []);
+
   const handleTalkToGuide = () => {
     console.log('Talk to Guide button clicked');
+    console.log('Button state change: showGuide =', !showGuide);
     setShowGuide(true);
     toast({
       title: "Guide says:",
       description: "Hello! I'm here to help you with your adventure. What would you like to know?",
       duration: 5000,
     });
+    console.log('✅ Talk to Guide functionality executed successfully');
   };
 
   const handleFindHiddenObjects = () => {
     console.log('Find Hidden Objects button clicked');
+    console.log('Button state change: showHiddenObjectsHint =', !showHiddenObjectsHint);
     setShowHiddenObjectsHint(true);
     handleUseMagicItem('lens');
     toast({
@@ -51,6 +63,7 @@ const AdventureScene: React.FC<{
       description: "Look carefully around the scene! Objects might be hidden in unexpected places.",
       duration: 5000,
     });
+    console.log('✅ Find Hidden Objects functionality executed successfully');
   };
   
   if (!currentLocation) return null;
@@ -73,7 +86,9 @@ const AdventureScene: React.FC<{
               currentLocation={currentLocation}
               showTips={showTips}
               onStartChallenge={() => {
+                console.log('Start Challenge button clicked');
                 onStartChallenge();
+                console.log('✅ Challenge started successfully');
               }}
             />
 
@@ -82,6 +97,8 @@ const AdventureScene: React.FC<{
                 variant="outline" 
                 className="flex items-center gap-2" 
                 onClick={handleTalkToGuide}
+                data-testid="talk-to-guide-button"
+                id="talk-to-guide-button"
               >
                 <MessageCircle size={18} />
                 Talk to Guide
@@ -91,6 +108,8 @@ const AdventureScene: React.FC<{
                 variant="outline" 
                 className="flex items-center gap-2" 
                 onClick={handleFindHiddenObjects}
+                data-testid="find-hidden-objects-button"
+                id="find-hidden-objects-button"
               >
                 <Search size={18} />
                 Find Hidden Objects
