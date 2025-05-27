@@ -1,4 +1,3 @@
-
 // Comprehensive button and interaction testing utility
 export class ButtonTester {
   private testResults: { [key: string]: boolean } = {};
@@ -164,7 +163,7 @@ export class ButtonTester {
   }
 
   // Generate test report
-  generateReport(): void {
+  generateReport() {
     console.group('📋 Test Results Summary');
     
     const totalTests = Object.keys(this.testResults).length;
