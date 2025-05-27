@@ -1,4 +1,3 @@
-
 import { Word, Language } from '../../../../../utils/game';
 import { normalizeTextForComparison } from './textNormalizer';
 import { getLanguageIdFromContext } from './languageUtils';
@@ -15,9 +14,10 @@ const logValidationDebug = (word: Word, userInput: string, languageId: string, i
     console.log(`User input: ${userInput}`);
     console.log(`Result: ${isCorrect ? 'Correct ✓' : 'Incorrect ✗'}`);
     
-    // Special details for Bengali words
-    if (languageId === 'bn' || word.language === 'bn') {
-      console.log(`Bengali word detected, showing character codes:`);
+    // Special details for vernacular languages
+    if (['bn', 'hi', 'ta', 'te', 'gu', 'ml', 'kn', 'or', 'pa', 'as'].includes(languageId) || 
+        ['bn', 'hi', 'ta', 'te', 'gu', 'ml', 'kn', 'or', 'pa', 'as'].includes(word.language || '')) {
+      console.log(`Vernacular language detected, showing character analysis:`);
       console.log(`Word: ${Array.from(word.text || '').map(c => c + ' (U+' + c.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ')')}`);
       console.log(`Input: ${Array.from(userInput || '').map(c => c + ' (U+' + c.charCodeAt(0).toString(16).padStart(4, '0').toUpperCase() + ')')}`);
     }
@@ -26,12 +26,99 @@ const logValidationDebug = (word: Word, userInput: string, languageId: string, i
 };
 
 /**
+ * Enhanced validation for picture questions with vernacular language support
+ */
+const validatePictureQuestion = (
+  userInput: string,
+  word: Word,
+  languageId: string
+): boolean => {
+  console.log('🖼️ Validating picture question:', {
+    wordText: word.text,
+    category: word.category,
+    userInput,
+    languageId
+  });
+
+  // Direct text comparison first
+  const normalizedAnswer = normalizeTextForComparison(word.text, languageId);
+  const normalizedInput = normalizeTextForComparison(userInput, languageId);
+  
+  if (normalizedInput === normalizedAnswer) {
+    console.log('✅ Direct match found');
+    return true;
+  }
+
+  // For picture questions, check cross-language translations
+  if (word.category && vocabularyTranslations) {
+    console.log(`🔍 Checking cross-language translations for category: ${word.category}`);
+    
+    // Find all vocabulary entries that might match this word
+    const matchingEntries = Object.entries(vocabularyTranslations).filter(([key, translations]) => {
+      if (!translations || typeof translations !== 'object') return false;
+      
+      // Check if any translation matches the word text
+      return Object.values(translations).some(translation => {
+        if (typeof translation === 'string') {
+          const normalizedTranslation = normalizeTextForComparison(translation, languageId);
+          return normalizedTranslation === normalizedAnswer;
+        }
+        return false;
+      });
+    });
+
+    console.log(`Found ${matchingEntries.length} matching vocabulary entries`);
+
+    // Check if user input matches any translation of the same concept
+    for (const [conceptKey, translations] of matchingEntries) {
+      const allTranslations = Object.entries(translations)
+        .filter(([lang, text]) => typeof text === 'string')
+        .map(([lang, text]) => ({
+          lang,
+          text: text as string,
+          normalized: normalizeTextForComparison(text as string, lang)
+        }));
+
+      console.log(`Checking concept "${conceptKey}" with translations:`, allTranslations.map(t => `${t.lang}: ${t.text}`));
+
+      // Check if user input matches any translation
+      const matchFound = allTranslations.some(translation => {
+        const match = translation.normalized === normalizedInput;
+        if (match) {
+          console.log(`✅ Cross-language match found: ${userInput} (${languageId}) = ${translation.text} (${translation.lang})`);
+        }
+        return match;
+      });
+
+      if (matchFound) return true;
+
+      // Special handling for vernacular scripts with extra normalization
+      if (['bn', 'hi', 'ta', 'te', 'gu', 'ml', 'kn', 'or', 'pa', 'as'].includes(languageId)) {
+        const specialNormalizedInput = normalizeTextForComparison(userInput, `${languageId}-special`);
+        
+        const specialMatchFound = allTranslations.some(translation => {
+          if (['bn', 'hi', 'ta', 'te', 'gu', 'ml', 'kn', 'or', 'pa', 'as'].includes(translation.lang)) {
+            const specialNormalizedTranslation = normalizeTextForComparison(translation.text, `${translation.lang}-special`);
+            const match = specialNormalizedTranslation === specialNormalizedInput;
+            if (match) {
+              console.log(`✅ Special vernacular match found: ${userInput} = ${translation.text}`);
+            }
+            return match;
+          }
+          return false;
+        });
+
+        if (specialMatchFound) return true;
+      }
+    }
+  }
+
+  return false;
+};
+
+/**
  * Validates if the user's input matches the expected word text
- * 
- * @param {string} userInput - User's submitted answer
- * @param {Word} word - The word to check against
- * @param {Language | string | null} selectedLanguage - The selected language context
- * @returns {boolean} Whether the answer is correct
+ * Enhanced for picture questions and vernacular language support
  */
 export const validateWordSubmission = (
   userInput: string, 
@@ -45,102 +132,89 @@ export const validateWordSubmission = (
   
   const languageId = getLanguageIdFromContext(word, selectedLanguage);
   
-  // Normalize both the expected answer and user input for proper comparison
+  console.log('🔤 Starting word validation:', {
+    userInput,
+    wordText: word.text,
+    wordLanguage: word.language,
+    selectedLanguage: typeof selectedLanguage === 'string' ? selectedLanguage : selectedLanguage?.id,
+    detectedLanguageId: languageId,
+    category: word.category
+  });
+
+  // For picture questions (words with categories), use enhanced validation
+  if (word.category) {
+    const result = validatePictureQuestion(userInput, word, languageId);
+    logValidationDebug(word, userInput, languageId, result);
+    return result;
+  }
+
+  // For regular text questions, use standard validation
   const normalizedAnswer = normalizeTextForComparison(word.text, languageId);
   const normalizedInput = normalizeTextForComparison(userInput, languageId);
   
-  // Direct comparison first
   let isCorrect = normalizedInput === normalizedAnswer;
   
-  // Bengali special case - try extra normalization
-  if (!isCorrect && (languageId === 'bn' || word.language === 'bn')) {
-    // Try additional Bengali-specific normalization
-    const specialNormalizedAnswer = normalizeTextForComparison(word.text, 'bn-special');
-    const specialNormalizedInput = normalizeTextForComparison(userInput, 'bn-special');
+  // Vernacular language special case - try extra normalization
+  if (!isCorrect && ['bn', 'hi', 'ta', 'te', 'gu', 'ml', 'kn', 'or', 'pa', 'as'].includes(languageId)) {
+    const specialNormalizedAnswer = normalizeTextForComparison(word.text, `${languageId}-special`);
+    const specialNormalizedInput = normalizeTextForComparison(userInput, `${languageId}-special`);
     isCorrect = specialNormalizedInput === specialNormalizedAnswer;
     
-    // Enhanced logging for Bengali special case
-    console.log('Bengali special comparison:', {
+    console.log('🔤 Vernacular special comparison:', {
       original: { word: word.text, input: userInput },
       normalized: { answer: normalizedAnswer, input: normalizedInput, match: normalizedInput === normalizedAnswer },
       special: { answer: specialNormalizedAnswer, input: specialNormalizedInput, match: specialNormalizedInput === specialNormalizedAnswer }
     });
   }
   
-  // If not correct directly, check if it matches animal names in vocabulary translations
-  if (!isCorrect && word.category === 'animal') {
-    // Look for the English equivalent in vocabularyTranslations for animal names
-    // First check all animal entries in the vocabulary translations
-    const animalEntries = Object.entries(vocabularyTranslations).filter(([key, translations]) => {
-      // Filter only animal entries
-      return key && translations.en && (
-        // Check if this entry has our target language
-        languageId in translations || 'bn' in translations
-      );
-    });
-    
-    // For debugging
-    console.log(`Looking for animal translations. Found ${animalEntries.length} animal entries`);
-    console.log(`Word text to check: ${word.text} in language: ${languageId}`);
-    
-    // Go through all animal translations to find if the user input matches any valid translation
-    for (const [animalKey, translations] of animalEntries) {
-      // Check if the current word's text matches this animal's entry in the target language
-      const wordMatchesThisAnimal = translations[languageId] === word.text;
-      
-      // Or if we're showing an English word but the user answered in Bengali or another language
-      const isEnglishWordWithForeignAnswer = 
-        word.language === 'en' && 
-        translations.en.toLowerCase() === word.text.toLowerCase();
-      
-      // Special case for Bengali words
-      const isBengaliWord = word.language === 'bn';
-      
-      if (wordMatchesThisAnimal || isEnglishWordWithForeignAnswer || isBengaliWord) {
-        // Get all possible correct translations for this animal
-        const allTranslations = Object.entries(translations)
-          .map(([lang, text]) => {
-            if (typeof text === 'string') {
-              return normalizeTextForComparison(text, lang);
-            }
-            return '';
-          })
-          .filter(text => text); // Remove empty strings
-        
-        // Check if user input matches any of these translations
-        isCorrect = allTranslations.includes(normalizedInput);
-        
-        console.log(`Checking animal: ${animalKey}`);
-        console.log(`Possible translations:`, allTranslations);
-        console.log(`User input (normalized): ${normalizedInput}`);
-        console.log(`Match found: ${isCorrect}`);
-        
-        // Extra check specifically for Bengali
-        if (!isCorrect && (languageId === 'bn' || word.language === 'bn' || userInput.match(/[\u0980-\u09FF]/))) {
-          if (translations.bn) {
-            const bnSpecialNormalized = normalizeTextForComparison(translations.bn, 'bn-special');
-            const inputSpecialNormalized = normalizeTextForComparison(userInput, 'bn-special');
-            isCorrect = bnSpecialNormalized === inputSpecialNormalized;
-            console.log('Bengali special animal check:', {
-              original: { word: translations.bn, input: userInput },
-              specialNormalized: { word: bnSpecialNormalized, input: inputSpecialNormalized, match: bnSpecialNormalized === inputSpecialNormalized }
-            });
-            
-            if (isCorrect) {
-              console.log('Bengali special match found!');
-            }
-          }
-        }
-        
-        if (isCorrect) break; // Stop checking if we found a match
-      }
-    }
-  }
-  
-  // Log detailed validation info
   logValidationDebug(word, userInput, languageId, isCorrect);
-  
   return isCorrect;
+};
+
+/**
+ * Test function specifically for picture questions with vernacular input
+ */
+export const testPictureQuestionValidation = () => {
+  const testCases = [
+    // Bengali animal names
+    { userInput: 'বিড়াল', word: { text: 'cat', category: 'animal', language: 'en' }, expected: true },
+    { userInput: 'cat', word: { text: 'বিড়াল', category: 'animal', language: 'bn' }, expected: true },
+    { userInput: 'কুকুর', word: { text: 'dog', category: 'animal', language: 'en' }, expected: true },
+    { userInput: 'dog', word: { text: 'কুকুর', category: 'animal', language: 'bn' }, expected: true },
+    { userInput: 'হাতি', word: { text: 'elephant', category: 'animal', language: 'en' }, expected: true },
+    
+    // Hindi animal names  
+    { userInput: 'बिल्ली', word: { text: 'cat', category: 'animal', language: 'en' }, expected: true },
+    { userInput: 'कुत्ता', word: { text: 'dog', category: 'animal', language: 'en' }, expected: true },
+    
+    // Same language validation
+    { userInput: 'বিড়াল', word: { text: 'বিড়াল', category: 'animal', language: 'bn' }, expected: true },
+    { userInput: 'cat', word: { text: 'cat', category: 'animal', language: 'en' }, expected: true },
+  ];
+  
+  console.group('🖼️ Picture Question Validation Test');
+  let passCount = 0;
+  
+  testCases.forEach((test, index) => {
+    const word = { id: `test-${index}`, ...test.word } as Word;
+    const result = validateWordSubmission(test.userInput, word, word.language);
+    const passed = result === test.expected;
+    
+    if (passed) passCount++;
+    
+    console.log(`\nTest ${index + 1}:`);
+    console.log(`User Input: "${test.userInput}"`);
+    console.log(`Word: "${test.word.text}" (${test.word.language})`);
+    console.log(`Category: ${test.word.category}`);
+    console.log(`Expected: ${test.expected ? 'ACCEPT' : 'REJECT'}`);
+    console.log(`Result: ${result ? 'ACCEPTED' : 'REJECTED'}`);
+    console.log(`Status: ${passed ? '✅ PASS' : '❌ FAIL'}`);
+  });
+  
+  console.log(`\n📊 Summary: ${passCount}/${testCases.length} tests passed (${Math.round(passCount/testCases.length*100)}%)`);
+  console.groupEnd();
+  
+  return 'Picture question validation test complete. Check console for results.';
 };
 
 /**
