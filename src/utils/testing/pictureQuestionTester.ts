@@ -20,7 +20,8 @@ export const testPictureQuestions = () => {
         id: 'test-1', 
         text: 'cat', 
         category: 'animal', 
-        language: 'en' 
+        language: 'en',
+        difficulty: 'easy' as const
       };
       testResults.englishToBengali = validateWordSubmission('বিড়াল', englishWord, 'en');
       console.log(`English "cat" → Bengali "বিড়াল": ${testResults.englishToBengali ? '✅ ACCEPTED' : '❌ REJECTED'}`);
@@ -30,7 +31,8 @@ export const testPictureQuestions = () => {
         id: 'test-2', 
         text: 'বিড়াল', 
         category: 'animal', 
-        language: 'bn' 
+        language: 'bn',
+        difficulty: 'easy' as const
       };
       testResults.bengaliToEnglish = validateWordSubmission('cat', bengaliWord, 'bn');
       console.log(`Bengali "বিড়াল" → English "cat": ${testResults.bengaliToEnglish ? '✅ ACCEPTED' : '❌ REJECTED'}`);
@@ -91,5 +93,3 @@ if (typeof window !== 'undefined') {
   (window as any).testPictureQuestions = testPictureQuestions;
   (window as any).testSpecificLanguageCombinations = testSpecificLanguageCombinations;
 }
-
-export { testPictureQuestions, testSpecificLanguageCombinations };
